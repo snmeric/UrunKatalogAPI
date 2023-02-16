@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrunKatalogAPI.Core", "UrunKatalogAPI.Core\UrunKatalogAPI.Core.csproj", "{F2B7ECA6-BBFA-4EC7-BEB5-0FF807CC1DDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrunKatalogAPI.Infrastructure", "UrunKatalogAPI.Infrastructere\UrunKatalogAPI.Infrastructure.csproj", "{51D5AF29-567B-4171-A76C-3C59C9DF296C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{0431EC1A-EEF5-4187-AFB9-FA58D6D149B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrunKatalogAPI.API", "Presentation\UrunKatalogAPI.API\UrunKatalogAPI.API.csproj", "{5A31C5B6-619B-48C8-A49C-3923E7EEBA57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F2B7ECA6-BBFA-4EC7-BEB5-0FF807CC1DDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2B7ECA6-BBFA-4EC7-BEB5-0FF807CC1DDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2B7ECA6-BBFA-4EC7-BEB5-0FF807CC1DDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2B7ECA6-BBFA-4EC7-BEB5-0FF807CC1DDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51D5AF29-567B-4171-A76C-3C59C9DF296C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51D5AF29-567B-4171-A76C-3C59C9DF296C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51D5AF29-567B-4171-A76C-3C59C9DF296C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51D5AF29-567B-4171-A76C-3C59C9DF296C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A31C5B6-619B-48C8-A49C-3923E7EEBA57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A31C5B6-619B-48C8-A49C-3923E7EEBA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A31C5B6-619B-48C8-A49C-3923E7EEBA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A31C5B6-619B-48C8-A49C-3923E7EEBA57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5A31C5B6-619B-48C8-A49C-3923E7EEBA57} = {0431EC1A-EEF5-4187-AFB9-FA58D6D149B5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8EA3B6B4-66F7-41A7-9D3E-E3E7A6F5BBC5}
+	EndGlobalSection
+EndGlobal
