@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UrunKatalogAPI.Core.Interfaces
+namespace UrunKatalogAPI.DAL
 {
-    public interface IProductRepository : IGenericRepository<Product>  
+    internal class GenericRepository
     {
     }
 }

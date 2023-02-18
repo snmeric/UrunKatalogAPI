@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Core.Interfaces
 {
-    internal class IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
+        IProductRepository Products { get; }
+
+        int Save();
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Core.Interfaces
 {
-    public interface IProductRepository : IGenericRepository<Product>  
+    public interface ICategoryRepository
     {
     }
 }
