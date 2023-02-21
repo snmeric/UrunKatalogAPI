@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UrunKatalogAPI.Services;
 using UrunKatalogAPI.Services.Interfaces;
 
 namespace UrunKatalogAPI.Infrastructere
@@ -12,7 +13,7 @@ namespace UrunKatalogAPI.Infrastructere
     {
         public static void AddPersistenceServices(this IServiceCollection services)
         {
-            services.AddSingleton<IProductService>
+            services.AddSingleton<IProductService, ProductService>();
         }
     }
 }
