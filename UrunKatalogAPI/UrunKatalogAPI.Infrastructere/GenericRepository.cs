@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using UrunKatalogAPI.Core.Interfaces;
+using UrunKatalogAPI.Infrastructere;
 
 namespace UrunKatalogAPI.DAL
 {
-    internal class GenericRepository
+    public abstract class GenericRepository<T> : IGenericRepository<T> where T : class
     {
+       
     }
 }

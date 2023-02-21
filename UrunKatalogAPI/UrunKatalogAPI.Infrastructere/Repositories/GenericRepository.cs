@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Infrastructere.Repositories
 {
-    public class Class1
+    internal class GenericRepository
     {
     }
 }

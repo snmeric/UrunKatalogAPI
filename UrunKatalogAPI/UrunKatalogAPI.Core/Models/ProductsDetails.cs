@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UrunKatalogAPI.Infrastructere.Repositories
+namespace UrunKatalogAPI.Core.Models
 {
-    public class Class1
+    internal class ProductsDetails
     {
     }
 }
