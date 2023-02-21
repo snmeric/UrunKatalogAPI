@@ -9,7 +9,7 @@ using UrunKatalogAPI.Infrastructere;
 
 namespace UrunKatalogAPI.DAL
 {
-    public abstract class GenericRepository<T> : IGenericRepository<T> where T : class
+    public abstract class GenericRepository<T> 
     {
        
     }
