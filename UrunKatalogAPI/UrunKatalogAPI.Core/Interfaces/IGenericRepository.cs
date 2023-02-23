@@ -10,8 +10,8 @@ namespace UrunKatalogAPI.Core.Interfaces
     {
         Task<T> GetById(int id);
         Task<IEnumerable<T>> GetAll();
-        Task Add(T entity);
+        void Add(T entity);
         void Delete(T entity);
-        void Update(T entity);
+       // void Update(T entity);
     }
 }

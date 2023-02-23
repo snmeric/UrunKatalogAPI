@@ -7,7 +7,7 @@ using UrunKatalogAPI.Core.Models;
 
 namespace UrunKatalogAPI.Core.Interfaces
 {
-    public interface IProductRepository : IGenericRepository<ProductsDetails>  
+    public interface IProductRepository : IGenericRepository<Product>  
     {
     }
 }
