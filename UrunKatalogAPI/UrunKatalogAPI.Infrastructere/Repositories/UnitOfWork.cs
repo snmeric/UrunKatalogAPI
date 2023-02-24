@@ -1,12 +1,25 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UrunKatalogAPI.Core.Interfaces;
 
 namespace UrunKatalogAPI.Infrastructere.Repositories
 {
-    public class Class1
+    public class UnitOfWork : IUnitOfWork
     {
+        private readonly UrunKatalogDbContext _context;
+
+        public UnitOfWork(UrunKatalogDbContext context)
+        {
+            _context = context;
+        }
+        public async Task CompleteAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

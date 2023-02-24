@@ -7,7 +7,7 @@ using UrunKatalogAPI.Core.Entities.Common;
 
 namespace UrunKatalogAPI.Core.Models
 {
-    public class Offer:BaseEntity
+    public class Offer : BaseEntity
     {
         public int ProductId { get; set; }
         public bool teklifYuzdesi { get; set; }

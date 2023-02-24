@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Core.Interfaces
 {
-    public interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
-        Task<T> GetById(int id);
-        Task<IEnumerable<T>> GetAll();
-        void Add(T entity);
-        void Delete(T entity);
-       // void Update(T entity);
+        Task<TEntity> GetById(int id);
+        Task<IEnumerable<TEntity>> GetAll();
+        void Add(TEntity entity);
+        void Remove(TEntity entity);
+       
     }
 }

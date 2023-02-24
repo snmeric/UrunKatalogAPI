@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UrunKatalogAPI.Core.Entities.Common;
 
 namespace UrunKatalogAPI.Core.Models
 {
-    internal class Color
+    public class Color : BaseEntity
     {
+        public string Name { get; set; }
     }
 }

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Core.Interfaces
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
-        IProductRepository Products { get; }
-
-        int Save();
+        Task CompleteAsync();
     }
 }

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Core.Enum
 {
-    internal class OfferStatus
+    public enum OfferStatus
     {
+        WAIT = 0,
+        ACCEPTED = 1,
+        REJECTED = 2
     }
 }
