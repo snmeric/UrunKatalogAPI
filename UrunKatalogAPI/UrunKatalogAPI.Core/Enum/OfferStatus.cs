@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UrunKatalogAPI.Core.Models
+namespace UrunKatalogAPI.Core.Enum
 {
-    public class Brand
+    internal class OfferStatus
     {
     }
 }

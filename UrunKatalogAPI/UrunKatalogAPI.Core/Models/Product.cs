@@ -7,7 +7,7 @@ using UrunKatalogAPI.Core.Entities.Common;
 
 namespace UrunKatalogAPI.Core.Models
 {
-    public class ProductsDetails:BaseEntity
+    public class Product:BaseEntity
     {
             public string Name { get; set; }
             public string Description { get; set; }
@@ -19,6 +19,9 @@ namespace UrunKatalogAPI.Core.Models
             public string UserName { get; set; }
             public bool IsOfferable { get; set; } = false;
             public bool IsSold { get; set; } = false;
-        
+            public int CategoryId { get; set; }
+            public Category Category { get; set; }
+
+
     }
 }
