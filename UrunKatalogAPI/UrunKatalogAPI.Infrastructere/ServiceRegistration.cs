@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,9 @@ namespace UrunKatalogAPI.Infrastructere
     {
         public static void AddPersistenceServices(this IServiceCollection services)
         {
-            services.AddDbContext(UrunKatalogDbContext(options=> options.Us));
+            services.AddDbContext<UrunKatalogDbContext>(options=> options.UseSqlServer(
+              
+                ));
         }
     }
 }

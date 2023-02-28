@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Core.Interfaces;
 using UrunKatalogAPI.Core.Models;
+using UrunKatalogAPI.Core.Shared;
 
 namespace UrunKatalogAPI.Infrastructere.Repositories
 {
@@ -30,6 +31,6 @@ namespace UrunKatalogAPI.Infrastructere.Repositories
 
         public abstract Task<TEntity> Get(int id);
 
-        public abstract Task<TEntity> GetAll(Filter filter);
+        public abstract Task<PaginatedResult<TEntity>> GetAll(Filter filter);
     }
 }
