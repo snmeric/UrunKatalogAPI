@@ -17,5 +17,6 @@ namespace UrunKatalogAPI.Core.Models
         public string BuyerId { get; set; }
         public int SoldPrice { get; set; }
         public DateTime PurchasedDate { get; set; }
+
     }
 }
