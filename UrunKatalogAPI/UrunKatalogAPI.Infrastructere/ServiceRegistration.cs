@@ -14,7 +14,7 @@ namespace UrunKatalogAPI.Infrastructere
         public static void AddPersistenceServices(this IServiceCollection services)
         {
             services.AddDbContext<UrunKatalogDbContext>(options=> options.UseSqlServer(
-              
+              "Server=MERIC\\SQLEXPRESS; Database=UrunKatalog;Trusted_Connection=True;"
                 ));
         }
     }
