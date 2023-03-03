@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,10 @@ namespace UrunKatalogAPI.Infrastructere
     {
         public static void AddPersistenceServices(this IServiceCollection services)
         {
-            services.AddDbContext<UrunKatalogDbContext>(options=> options.UseSqlServer(
-              "Server=MERIC\\SQLEXPRESS; Database=UrunKatalog;Trusted_Connection=True;"
-                ));
+            services.AddDbContext<UrunKatalogDbContext>(options =>
+            {
+                options.UseSqlServer("DefaultConnection");
+            });
         }
     }
 }

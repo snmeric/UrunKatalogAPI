@@ -7,7 +7,7 @@ using UrunKatalogAPI.Core.Models;
 
 namespace UrunKatalogAPI.Core.Interfaces
 {
-    public interface ICategoryRepository : IGenericRepository<Category>
+    public interface IColorRepository : IGenericRepository<Color>
     {
     }
 }

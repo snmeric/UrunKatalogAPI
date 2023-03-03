@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -10,7 +11,7 @@ namespace UrunKatalogAPI.Core.Models
 {
     public class AppUser
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        [Key]
+        public int Id { get; set; }
     }
 }

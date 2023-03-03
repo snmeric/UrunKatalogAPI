@@ -10,7 +10,7 @@ namespace UrunKatalogAPI.Core.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {
-        Task<TEntity> Get(int id);
+        Task<TEntity> GetById(int id);
         Task<PaginatedResult<TEntity>> GetAll(Filter filter);
         void Add(TEntity entity);
         void Remove(TEntity entity);
