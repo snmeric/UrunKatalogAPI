@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +13,19 @@ namespace UrunKatalogAPI.Infrastructere.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly UrunKatalogDbContext _context;
-
-        public UnitOfWork(UrunKatalogDbContext context)
+        private readonly UrunKatalogDbContext dbContext;
+        public UnitOfWork(UrunKatalogDbContext dbContext)
         {
-            _context = context;
+            this.dbContext = dbContext;
         }
-        public async Task CompleteAsync()
+        public void Commit()
         {
-            await _context.SaveChangesAsync();
+            dbContext.SaveChanges();
         }
 
+        public async Task CommitAsync()
+        {
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

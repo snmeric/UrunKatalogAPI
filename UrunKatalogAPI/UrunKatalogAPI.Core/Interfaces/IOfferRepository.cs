@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Core.Interfaces
 {
-    internal interface IOfferRepository
+    public interface IOfferRepository
     {
     }
 }

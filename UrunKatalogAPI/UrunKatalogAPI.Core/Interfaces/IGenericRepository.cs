@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Core.Models;
@@ -10,10 +11,12 @@ namespace UrunKatalogAPI.Core.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {
-        Task<TEntity> GetById(int id);
-        Task<PaginatedResult<TEntity>> GetAll(Filter filter);
-        void Add(TEntity entity);
-        void Remove(TEntity entity);
-       
+        Task<TEntity> GetByIdAsync(int id);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> expression);
+        Task InsertAsync(TEntity entity);
+        void Update(TEntity entity); 
+        void Delete(TEntity entity);
+
     }
 }

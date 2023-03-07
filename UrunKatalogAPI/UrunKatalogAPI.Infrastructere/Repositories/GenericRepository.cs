@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Core.Interfaces;
@@ -12,25 +13,45 @@ namespace UrunKatalogAPI.Infrastructere.Repositories
 {
     public abstract class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        private readonly UrunKatalogDbContext _context;
+        protected readonly UrunKatalogDbContext _context;
+        private readonly DbSet<TEntity> _dbSet;
         public GenericRepository(UrunKatalogDbContext context)
         {
             _context = context;
+            _dbSet=context.Set<TEntity>();
         }
 
-        public void Add(TEntity entity)
+        public void Delete(TEntity entity)
         {
-            _context.Set<TEntity>().Add(entity);
+            _dbSet.Remove(entity);
         }
 
-
-        public void Remove(TEntity entity)
+        public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> expression)
         {
-            _context.Set<TEntity>().Remove(entity);
+            return _dbSet.Where(expression);
         }
 
-        public abstract Task<TEntity> Get(int id);
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        {
+            return await _dbSet.AsNoTracking().ToListAsync();
+        }
 
-        public abstract Task<PaginatedResult<TEntity>> GetAll(Filter filter);
+        public async virtual Task<TEntity> GetByIdAsync(int id)
+        {
+            var result = await _dbSet.FindAsync(id);
+            if (result != null)
+                _context.Entry(result).State = EntityState.Detached;
+            return result;
+        }
+
+        public async Task InsertAsync(TEntity entity)
+        {
+            await _dbSet.AddAsync(entity);
+        }
+
+        public void Update(TEntity entity)
+        {
+            _dbSet.Update(entity);
+        }
     }
 }

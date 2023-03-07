@@ -8,6 +8,7 @@ namespace UrunKatalogAPI.Core.Interfaces
 {
     public interface IUnitOfWork
     {
-        Task CompleteAsync();
+        Task CommitAsync();
+        void Commit();
     }
 }

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Core.Models;
-using Color = UrunKatalogAPI.Core.Models.Color;
 
 namespace UrunKatalogAPI.Infrastructere
 {
@@ -17,11 +16,8 @@ namespace UrunKatalogAPI.Infrastructere
         }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Brand> Brands { get; set; }
         public DbSet<Offer> Offers { get; set; }
-        public DbSet<Color> Colors { get; set; }
-        public DbSet<Condition> Conditions { get; set; }
-        public DbSet<PurchaseHistory> PurchaseHistories { get; set; }
+      
         public DbSet<AppUser> AppUser { get; set; }
     }
 }
