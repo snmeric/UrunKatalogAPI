@@ -9,6 +9,7 @@ namespace UrunKatalogAPI.Core.Models
 {
     public class Category:BaseEntity
     {
-        public string Name { get; set; }
+        public string CategoryName { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
     }
 }
