@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Core.DTO
 {
-    internal class CategoryDTO
+    public class CategoryDto
     {
+        public int Id { get; set; }
+        public string CategoryName { get; set; }
+    }
+    public class DetailCategoryDto
+    {
+        public int Id { get; set; }
+        public string CategoryName { get; set; }
+        public ICollection<ProductDto> Products { get; set; }
     }
 }
