@@ -17,7 +17,6 @@ namespace UrunKatalogAPI.Infrastructere
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Offer> Offers { get; set; }
-      
         public DbSet<AppUser> AppUser { get; set; }
     }
 }
