@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Mapper\" />
+    <Folder Include="Services\Concrete\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UrunKatalogAPI.Core\UrunKatalogAPI.Core.csproj" />
+    <ProjectReference Include="..\UrunKatalogAPI.Infrastructere\UrunKatalogAPI.Infrastructere.csproj" />
+  </ItemGroup>
+
 </Project>

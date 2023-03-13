@@ -13,18 +13,16 @@ namespace UrunKatalogAPI.Infrastructere
 {
     public static class ServiceRegistration
     {
-        public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
+        public static void AddPersistenceServices(this IServiceCollection services)
         {
 
-            ConfigurationManager configurationManager = new();
-            configurationManager.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../UrunKatalogAPI.API"));
-            configurationManager.AddJsonFile("appsettings.json");
+           
 
             services.AddDbContext<UrunKatalogDbContext>(options =>
             {
-                options.UseSqlServer(configurationManager.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.ConnectionString);
             });
-            return services;
+         
         }
     }
 }
