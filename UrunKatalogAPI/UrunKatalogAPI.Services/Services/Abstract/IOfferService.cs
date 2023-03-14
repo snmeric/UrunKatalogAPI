@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Services.Services.Abstract
 {
-    internal class IOfferService
+    public interface IOfferService
     {
+
     }
 }

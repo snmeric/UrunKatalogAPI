@@ -22,7 +22,7 @@ namespace UrunKatalogAPI.Infrastructere
             {
                 options.UseSqlServer(Configuration.ConnectionString);
             });
-         
+            services.AddScoped<>
         }
     }
 }
