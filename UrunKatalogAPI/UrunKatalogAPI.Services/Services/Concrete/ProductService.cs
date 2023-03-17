@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UrunKatalogAPI.Services.Services.Concrete
 {
-    internal class ProductService
+    public class ProductService:
     {
     }
 }
