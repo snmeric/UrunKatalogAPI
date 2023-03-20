@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\UrunKatalogAPI.Core\UrunKatalogAPI.Core.csproj" />
     <ProjectReference Include="..\UrunKatalogAPI.Infrastructere\UrunKatalogAPI.Infrastructere.csproj" />
+    <ProjectReference Include="..\UrunKatalogAPI.Services\UrunKatalogAPI.Services.csproj" />
   </ItemGroup>
 
 </Project>
