@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UrunKatalogAPI.Core.Shared
+﻿namespace UrunKatalogAPI.API.Shared
 {
     public class PaginatedResult<T>
     {

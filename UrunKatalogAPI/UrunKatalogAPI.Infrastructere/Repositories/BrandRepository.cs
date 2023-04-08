@@ -10,38 +10,41 @@ using UrunKatalogAPI.Core.Domain.Entities;
 
 namespace UrunKatalogAPI.Infrastructere.Repositories
 {
-    public class CategoryRepository : Repository<Category>, ICategoryRepository
+    public class BrandRepository : Repository<Brand>, IBrandRepository
     {
         private readonly UrunKatalogDbContext _context;
 
-        public CategoryRepository(UrunKatalogDbContext context) : base(context)
+        public BrandRepository(UrunKatalogDbContext context) : base(context)
         {
             _context = context;
         }
 
-        public override async Task<Category> Get(int id)
+        public override async Task<Brand> Get(int id)
         {
-            var result = await _context.Categories
-                                .FirstOrDefaultAsync(p => p.Id == id);
+            var result = await _context.Brands.FirstOrDefaultAsync(p => p.Id == id);
+
 
             if (result == null)
                 throw new KeyNotFoundException("Not Found!");
+
 
             return result;
         }
 
 
 
-        public override async Task<PaginatedResult<Category>> GetAll(Filter filter)
+        public override async Task<PaginatedResult<Brand>> GetAll(Filter filter)
         {
 
-            var query = _context.Categories.AsQueryable();
+            var query = _context.Brands.AsQueryable();
 
             var result = await query.ToPaginatedListAsync(filter.PageNumber, filter.PageSize);
 
             return result;
 
         }
+
+
 
 
     }

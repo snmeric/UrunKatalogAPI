@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Mapper\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\UrunKatalogAPI.Core\UrunKatalogAPI.Core.csproj" />
     <ProjectReference Include="..\UrunKatalogAPI.Infrastructere\UrunKatalogAPI.Infrastructere.csproj" />
   </ItemGroup>

@@ -9,7 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Core.Interfaces;
+using UrunKatalogAPI.Infrastructere.Context;
 using UrunKatalogAPI.Infrastructere.Repositories;
+using UrunKatalogAPI.Infrastructere.Repositories.Interface;
 using UrunKatalogAPI.Services.Services.Abstract;
 using UrunKatalogAPI.Services.Services.Concrete;
 

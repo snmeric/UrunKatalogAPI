@@ -1,31 +1,24 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UrunKatalogAPI.Core.Interfaces;
+using UrunKatalogAPI.Core.Application.Interfaces;
 
 namespace UrunKatalogAPI.Infrastructere.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly UrunKatalogDbContext dbContext;
-        public UnitOfWork(UrunKatalogDbContext dbContext)
+        private readonly UrunKatalogDbContext _context;
+
+        public UnitOfWork(UrunKatalogDbContext context)
         {
-            this.dbContext = dbContext;
-        }
-        public void Commit()
-        {
-            dbContext.SaveChanges();
+            _context = context;
         }
 
-        public async Task CommitAsync()
+        public async Task CompleteAsync()
         {
-            await dbContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }
