@@ -8,9 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Infrastructere;
-using UrunKatalogAPI.Infrastructere.Repositories;
-using UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository.CategoryRepository;
-using UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository.UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository;
+using UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.MailRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.OfferRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.ProductRepository;
@@ -22,7 +20,7 @@ namespace UrunKatalogAPI.API
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
 
         public ICategoryRepository Category { get; private set; }
 
@@ -35,23 +33,23 @@ namespace UrunKatalogAPI.API
 
         public UnitOfWork(ApplicationDbContext context, ILoggerFactory loggerFactory, IConfiguration configuration, IMapper mapper)
         {
-            this.context = context;
+            _context = context;
             _logger = loggerFactory.CreateLogger("Project");
             _mapper = mapper;
 
-           Category = new CategoryRepository(context, mapper);
-           Product = new ProductRepository(context, mapper);
-            Offer = new OfferRepository(context, mapper);
-           Mail = new MailRepository(context, mapper);
+           Category = new CategoryRepository(_context, _mapper);
+           Product = new ProductRepository(_context, _mapper);
+           Offer = new OfferRepository(_context, _mapper);
+           Mail = new MailRepository(_context, _mapper);
         }
 
         public int Complete()
         {
-            return context.SaveChanges();
+            return _context.SaveChanges();
         }
         public void Dispose()
         {
-            context.Dispose();
+            _context.Dispose();
         }
     }
 }

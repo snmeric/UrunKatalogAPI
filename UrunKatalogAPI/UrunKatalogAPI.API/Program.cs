@@ -33,16 +33,20 @@ builder.Services.AddMvc(options =>
            .AddFluentValidation(m => m.RegisterValidatorsFromAssemblyContaining<Program>())
            .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
 
-//builder.Services.AddDataProtection()
-//      .PersistKeysToFileSystem(new DirectoryInfo(@"./keys/"))
-//      .SetApplicationName("UrunKatalogAPI");
+builder.Services.AddDataProtection()
+      .PersistKeysToFileSystem(new DirectoryInfo(Path.GetTempPath()))
+      .SetApplicationName("UrunKatalogAPI");
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
     {
         options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
-            Description="Standart Authorization header using the Bearer scheme{\"bearer {token}\")",
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            Description ="Standart Authorization header using the Bearer scheme{\"bearer {token}\")",
             In=ParameterLocation.Header,
             Name="Authorization",
             Type=SecuritySchemeType.ApiKey
@@ -82,6 +86,8 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 // Adding Authentication and jwt 
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -91,35 +97,39 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(jwt =>
 {
     var key = Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JwtConfig:Secret").Value);
+    jwt.RequireHttpsMetadata = false;
     jwt.SaveToken = true;
     jwt.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer= false,
-        ValidateAudience=false,
-        RequireExpirationTime=false,
-        ValidateLifetime=true,
+        ValidateIssuer= true,
+        ValidateAudience= true,
+        //  RequireExpirationTime=false,
+        // ValidateLifetime=true,
+        ValidIssuer = builder.Configuration["JwtConfig:ValidIssuer"],
+        ValidAudience = builder.Configuration["JwtConfig:ValidAudience"],
+        // ClockSkew = TimeSpan.Zero
 
     };
 });
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
              .AddEntityFrameworkStores<ApplicationDbContext>()
-             .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders();
 
 //builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false
-//    ).AddEntityFrameworkStores<ApplicationDbContext>();
+//    ).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 
 
 var app = builder.Build();
 
-app.Use((context, next) =>
-{
-    context.Request.EnableBuffering();
-    return next();
-});
+//app.Use((context, next) =>
+//{
+//    context.Request.EnableBuffering();
+//    return next();
+//});
 
 app.UseExceptionHandler(errorApp =>
 {
@@ -137,14 +147,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UrunKatalogAPI.API v1"));
 }
-app.UseCustomGlobalException();
+//app.UseCustomGlobalException();
 
 app.UseHttpLogging();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseAuthentication();
 
 
 

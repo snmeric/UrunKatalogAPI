@@ -12,6 +12,7 @@ using UrunKatalogAPI.Core.Domain.Entities;
 using UrunKatalogAPI.Core.Shared;
 using UrunKatalogAPI.Infrastructere.DTO;
 using UrunKatalogAPI.Infrastructere.Repositories;
+using static Microsoft.VisualStudio.Services.Graph.GraphResourceIds;
 
 namespace UrunKatalogAPI.API.Controllers
 {
@@ -69,9 +70,10 @@ namespace UrunKatalogAPI.API.Controllers
             }
 
             //Kullanıcı oluşturma
-            var newUser = new ApplicationUser
+            ApplicationUser newUser = new()
             {
-                UserName = model.Username,                 //yeni application user oluştur
+                UserName = model.Username,
+                SecurityStamp = Guid.NewGuid().ToString(),//yeni application user oluştur
                 Email = model.Email
             };
 
@@ -79,12 +81,21 @@ namespace UrunKatalogAPI.API.Controllers
 
             if (registerUser.Succeeded) //kullanıcı oluşturma başarılıysa
             {
+               
+                
+
                 await _signInManager.SignInAsync(newUser, isPersistent: false); //signin
                 var user = await _userManager.FindByNameAsync(newUser.UserName);
 
 
-               // var token = GenerateJwtToken(newUser);
+
+
                 return Ok(GetTokenResponse(user));
+
+
+
+
+
 
             }
 
@@ -99,11 +110,11 @@ namespace UrunKatalogAPI.API.Controllers
             });
 
         }
-
+     
 
         private JwtTokenResult GetTokenResponse(ApplicationUser user) // TOKEN RESPONSE'UNU DÖNEN METOT
         {
-            var token = GenerateJwtToken(user);
+            var token = GetToken(user);
             JwtTokenResult result = new()
             {
                 AccessToken = token,
@@ -112,43 +123,99 @@ namespace UrunKatalogAPI.API.Controllers
             };
             return result;
         }
-
-    
-
-
-        private string GenerateJwtToken(ApplicationUser user)
+        private string GetToken(ApplicationUser user)
         {
-            var jwtTokenHandler= new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
-
-
-
-
-            var tokenDescriptor = new SecurityTokenDescriptor()
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtConfig:Secret"]));
+            var authClaims = new List<Claim>
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim("Id",user.Id),
-                    new Claim(JwtRegisteredClaimNames.Sub,user.Email),
-                    new Claim(JwtRegisteredClaimNames.Email,user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Iat,DateTime.Now.ToUniversalTime().ToString())
-                }),
-                Expires = DateTime.Now.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            };
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+                                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString())
+                };
 
-            var token=jwtTokenHandler.CreateToken(tokenDescriptor);
-            return jwtTokenHandler.WriteToken(token);
-           
+            var jwt = new JwtSecurityToken(
+                issuer: _configuration["JwtConfig:ValidIssuer"],
+                audience: _configuration["JwtConfig:ValidAudience"],
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
 
-
-
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
-       
-     
     }
 }
+//private JwtTokenResult GetTokenResponse(ApplicationUser user) // TOKEN RESPONSE'UNU DÖNEN METOT
+//{
+//    var token = GetToken(user);
+//    JwtTokenResult result = new()
+//    {
+//        AccessToken = token,
+//        ExpireInSeconds = _configuration.GetValue<int>("Tokens:Lifetime"),
+//        UserId = user.Id
+//    };
+//    return result;
+//}
+
+//private string GetToken(ApplicationUser user) //TOKEN ÜRETEN METOT
+//{
+//    var utcNow = DateTime.UtcNow;
+
+//    var claims = new Claim[]
+//    {
+//                new Claim(ClaimTypes.NameIdentifier, user.Id),
+//                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+//                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+//                new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString())
+//    };
+
+//    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+//    var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+//    var jwt = new JwtSecurityToken(
+//        claims: claims,
+//        notBefore: utcNow,
+//        expires: DateTime.Now.AddDays(30),
+//        audience: _configuration["JWT:ValidAudience"],
+//        issuer: _configuration["JWT:ValidIssuer"],
+//        signingCredentials: signingCredentials
+//        );
+
+//    return new JwtSecurityTokenHandler().WriteToken(jwt);
+//}
+
+
+//private string GenerateJwtToken(ApplicationUser user)
+//{
+//    var jwtTokenHandler= new JwtSecurityTokenHandler();
+//    var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
+
+
+
+
+//    var tokenDescriptor = new SecurityTokenDescriptor()
+//    {
+//        Subject = new ClaimsIdentity(new[]
+//        {
+//              new Claim(ClaimTypes.NameIdentifier, user.Id),
+//                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+//            new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+//            new Claim(JwtRegisteredClaimNames.Iat,DateTime.Now.ToUniversalTime().ToString())
+//        }),
+//        Expires = DateTime.Now.AddHours(1),
+//        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+//    };
+
+//    var token=jwtTokenHandler.CreateToken(tokenDescriptor);
+//    return jwtTokenHandler.WriteToken(token);
+
+
+
+
+//}
+
+
+
 
 //var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value));
 //var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);

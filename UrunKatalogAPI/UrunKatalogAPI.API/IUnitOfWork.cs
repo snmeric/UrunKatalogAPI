@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository.CategoryRepository;
+using UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.MailRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.OfferRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.ProductRepository;
 
-namespace UrunKatalogAPI.Infrastructere.Repositories
+namespace UrunKatalogAPI.API
 {
     public interface IUnitOfWork
     {

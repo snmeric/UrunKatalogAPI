@@ -15,6 +15,7 @@ namespace UrunKatalogAPI.Infrastructere.DTO
     {
         [Required]
         public string Name { get; set; }
+      
 
 
     }

@@ -41,15 +41,16 @@ namespace UrunKatalogAPI.API.Controllers
         [HttpPost] // YENİ KATEGORİ OLUŞTURMA ENDPOINT'İ
         public async Task<ActionResult<ApplicationResult<CategoryDto>>> CreateCategory([FromBody] CreateCategoryInput input)
         {
-            if(!ModelState.IsValid) {
-            return BadRequest("Hata");
-            }
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var result = await _unitOfWork.Category.Create(input, user);
-            if (result.Succeeded)
-                return result;
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                var result = await _unitOfWork.Category.Create(input, user);
+                if (result.Succeeded)
+                    return Ok(result);
 
-            return NotFound(result);
+              //  return NotFound(result);
+            }
+            return BadRequest();
         }
 
         [HttpPut] // KATEGORİ GÜNCELLEME ENDPOINT'İ
