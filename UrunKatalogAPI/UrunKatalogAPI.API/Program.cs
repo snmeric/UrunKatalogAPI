@@ -1,12 +1,16 @@
 using AutoMapper;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.TeamFoundation.TestManagement.WebApi;
 using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 using System.Text;
 using UrunKatalogAPI.API;
 using UrunKatalogAPI.API.Extensions;
@@ -19,8 +23,14 @@ using UrunKatalogAPI.Infrastructere.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
 builder.Services.AddControllers();
+builder.Services.AddMvc(options =>
+{
+    options.EnableEndpointRouting = false;
+    options.Filters.Add<ValidationFilter>();
+})
+           .AddFluentValidation(m => m.RegisterValidatorsFromAssemblyContaining<Program>())
+           .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
@@ -38,33 +48,35 @@ builder.Services.AddSwaggerGen(
     
     );
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredUniqueChars = 1;
+});
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(Configuration.ConnectionString);
 
-builder.Services.AddPersistenceServices();
+});
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+var mappingConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new AutoMapperProfile());
+});
+IMapper mapper = mappingConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-//builder.Services.AddIdentityCore<ApplicationUser>(options =>
-//{
-//    options.Password.RequireDigit = false;
-//    options.Password.RequireLowercase = false;
-//    options.Password.RequireUppercase = false;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequiredUniqueChars = 1;
-//})
-//             .AddEntityFrameworkStores<ApplicationDbContext>()
-//             .AddDefaultTokenProviders();
-
 
 // Adding Authentication and jwt 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-
-builder.Services.AddIdentityCore<IdentityUser>(options=>options.SignIn.RequireConfirmedAccount=false
-    ).AddEntityFrameworkStores<ApplicationDbContext>();
-// Adding Authentication and jwt 
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JWT"));
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -88,17 +100,33 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//builder.Services.Configure<IdentityOptions>(options =>
-//{
-//    options.Password.RequireDigit = false;
-//    options.Password.RequireLowercase = false;
-//    options.Password.RequireUppercase = false;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequiredUniqueChars = 1;
-//});
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+             .AddEntityFrameworkStores<ApplicationDbContext>()
+             .AddDefaultTokenProviders();
+
+//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false
+//    ).AddEntityFrameworkStores<ApplicationDbContext>();
+
 
 
 var app = builder.Build();
+
+app.Use((context, next) =>
+{
+    context.Request.EnableBuffering();
+    return next();
+});
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        var error = exceptionHandlerPathFeature?.Error;
+        var result = new { error = error?.Message };
+        await context.Response.WriteAsJsonAsync(result);
+    });
+});
 
 if (app.Environment.IsDevelopment())
 {
@@ -109,9 +137,10 @@ app.UseCustomGlobalException();
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
-app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseAuthentication();
+
 
 
 app.MapControllers();

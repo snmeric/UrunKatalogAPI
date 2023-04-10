@@ -1,8 +1,8 @@
-﻿using Hangfire;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Services.Users;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,21 +19,21 @@ namespace UrunKatalogAPI.API.Controllers
     [Route("[controller]")]
     public class RegisterController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
-       // private readonly JwtConfig _jwtConfig;
+        // private readonly JwtConfig _jwtConfig;
 
 
 
-        public RegisterController(UserManager<ApplicationUser> userManager, IConfiguration configuration, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork, JwtConfig jwtConfig)
+        public RegisterController(UserManager<ApplicationUser> userManager, IConfiguration configuration, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork)
         {
-            this.userManager = userManager;
+            _userManager = userManager;
             _configuration = configuration;
-            this.signInManager = signInManager;
+            _signInManager = signInManager;
             _unitOfWork = unitOfWork;
-           // _jwtConfig = jwtConfig;
+            // _jwtConfig = jwtConfig;
 
         }
 
@@ -41,61 +41,82 @@ namespace UrunKatalogAPI.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
 
-            if (ModelState.IsValid) //model validse
+            if (!ModelState.IsValid) //model validse
             {
-
-                // Email Zaten Kaytlı
-                var user_exist = await userManager.FindByEmailAsync(model.Email);
-                if (user_exist != null)
-                {
-                    return BadRequest(new AuthResult()
-                    {
-                        Result = false,
-                        Errors = new List<string>()
-                        {
-                            "Email zaten kayıtlı!"
-                        }
-                    });
-                }
-
-                //Kullanıcı oluşturma
-                var newUser = new ApplicationUser
-                {
-                    UserName = model.Username,                 //yeni application user oluştur
-                    Email = model.Email
-                };
-
-                var is_created = await userManager.CreateAsync(newUser, model.Password);
-
-                if (is_created.Succeeded)
-                {
-
-                    //TOKEN ÜRETME
-
-                    var token = GenerateJwtToken(newUser);
-
-                    return Ok(new AuthResult()
-                    {
-                        Result = true,
-                        Token = token
-                    });
-
-                }
                 return BadRequest(new AuthResult()
                 {
                     Result = false,
-                    Errors = new List<string>() { "Server Error" }
+                    Errors = new List<string>()
+                        {
+                            "Başarısız!"
+                        }
                 });
             }
-            return BadRequest();
+
+            // Email Zaten Kaytlı
+            // usermanager ile kullanıcıyı oluştur
+            var user_exist = await _userManager.FindByEmailAsync(model.Email);
+            if (user_exist != null)
+            {
+                return BadRequest(new AuthResult()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                        {
+                            "Email zaten kayıtlı!"
+                        }
+                });
+            }
+
+            //Kullanıcı oluşturma
+            var newUser = new ApplicationUser
+            {
+                UserName = model.Username,                 //yeni application user oluştur
+                Email = model.Email
+            };
+
+            var registerUser = await _userManager.CreateAsync(newUser, model.Password);
+
+            if (registerUser.Succeeded) //kullanıcı oluşturma başarılıysa
+            {
+                await _signInManager.SignInAsync(newUser, isPersistent: false); //signin
+                var user = await _userManager.FindByNameAsync(newUser.UserName);
+
+
+                var token = GenerateJwtToken(newUser);
+                return Ok(new AuthResult()
+                {
+                    Result = true,
+                    Token = token
+                }) ;
+
+            }
+
+            
+            return BadRequest(new AuthResult()
+            {
+                Result = false,
+                Errors = new List<string>()
+                        {
+                            "Server Hatası!"
+                        }
+            });
+
         }
+
+
+
+
+
+
+
         private string GenerateJwtToken(ApplicationUser user)
         {
-            var JwtTokenHandler=new JwtSecurityTokenHandler();
+            var jwtTokenHandler= new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
 
 
-            //Token Desc
+
 
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
@@ -110,17 +131,51 @@ namespace UrunKatalogAPI.API.Controllers
                 Expires = DateTime.Now.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
-            var token = JwtTokenHandler.CreateToken(tokenDescriptor);
-            return JwtTokenHandler.WriteToken(token);
+
+            var token=jwtTokenHandler.CreateToken(tokenDescriptor);
+            return jwtTokenHandler.WriteToken(token);
            
+
+
+
+        }
+       
+        private JwtTokenResult GetTokenResponse(ApplicationUser user) // TOKEN RESPONSE'UNU DÖNEN METOT
+        {
+            var token = GenerateJwtToken(user);
+            JwtTokenResult result = new()
+            {
+                AccessToken = token,
+                ExpireInSeconds = _configuration.GetValue<int>("Tokens:Lifetime"),
+                UserId = user.Id
+            };
+            return result;
         }
     }
-   
 }
 
-       
- 
-   
+//var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value));
+//var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+//var utcNow = DateTime.UtcNow;
+
+//var claims = new Claim[]
+//{
+//            new Claim(ClaimTypes.NameIdentifier, user.Id),
+//            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+//            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+//            new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString())
+//};
+//var jwt = new JwtSecurityToken(
+//    claims: claims,
+//    notBefore: utcNow,
+//    expires: DateTime.Now.AddDays(30),
+//    signingCredentials: signingCredentials
+//    );
+
+
+
+
+
 
 
 //                var registerUser = await userManager.CreateAsync(newUser, model.Password); // usermanager ile kullanıcıyı oluştur
