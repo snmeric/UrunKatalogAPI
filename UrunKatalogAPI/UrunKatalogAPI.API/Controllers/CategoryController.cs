@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace UrunKatalogAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoryController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -40,6 +41,9 @@ namespace UrunKatalogAPI.API.Controllers
         [HttpPost] // YENİ KATEGORİ OLUŞTURMA ENDPOINT'İ
         public async Task<ActionResult<ApplicationResult<CategoryDto>>> CreateCategory([FromBody] CreateCategoryInput input)
         {
+            if(!ModelState.IsValid) {
+            return BadRequest("Hata");
+            }
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var result = await _unitOfWork.Category.Create(input, user);
             if (result.Succeeded)

@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,9 @@ builder.Services.AddMvc(options =>
            .AddFluentValidation(m => m.RegisterValidatorsFromAssemblyContaining<Program>())
            .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
 
+//builder.Services.AddDataProtection()
+//      .PersistKeysToFileSystem(new DirectoryInfo(@"./keys/"))
+//      .SetApplicationName("UrunKatalogAPI");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
@@ -135,6 +139,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCustomGlobalException();
 
+app.UseHttpLogging();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Infrastructere.DTO;
 
-namespace UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository
+namespace UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository.CategoryRepository
 {
     public interface ICategoryRepository : IRepository<int, CategoryDto, CreateCategoryInput, UpdateCategoryInput, ApplicationUser>
     {

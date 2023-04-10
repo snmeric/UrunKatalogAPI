@@ -1,200 +1,212 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using UrunKatalogAPI.Core.Domain.Entities;
-using UrunKatalogAPI.Core.Shared;
-using UrunKatalogAPI.Infrastructere.DTO;
-
 namespace UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository
 {
-    public class CategoryRepository : ICategoryRepository
+    using AutoMapper;
+    using global::UrunKatalogAPI.Core.Domain.Entities;
+    using global::UrunKatalogAPI.Core.Shared;
+    using global::UrunKatalogAPI.Infrastructere.DTO;
+    using global::UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository.CategoryRepository;
+    using Microsoft.EntityFrameworkCore;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
+
+
+    namespace UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
-
-        public CategoryRepository(ApplicationDbContext context, IMapper mapper)
+        public class CategoryRepository : ICategoryRepository
         {
-            _mapper = mapper;
-            _context = context;
-        }
+            private readonly ApplicationDbContext _context;
+            private readonly IMapper _mapper;
 
-        public async Task<ApplicationResult<CategoryDto>> Create(CreateCategoryInput input, ApplicationUser applicationUser)
-        {
-            try
+            public CategoryRepository(ApplicationDbContext context, IMapper mapper)
             {
-                Category mapCat = _mapper.Map<Category>(input);
-                mapCat.CreatedById = applicationUser.Id;
-                mapCat.CreatedBy = applicationUser.UserName;
-                _context.Categories.Add(mapCat);
-                await _context.SaveChangesAsync();
-                ApplicationResult<CategoryDto> result = new ApplicationResult<CategoryDto>
-                {
-                    Result = _mapper.Map<CategoryDto>(mapCat),
-                    Succeeded = true
-                };
-
-                return result;
+                _mapper = mapper;
+                _context = context;
             }
-            catch (Exception)
-            {
 
-                return new ApplicationResult<CategoryDto>
-                {
-                    Succeeded = false,
-                    ErrorMessage = "Error Occured!"
-                };
-            }
-        }
-
-        public async Task<ApplicationResult> Delete(int id)
-        {
-            try
+            public async Task<ApplicationResult<CategoryDto>> Create(CreateCategoryInput input, ApplicationUser applicationUser)
             {
-                var willDelete = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
-                if (willDelete != null)
+                try
                 {
-                    _context.Categories.Remove(willDelete);
+                    Category mapCat = _mapper.Map<Category>(input);
+                    mapCat.CreatedById = applicationUser.Id;
+                    mapCat.CreatedBy = applicationUser.UserName;
+                    _context.Categories.Add(mapCat);
                     await _context.SaveChangesAsync();
-                    return new ApplicationResult { Succeeded = true };
+                    ApplicationResult<CategoryDto> result = new ApplicationResult<CategoryDto>
+                    {
+                        Result = _mapper.Map<CategoryDto>(mapCat),
+                        Succeeded = true
+                    };
+
+                    return result;
                 }
-                else
+                catch (Exception)
                 {
-                    return new ApplicationResult { Succeeded = false, ErrorMessage = ErrorCodes.NoRecordFaund, };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new GenericException().GetError(ex);
-            }
-        }
 
-        public async Task<ApplicationResult<CategoryDto>> Get(int id)
-        {
-            try
-            {
-                Category category = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
-                CategoryDto dto = new()
-                {
-                    CreatedBy = category.CreatedBy,
-                    CreatedById = category.CreatedById,
-                    CreatedDate = category.CreatedDate,
-                    Id = category.Id,
-                    ModifiedBy = category.ModifiedBy,
-                    ModifiedById = category.ModifiedById,
-                    ModifiedDate = category.ModifiedDate,
-                    Name = category.Name
-                };
-                return new ApplicationResult<CategoryDto>
-                {
-                    Result = dto,
-                    Succeeded = true
-                };
-            }
-            catch (Exception)
-            {
-                return new ApplicationResult<CategoryDto>
-                {
-                    Succeeded = false,
-                    ErrorMessage = "Error Occured!"
-                };
-            }
-        }
-
-        public async Task<ApplicationResult<List<CategoryDto>>> GetAll()
-        {
-            try
-            {
-                List<CategoryDto> list = await _context.Categories.Select(category => new CategoryDto
-                {
-                    CreatedBy = category.CreatedBy,
-                    CreatedById = category.CreatedById,
-                    CreatedDate = category.CreatedDate,
-                    Id = category.Id,
-                    ModifiedBy = category.ModifiedBy,
-                    ModifiedById = category.ModifiedById,
-                    ModifiedDate = category.ModifiedDate,
-                    Name = category.Name
-                }).ToListAsync();
-
-                return new ApplicationResult<List<CategoryDto>>
-                {
-                    Result = list,
-                    Succeeded = true
-                };
-
-            }
-            catch (Exception)
-            {
-                return new ApplicationResult<List<CategoryDto>>
-                {
-                    Succeeded = false,
-                    ErrorMessage = "Error Occured!"
-                };
-            }
-        }
-
-        public async Task<ApplicationResult<CategoryDto>> Update(UpdateCategoryInput input, ApplicationUser applicationUser)
-        {
-            try
-            {
-                var getExistCategory = await _context.Categories.FindAsync(input.Id);
-                if (getExistCategory == null)
-                {
                     return new ApplicationResult<CategoryDto>
                     {
                         Succeeded = false,
-                        ErrorMessage = ErrorCodes.NoRecordFaund,
-                        Result = new CategoryDto()
+                        ErrorMessage = "Error Occured!"
                     };
                 }
-                if (!getExistCategory.CreatedById.Equals(applicationUser.Id))
-                {
-                    return new ApplicationResult<CategoryDto>
-                    {
-                        Succeeded = false,
-                        ErrorMessage = ErrorCodes.NoRecordFaund,
-                        Result = new CategoryDto()
-                    };
-                }
+            }
 
-                getExistCategory.Name = input.Name;
-                getExistCategory.ModifiedBy = applicationUser.UserName;
-                getExistCategory.ModifiedById = applicationUser.Id;
-                getExistCategory.ModifiedDate = DateTime.UtcNow;
-                _context.Update(getExistCategory);
-                await _context.SaveChangesAsync();
-
-                return new ApplicationResult<CategoryDto>
+            public async Task<ApplicationResult> Delete(int id)
+            {
+                try
                 {
-                    Succeeded = true,
-                    Result = new CategoryDto
+                    var willDelete = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
+                    if (willDelete != null)
                     {
-                        CreatedBy = getExistCategory.CreatedBy,
-                        CreatedById = getExistCategory.CreatedById,
-                        CreatedDate = getExistCategory.CreatedDate,
-                        Id = getExistCategory.Id,
-                        ModifiedBy = getExistCategory.ModifiedBy,
-                        ModifiedById = getExistCategory.ModifiedById,
-                        ModifiedDate = getExistCategory.ModifiedDate,
-                        Name = getExistCategory.Name
+                        _context.Categories.Remove(willDelete);
+                        await _context.SaveChangesAsync();
+                        return new ApplicationResult { Succeeded = true };
                     }
-                };
-            }
-            catch (Exception)
-            {
-
-                return new ApplicationResult<CategoryDto>
+                    else
+                    {
+                        return new ApplicationResult { Succeeded = false, ErrorMessage = ErrorCodes.NoRecordFaund, };
+                    }
+                }
+                catch (Exception ex)
                 {
-                    Succeeded = false,
-                    ErrorMessage = "Error Occured!"
-                };
+                    return new GenericException().GetError(ex);
+                }
+            }
 
+            public async Task<ApplicationResult<CategoryDto>> Get(int id)
+            {
+                try
+                {
+                    Category category = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
+                    CategoryDto dto = new()
+                    {
+                        CreatedBy = category.CreatedBy,
+                        CreatedById = category.CreatedById,
+                        CreatedDate = category.CreatedDate,
+                        Id = category.Id,
+                        ModifiedBy = category.ModifiedBy,
+                        ModifiedById = category.ModifiedById,
+                        ModifiedDate = category.ModifiedDate,
+                        Name = category.Name
+                    };
+                    return new ApplicationResult<CategoryDto>
+                    {
+                        Result = dto,
+                        Succeeded = true
+                    };
+                }
+                catch (Exception)
+                {
+                    return new ApplicationResult<CategoryDto>
+                    {
+                        Succeeded = false,
+                        ErrorMessage = "Error Occured!"
+                    };
+                }
+            }
+
+            public async Task<ApplicationResult<List<CategoryDto>>> GetAll()
+            {
+                try
+                {
+                    List<CategoryDto> list = await _context.Categories.Select(category => new CategoryDto
+                    {
+                        CreatedBy = category.CreatedBy,
+                        CreatedById = category.CreatedById,
+                        CreatedDate = category.CreatedDate,
+                        Id = category.Id,
+                        ModifiedBy = category.ModifiedBy,
+                        ModifiedById = category.ModifiedById,
+                        ModifiedDate = category.ModifiedDate,
+                        Name = category.Name
+                    }).ToListAsync();
+
+                    return new ApplicationResult<List<CategoryDto>>
+                    {
+                        Result = list,
+                        Succeeded = true
+                    };
+
+                }
+                catch (Exception)
+                {
+                    return new ApplicationResult<List<CategoryDto>>
+                    {
+                        Succeeded = false,
+                        ErrorMessage = "Error Occured!"
+                    };
+                }
+            }
+
+            public async Task<ApplicationResult<CategoryDto>> Update(UpdateCategoryInput input, ApplicationUser applicationUser)
+            {
+                try
+                {
+                    var getExistCategory = await _context.Categories.FindAsync(input.Id);
+                    if (getExistCategory == null)
+                    {
+                        return new ApplicationResult<CategoryDto>
+                        {
+                            Succeeded = false,
+                            ErrorMessage = ErrorCodes.NoRecordFaund,
+                            Result = new CategoryDto()
+                        };
+                    }
+                    if (!getExistCategory.CreatedById.Equals(applicationUser.Id))
+                    {
+                        return new ApplicationResult<CategoryDto>
+                        {
+                            Succeeded = false,
+                            ErrorMessage = ErrorCodes.NoRecordFaund,
+                            Result = new CategoryDto()
+                        };
+                    }
+
+                    getExistCategory.Name = input.Name;
+                    getExistCategory.ModifiedBy = applicationUser.UserName;
+                    getExistCategory.ModifiedById = applicationUser.Id;
+                    getExistCategory.ModifiedDate = DateTime.UtcNow;
+                    _context.Update(getExistCategory);
+                    await _context.SaveChangesAsync();
+
+                    return new ApplicationResult<CategoryDto>
+                    {
+                        Succeeded = true,
+                        Result = new CategoryDto
+                        {
+                            CreatedBy = getExistCategory.CreatedBy,
+                            CreatedById = getExistCategory.CreatedById,
+                            CreatedDate = getExistCategory.CreatedDate,
+                            Id = getExistCategory.Id,
+                            ModifiedBy = getExistCategory.ModifiedBy,
+                            ModifiedById = getExistCategory.ModifiedById,
+                            ModifiedDate = getExistCategory.ModifiedDate,
+                            Name = getExistCategory.Name
+                        }
+                    };
+                }
+                catch (Exception)
+                {
+
+                    return new ApplicationResult<CategoryDto>
+                    {
+                        Succeeded = false,
+                        ErrorMessage = "Error Occured!"
+                    };
+
+                }
             }
         }
     }
+
 }

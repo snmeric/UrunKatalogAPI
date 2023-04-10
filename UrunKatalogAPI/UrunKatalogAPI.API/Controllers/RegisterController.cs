@@ -83,12 +83,8 @@ namespace UrunKatalogAPI.API.Controllers
                 var user = await _userManager.FindByNameAsync(newUser.UserName);
 
 
-                var token = GenerateJwtToken(newUser);
-                return Ok(new AuthResult()
-                {
-                    Result = true,
-                    Token = token
-                }) ;
+               // var token = GenerateJwtToken(newUser);
+                return Ok(GetTokenResponse(user));
 
             }
 
@@ -105,9 +101,19 @@ namespace UrunKatalogAPI.API.Controllers
         }
 
 
+        private JwtTokenResult GetTokenResponse(ApplicationUser user) // TOKEN RESPONSE'UNU DÖNEN METOT
+        {
+            var token = GenerateJwtToken(user);
+            JwtTokenResult result = new()
+            {
+                AccessToken = token,
+                ExpireInSeconds = _configuration.GetValue<int>("Tokens:Lifetime"),
+                UserId = user.Id
+            };
+            return result;
+        }
 
-
-
+    
 
 
         private string GenerateJwtToken(ApplicationUser user)
@@ -140,17 +146,7 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
        
-        private JwtTokenResult GetTokenResponse(ApplicationUser user) // TOKEN RESPONSE'UNU DÖNEN METOT
-        {
-            var token = GenerateJwtToken(user);
-            JwtTokenResult result = new()
-            {
-                AccessToken = token,
-                ExpireInSeconds = _configuration.GetValue<int>("Tokens:Lifetime"),
-                UserId = user.Id
-            };
-            return result;
-        }
+     
     }
 }
 
