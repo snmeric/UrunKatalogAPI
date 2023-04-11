@@ -23,13 +23,13 @@ namespace UrunKatalogAPI.API.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet] // TÜM KATEGORİLERİ LİSTELEME ENDPOINT'İ
+        [HttpGet]
         public Task<ApplicationResult<List<CategoryDto>>> GetAllCategories()
         {
             return _unitOfWork.Category.GetAll();
         }
 
-        [HttpGet("{id}")] // İDYE GÖRE KATEGORİLERİ LİSTELEME ENDPOINT'İ
+        [HttpGet("{id}")] 
         public async Task<ActionResult<ApplicationResult<CategoryDto>>> GetCategoryById(int id)
         {
             var result = await _unitOfWork.Category.Get(id);
@@ -38,7 +38,7 @@ namespace UrunKatalogAPI.API.Controllers
             return NotFound(result);
         }
 
-        [HttpPost] // YENİ KATEGORİ OLUŞTURMA ENDPOINT'İ
+        [HttpPost] 
         public async Task<ActionResult<ApplicationResult<CategoryDto>>> CreateCategory([FromBody] CreateCategoryInput input)
         {
             if (ModelState.IsValid)
@@ -48,12 +48,12 @@ namespace UrunKatalogAPI.API.Controllers
                 if (result.Succeeded)
                     return Ok(result);
 
-              //  return NotFound(result);
+              return NotFound(result);
             }
             return BadRequest();
         }
 
-        [HttpPut] // KATEGORİ GÜNCELLEME ENDPOINT'İ
+        [HttpPut] 
         public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryInput updateCategory)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -64,7 +64,7 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
 
-        [HttpDelete("{id}")] //KATEGORİ SİLME ENDPOINT'İ
+        [HttpDelete("{id}")] 
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var result = await _unitOfWork.Category.Delete(id);
@@ -73,7 +73,7 @@ namespace UrunKatalogAPI.API.Controllers
                 return Ok("Kategori silindi.");
             }
 
-            return BadRequest("Kategori silinemedi!");
+            return BadRequest("Silinirken Hata Oluştu.");
 
         }
     }

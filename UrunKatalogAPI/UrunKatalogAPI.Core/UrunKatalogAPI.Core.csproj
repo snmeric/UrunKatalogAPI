@@ -17,7 +17,6 @@
   <ItemGroup>
     <Folder Include="Application\Interfaces\" />
     <Folder Include="Application\RequestResponse\" />
-    <Folder Include="Configuration\" />
     <Folder Include="Domain\Enums\" />
   </ItemGroup>
 

@@ -30,6 +30,8 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.ProductRepository
                 Product mapCat = _mapper.Map<Product>(input);
                 mapCat.CreatedById = applicationUser.Id;
                 mapCat.CreatedBy = applicationUser.UserName;
+                mapCat.ModifiedById = applicationUser.Id;
+                mapCat.ModifiedBy = applicationUser.UserName;
                 _context.Products.Add(mapCat);
                 await _context.SaveChangesAsync();
                 ApplicationResult<ProductDto> result = new ApplicationResult<ProductDto>

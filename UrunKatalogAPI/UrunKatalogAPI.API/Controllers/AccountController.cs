@@ -23,53 +23,53 @@ namespace UrunKatalogAPI.API.Controllers
         }
 
 
-        [HttpGet("{Username}")] // KULLANICININ YAPTIĞI TEKLİFLER ENDPOINT'İ, username parametresini almaya gerek yoktu ancak aynı controllerda 2 get çalışmayacağı için böyle yaptım
+        [HttpGet("{Username}")] 
         public async Task<ActionResult<List<OfferDto>>> OffersThatIMade(string username)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var offercreatedby = _unitOfWork.Offer.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName); // swaggerdan girilen username, teklifi yaratan kişi ise değişkene at
-            if (offercreatedby != null) // eğer boş değil ise
+            var offercreatedby = _unitOfWork.Offer.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName); 
+            if (offercreatedby != null) 
             {
-                return Ok(offercreatedby); //teklifleri dön
+                return Ok(offercreatedby); 
             }
             return BadRequest("Verdiğiniz bir teklif bulunmamaktadır.");
         }
 
-        [HttpGet] // KULLANICININ ALDIĞI TEKLİFLER ENDPOINT'İ
+        [HttpGet] 
         public async Task<ActionResult<List<OfferDto>>> OffersThatIReceive()
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User); // authorize olan user'ı al
-            var product = _unitOfWork.Product.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName); // bu kullanıcıya ait productları bul
-            if (product != null) // kullanıcının product'ı varsa
+            var user = await _userManager.GetUserAsync(HttpContext.User); 
+            var product = _unitOfWork.Product.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName); 
+            if (product != null)
             {
-                List<int> list2 = new List<int>(); // Yeni liste oluştur
-                var sonuc = new List<OfferDto>(); //Yeni OfferDto tipinde liste oluştur
-                product.ForEach(n => list2.Add(n.Id)); //product'taki her bir ürünün id'sini list2'ye at
+                List<int> list2 = new List<int>(); 
+                var sonuc = new List<OfferDto>(); 
+                product.ForEach(n => list2.Add(n.Id)); 
                 for (int i = 0; i < list2.Count(); i++)
                 {
-                    var offer = _unitOfWork.Offer.GetAll().Result.Result.Find(x => x.ProductId == list2[i]); // ürün idleri ile eşleşen ve kullanıcı tarafından oluşturulmuş ürünleri bul
-                    sonuc.Add(offer); // listeye at
+                    var offer = _unitOfWork.Offer.GetAll().Result.Result.Find(x => x.ProductId == list2[i]);
+                    sonuc.Add(offer);
                 }
-                return sonuc; // sonucunda kullanıcının bütün aldığı teklifleri sıralamış olduk
+                return sonuc;
             }
 
 
             return BadRequest("Teklif bulunmamaktadır.");
         }
 
-        [HttpPut("{id}")] // YAPILAN TEKLİFİ KABUL ETME ENDPOINT'İ
+        [HttpPut("{id}")] 
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AcceptTheOffer(int id)
         {
 
-            var user = await _userManager.GetUserAsync(HttpContext.User); // authorize olan user'ı al
-            var teklif = await _unitOfWork.Offer.Get(id); // girilen id'ye sahip teklifi al
-            var kk = teklif.Result.ProductId;       //teklifteki ürün id'sini al   
-            var product = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == kk); // offer tablosundaki productid ve producttaki id eşitse producta attı
+            var user = await _userManager.GetUserAsync(HttpContext.User); 
+            var teklif = await _unitOfWork.Offer.Get(id);
+            var kk = teklif.Result.ProductId;      
+            var product = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == kk); 
             if (product.UserName == user.UserName)
             {
-                if (teklif.Result.IsOfferPercentage is true) //eğer teklifteki "teklif yüzdelik mi" kısmı true ise
+                if (teklif.Result.IsOfferPercentage is true) 
                 {
-                    int yuzdelik = teklif.Result.OfferedPrice; //girilen değer yüzdeliği temsil eder
+                    int yuzdelik = teklif.Result.OfferedPrice; 
                     var map = new UpdateProductInput
                     {
 
@@ -78,7 +78,7 @@ namespace UrunKatalogAPI.API.Controllers
                         Color = product.Color,
                         CategoryId = product.CategoryId,
                         Description = product.Description,
-                        UserName = product.UserName,             //yeni update input'u oluşturdu price'ı yüzdelik üzerinden hesaplayarak set etti
+                        UserName = product.UserName,             
                         IsOfferable = true,
                         IsSold = false,
                         Name = product.Name,
@@ -87,11 +87,11 @@ namespace UrunKatalogAPI.API.Controllers
                         ProductCondition = product.ProductCondition
                     };
 
-                    var result = await _unitOfWork.Product.Update(map, user); // ürünü güncelle
+                    var result = await _unitOfWork.Product.Update(map, user); 
 
                     return result;
                 }
-                else if (teklif.Result.IsOfferPercentage is false) //eğer teklifteki "teklif yüzdelik mi" kısmı false ise
+                else if (teklif.Result.IsOfferPercentage is false) 
                 {
                     var map = new UpdateProductInput
                     {
@@ -101,7 +101,7 @@ namespace UrunKatalogAPI.API.Controllers
                         Color = product.Color,
                         CategoryId = product.CategoryId,
                         Description = product.Description,
-                        UserName = product.UserName,             //yeni update input'u oluşturdu price'ı verilen teklif fiyatından kabul etti
+                        UserName = product.UserName,             
                         IsOfferable = true,
                         IsSold = false,
                         Name = product.Name,
@@ -110,7 +110,7 @@ namespace UrunKatalogAPI.API.Controllers
                         ProductCondition = product.ProductCondition
                     };
 
-                    var result = await _unitOfWork.Product.Update(map, user); // ürünü güncelle
+                    var result = await _unitOfWork.Product.Update(map, user); 
 
                     return result;
                 }

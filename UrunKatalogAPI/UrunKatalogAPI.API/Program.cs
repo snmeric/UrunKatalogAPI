@@ -83,10 +83,8 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 
-// Adding Authentication and jwt 
+// Authentication ve jwt Ekleme
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
-
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -105,12 +103,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer= true,
         ValidateAudience= true,
-        //  RequireExpirationTime=false,
-        // ValidateLifetime=true,
         ValidIssuer = builder.Configuration["JwtConfig:ValidIssuer"],
         ValidAudience = builder.Configuration["JwtConfig:ValidAudience"],
-        // ClockSkew = TimeSpan.Zero
-
     };
 });
 

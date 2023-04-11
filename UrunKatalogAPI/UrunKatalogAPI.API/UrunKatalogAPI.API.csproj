@@ -34,8 +34,4 @@
     <ProjectReference Include="..\UrunKatalogAPI.Infrastructere\UrunKatalogAPI.Infrastructere.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="images\" />
-  </ItemGroup>
-
 </Project>

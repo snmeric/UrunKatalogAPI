@@ -80,26 +80,12 @@ namespace UrunKatalogAPI.API.Controllers
             var registerUser = await _userManager.CreateAsync(newUser, model.Password);
 
             if (registerUser.Succeeded) //kullanıcı oluşturma başarılıysa
-            {
-               
-                
-
+            {    
                 await _signInManager.SignInAsync(newUser, isPersistent: false); //signin
                 var user = await _userManager.FindByNameAsync(newUser.UserName);
-
-
-
-
                 return Ok(GetTokenResponse(user));
-
-
-
-
-
-
             }
-
-            
+ 
             return BadRequest(new AuthResult()
             {
                 Result = false,

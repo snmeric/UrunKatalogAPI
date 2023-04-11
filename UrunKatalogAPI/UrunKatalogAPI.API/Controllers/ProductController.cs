@@ -25,7 +25,7 @@ namespace UrunKatalogAPI.API.Controllers
             webHostEnvironment = hostEnvironment;
 
         }
-        private string ImageFile(ProductImage image) // SWAGGERDAN UPLOAD EDİLEN DOSYAYI STRINGE ÇEVİRİP BUNU DÖNEN + İMAGES KLASÖRÜNE RESMİ EKLEYEN METOT
+        private string ImageFile(ProductImage image)
         {
             string uniqueFileName = null;
 
@@ -45,8 +45,8 @@ namespace UrunKatalogAPI.API.Controllers
         [HttpPost] // ÜRÜN EKLEME ENDPOINT'İ
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AddProduct([FromForm] ProductImage image, [FromQuery] CreateProductInput input)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User); // kullanıcıyı al
-            string uniqueFileName = ImageFile(image); // swaggerdan girilen dosyayı yukarıdaki metotta çözümle. 
+            var user = await _userManager.GetUserAsync(HttpContext.User); 
+            string uniqueFileName = ImageFile(image); 
             var n = new CreateProductInput
             {
                 Brand = input.Brand,
@@ -54,17 +54,17 @@ namespace UrunKatalogAPI.API.Controllers
                 Color = input.Color,
                 Description = input.Description,
                 Image = uniqueFileName,
-                IsOfferable = true,                            //yeni create inputu oluştur
+                IsOfferable = true,                          
                 IsSold = false,
                 Name = input.Name,
                 Price = input.Price,
                 ProductCondition = input.ProductCondition,
                 UserName = input.UserName
             };
-            var result = await _unitOfWork.Product.Create(n, user); // ürünü ekle
-            if (result.Succeeded) // ekleme başarılı ise
+            var result = await _unitOfWork.Product.Create(n, user); // Ürünü ekle
+            if (result.Succeeded) 
             {
-                return result; //dön
+                return result; 
             }
 
             return NotFound("Ürün eklenemedi!");
@@ -72,7 +72,7 @@ namespace UrunKatalogAPI.API.Controllers
         }
 
 
-        [HttpGet("{id}")] // SATIN ALMA ENDPOINT'İ
+        [HttpGet("{id}")] // SATIN ALMA
         public async Task<ActionResult<ApplicationResult<ProductDto>>> Purchase(int id)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User); //kullanıcıyı al
@@ -98,21 +98,44 @@ namespace UrunKatalogAPI.API.Controllers
                         ProductCondition = result.Result.ProductCondition
                     };
 
-                    var resultt = await _unitOfWork.Product.Update(maplendi, user); // ürünü güncelle
+                    var resultt = await _unitOfWork.Product.Update(maplendi, user); 
 
                     return resultt;
                 }
-                else if (result.Result.IsSold is true) //eğer ürün çoktan satın alınmışsa
+                else if (result.Result.IsSold is true) 
                 {
-                    return BadRequest("Bu ürün başka bir kullanıcı tarafından satın alınmıştır.");
+                    return BadRequest("Bu ürün stokta kalmamış.");
                 }
             }
 
             return NotFound(result);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ApplicationResult<ProductDto>>> DeleteProduct(int id) {
+       
+            
+            var result = await _unitOfWork.Product.Delete(id);
+            if (result.Succeeded)
+            {  
+                    return Ok("Ürün Silindi");
+            }
+            return BadRequest("Ürün Silinirken Hata Oluştu");
+        }
 
+        [HttpPut]
+        public async Task<ActionResult> UpdateProductInput ([FromBody] UpdateProductInput updateProduct)
+        {
+            var user=await _userManager.GetUserAsync(User);
+            var result = await _unitOfWork.Product.Update(updateProduct, user);
 
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+            return BadRequest("Ürün Güncellenirken Hata Oluştu.");
+        }
+    
 
     }
 }
