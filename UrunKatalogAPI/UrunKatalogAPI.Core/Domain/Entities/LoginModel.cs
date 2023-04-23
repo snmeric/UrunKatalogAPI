@@ -9,8 +9,9 @@ namespace UrunKatalogAPI.Core.Domain.Entities
 {
     public class LoginModel
     {
-        [Required]
-        public string UserName { get; set; }
+        //[Required]
+        //public string UserName { get; set; }
+
         [Required]
         public string Email { get; set; }
         [Required]
