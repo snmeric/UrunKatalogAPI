@@ -1,12 +1,14 @@
-import { Input, useInput, Link, Grid,Loading, Spacer, Container, Card, Row, Text, Button } from "@nextui-org/react";
+import { Input, useInput, Link, Grid, Spacer, Card, Text, Button } from "@nextui-org/react";
 import { UnLockIcon } from "./UnlockIcon.js";
 import { LockIcon } from "./LockIcon.js";
-import { useSignIn } from "react-auth-kit";
+import { AuthProvider, useSignIn } from "react-auth-kit";
 import { useFormik } from "formik";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import React from 'react'
+
+import COVER_IMAGE from '../assets/loginbg.png'
+import toast, { Toaster } from 'react-hot-toast';
 
 
 function Login() {
@@ -28,12 +30,16 @@ function Login() {
                 expiresIn: 3600,
                 tokenType: "Bearer",
                 authState: { email: values.email },
+            }
+            );
+            toast('Good Job!', {
+                icon: '👏',
             });
         } catch (err) {
             if (err && err instanceof AxiosError)
                 setError(err.response?.data.message);
             else if (err && err instanceof Error) setError(err.message);
-
+            toast.error("Hatalı Giriş");
             console.log("Error: ", err);
         }
     };
@@ -42,7 +48,9 @@ function Login() {
             email: "",
             password: "",
         },
-        onSubmit,
+        onSubmit: values => {
+            console.log('onSubmit', values);
+        },
     });
 
     const { value, reset, bindings } = useInput("");
@@ -52,94 +60,95 @@ function Login() {
     };
 
     const helper = React.useMemo(() => {
-        if (!value)
+        if (!formik.values.email)
             return {
                 text: "",
                 color: "",
             };
-        const isValid = validateEmail(value);
+        const isValid = validateEmail(formik.values.email);
         return {
-            text: isValid ? "Correct email" : "Enter a valid email",
+            text: isValid ? "Doğru Eposta" : "Emailinizi doğru giriniz",
             color: isValid ? "success" : "error",
         };
-    }, [value]);
+    }, [formik.values.email]);
 
 
 
     return (
 
-        <div className='header__container min-vh-100 d-flex justify-content-center align-items-center'>
+        <div className="w-full h-screen flex items-start">
+            <div className="relative w-1/2 h-full flex flex-col">
 
+                <img src={COVER_IMAGE} className="w-full h-full object-cover"></img>
 
-            <Grid.Container gap={1} justify="center"
+            </div>
 
-            >
-                <Grid sm={3} >
+            <div className="w-1/2 h-full  p-20 flex flex-col justify-center items-center">
+                <div className="w-full flex flex-col items-center justify-center">
+                    <form initialValues={formik.initialValues} onSubmit={onSubmit} className="w-80 flex flex-col mb-5 ">
+                        <Input
+                            {...bindings}
+                            clearable
+                            shadow={false}
 
-                    <Card variant="bordered" >
-                        <Card.Body justify='center' className='p-5 d-flex justify-content-center'>
+                            onClearClick={reset}
+                            status={helper.color}
+                            color={helper.color}
+                            helperColor={helper.color}
+                            helperText={helper.text}
+                            name="email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            type="email"
+                            labelPlaceholder="Email"
 
+                        />
+                        <Spacer y={2} />
 
-
-
-                            {/* <Input
-                                {...bindings}
-                                clearable
-                                shadow={false}
-                                onChange={formik.values.email}
-                                onClearClick={reset}
-                                status={helper.color}
-                                color={helper.color}
-                                helperColor={helper.color}
-                                helperText={helper.text}
-                                type="email"
-                                label="Email"
-                                placeholder="With regex validation"
-                            /> */}
-                            <Spacer y={1} />
-
-                            <form onSubmit={formik.handleSubmit}>
+                        {/*                            
                                 <Input
                                     clearable
                                     helperText="Please enter your name"
                                     label="Name"
                                     placeholder="Enter your name"
-
+                                    value={formik.email}
                                     onChange={formik.handleChange}
-                                />
+                                /> */}
 
-                                <Spacer y={2} />
-                                <Input.Password width='250px'
-                                    clearable label="Şifre"
-                                    placeholder="Şifre"
 
-                                    onChange={formik.handleChange}
-                                    visibleIcon={<UnLockIcon fill="currentColor" />}
-                                    hiddenIcon={<LockIcon fill="currentColor" />}
-                                />
+                        <Input.Password
+                            clearable
+                            type="password"
 
-                                <Spacer y={1} />
-                                <Button disabled auto bordered color="primary" css={{ px: "$13" }}>
-                                    <Loading color="currentColor" size="sm" />
-                                </Button>
-                                <Button shadow color="secondary" auto onPressChange={formik.isSubmitting}>
-                                    Giriş Yap
-                                </Button>
-                            </form>
-                            <Spacer y={0.5} />
-                            <Text color='grey'>
-                                Hesabınız yok mu?
-                                <Link block color="secondary" href="#">
-                                    Kayıt Ol
-                                </Link>
-                            </Text>
+                            name="password"
+                            onBlur={formik.handleBlur}
+                            labelPlaceholder="Şifre"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
 
-                        </Card.Body>
-                    </Card>
-                </Grid>
-            </Grid.Container >
+                        />
+
+                        <Spacer y={2} />
+
+                        <Button flat color="primary" type="submit">
+                            Giriş Yap
+                        </Button>
+                        <Toaster />
+                    </form>
+                    <Spacer y={0.5} />
+                    <Text color='grey'>
+                        Hesabınız yok mu?
+                        <Link block color="secondary" href="#">
+                            Kayıt Ol
+                        </Link>
+                    </Text>
+                </div>
+            </div>
+
 
         </div>
+
     );
 }
 
