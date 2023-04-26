@@ -12,7 +12,10 @@ function App() {
   return (
 
     <Routes>
-      <Route path="/" element={ <Home />}></Route>
+      <Route path="/" element={<RequireAuth loginPath='/login'>
+        <Home />
+      </RequireAuth>}>
+      </Route>
       <Route path="/login" element={<Login />}></Route>
     </Routes>
 

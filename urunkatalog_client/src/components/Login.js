@@ -1,12 +1,11 @@
 import { Input, useInput, Link, Grid, Spacer, Card, Text, Button } from "@nextui-org/react";
-import { UnLockIcon } from "./UnlockIcon.js";
-import { LockIcon } from "./LockIcon.js";
-import { AuthProvider, useSignIn } from "react-auth-kit";
+
+import { useSignIn } from "react-auth-kit";
 import { useFormik } from "formik";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import React from 'react'
-
+import { useNavigate } from "react-router-dom";
 import COVER_IMAGE from '../assets/loginbg.png'
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -48,9 +47,9 @@ function Login() {
             email: "",
             password: "",
         },
-        onSubmit: values => {
-            console.log('onSubmit', values);
-        },
+        onSubmit,
+          
+        
     });
 
     const { value, reset, bindings } = useInput("");
@@ -85,7 +84,9 @@ function Login() {
 
             <div className="w-1/2 h-full  p-20 flex flex-col justify-center items-center">
                 <div className="w-full flex flex-col items-center justify-center">
-                    <form initialValues={formik.initialValues} onSubmit={onSubmit} className="w-80 flex flex-col mb-5 ">
+                {/* initialValues={formik.initialValues} */}
+                    <form  onSubmit={formik.handleSubmit} className="w-80 flex flex-col mb-5 ">
+                    <Text>{error}</Text>
                         <Input
                             {...bindings}
                             clearable
@@ -131,7 +132,7 @@ function Login() {
 
                         <Spacer y={2} />
 
-                        <Button flat color="primary" type="submit">
+                        <Button flat color="primary" type="submit" isDisabled={formik.isSubmitting}>
                             Giriş Yap
                         </Button>
                         <Toaster />
