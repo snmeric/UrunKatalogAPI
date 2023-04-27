@@ -41,6 +41,11 @@ namespace UrunKatalogAPI.API.Controllers
             }
             return uniqueFileName;
         }
+        [HttpGet]
+        public Task<ApplicationResult<List<ProductDto>>> GetAllProducts()
+        {
+            return _unitOfWork.Product.GetAll();
+        }
 
         [HttpPost] // ÜRÜN EKLEME ENDPOINT'İ
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AddProduct([FromForm] ProductImage image, [FromQuery] CreateProductInput input)

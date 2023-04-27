@@ -144,7 +144,14 @@ namespace UrunKatalogAPI.API.Controllers
             if (ModelState.IsValid)
             {
                 var userEmail = await _userManager.FindByEmailAsync(model.Email);
+                if(userEmail==null)
+                {
+                    return BadRequest("Email Kayıtlı Değil");
+                }
                 var loginResult = await _signInManager.PasswordSignInAsync(userEmail.UserName, model.Password, true, false); // username ve password ile giriş yap
+
+
+
                 if (!loginResult.Succeeded) // giriş başarılı
                 {
 

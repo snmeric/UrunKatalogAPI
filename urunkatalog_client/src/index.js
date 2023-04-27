@@ -45,10 +45,12 @@ const myDarkTheme = createTheme({
 
 root.render(
   <React.StrictMode>
-    <AuthProvider authType={"cookie"}
+    <AuthProvider 
+    authType={"cookie"}
       authName={"_auth"}
       cookieDomain={window.location.hostname}
-      cookieSecure={false}>
+      cookieSecure={false}
+    >
       <BrowserRouter>
         <NextUIProvider>
           <App />
