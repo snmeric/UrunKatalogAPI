@@ -16,22 +16,26 @@ function Login() {
     const signIn = useSignIn();
     const [isButtonDisabled, setIsButtonDisabled] = React.useState(true);
     const navigate = useNavigate();
+    const [isLoading,setisLoading]=useState();
 
     const onSubmit = async (values) => {
         console.log("Values: ", values);
         setError("");
-
+        setisLoading(true);
         const data = {
             email: values.email,
             password: values.password
         }
 
         const config = {
+            
             headers: {
                 "Content-Type": "application/json",
             },
         };
         try {
+            
+            
             const response = await axios.post(
                 "https://localhost:7104/Authenticate/login",
                 data,
@@ -47,16 +51,22 @@ function Login() {
             }
             );
 
-            navigate("/");
-            toast('Good Job!', {
-                icon: '👏',
-            });
+            toast('Giriş Başarılı', { icon: '👏' });
+            setTimeout(() => {
+                navigate('/');
+              }, 2000); 
+        
+             
+          
         } catch (err) {
             if (err && err instanceof AxiosError)
                 setError(err.response?.data.message);
             else if (err && err instanceof Error) setError(err.message);
             toast.error("Hatalı Giriş");
             console.log("Error: ", err);
+        }
+        finally{
+            setisLoading(false);
         }
     };
     const formik = useFormik({
@@ -137,11 +147,11 @@ function Login() {
 
 
                 {/* LOGIN FORM */}
-                
+
                 <div className="md:w-1/2 px-16 h-full  p-20 flex flex-col justify-center items-center">
                     <div className="w-full flex flex-col items-center justify-center">
-                      <h2 className="text-[#5A6180] font-bold text-2xl ">Giriş</h2>
-                      <Spacer y={2} />
+                        <h2 className="text-[#5A6180] font-bold text-2xl ">Giriş</h2>
+                        <Spacer y={2} />
                         <form onSubmit={formik.handleSubmit} className="w-80 flex flex-col mb-5 ">
                             <Text>{error}</Text>
                             <Input
@@ -184,7 +194,7 @@ function Login() {
 
                             <Spacer y={2} />
 
-                            <Button flat color="primary" type="submit" disabled={isButtonDisabled}>
+                            <Button flat color="primary" type="submit" disabled={isLoading}>
                                 Giriş Yap
                             </Button>
                             <Toaster />

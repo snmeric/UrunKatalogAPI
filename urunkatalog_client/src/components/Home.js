@@ -3,8 +3,35 @@ import React from 'react'
 import { useSignOut } from 'react-auth-kit'
 import { useNavigate } from 'react-router-dom';
 import { Card, Grid, Row, Text } from "@nextui-org/react";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import {useAuthHeader} from 'react-auth-kit'
+
 
 function Home() {
+    const [products, setProducts] = useState([]);
+   
+    const authHeader = useAuthHeader()
+
+
+
+      const config = {
+        headers: {
+          'Authorization': `${authHeader()}`
+        }
+      };
+
+
+    useEffect(() => {
+       
+        axios.get('https://localhost:7104/api/Product',config)
+            .then(response => setProducts(response.data.result));
+  
+    }, []);
+
+   
+    console.log(authHeader());
+
 
     const signOut = useSignOut();
     const navigate = useNavigate();
@@ -58,7 +85,33 @@ function Home() {
 
     return (
         <div className='text-2xl flex-col h-screen flex justify-center items-center p-10'>
-            <Grid.Container gap={2} justify="flex-start">
+           
+           <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Color</th>
+            <th>Brand</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map(product => (
+            <tr key={product.result.id}>
+              <td>{product.result.brand}</td>
+              <td>{product.description}</td>
+              <td>{product.color}</td>
+              <td>{product.brand}</td>
+              <td>{product.price}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+            {/* <Grid.Container gap={2} justify="flex-start">
                 {list.map((item, index) => (
                     <Grid xs={6} sm={3} key={index}>
                         <Card isPressable>
@@ -82,7 +135,7 @@ function Home() {
                         </Card>
                     </Grid>
                 ))}
-            </Grid.Container>
+            </Grid.Container> */}
             <Button shadow color="primary" auto onClick={logout}>
                 Çıkış Yap
             </Button>
