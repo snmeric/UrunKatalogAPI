@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { createTheme, NextUIProvider } from '@nextui-org/react';
 import { AuthProvider } from 'react-auth-kit';
 import { BrowserRouter } from 'react-router-dom';
-
+import { ThemeProvider } from "@material-tailwind/react";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -45,6 +45,7 @@ const myDarkTheme = createTheme({
 
 root.render(
   <React.StrictMode>
+
     <AuthProvider 
     authType={"cookie"}
       authName={"_auth"}
@@ -52,9 +53,11 @@ root.render(
       cookieSecure={false}
     >
       <BrowserRouter>
+      <ThemeProvider>
         <NextUIProvider>
           <App />
         </NextUIProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </AuthProvider>
   </React.StrictMode >

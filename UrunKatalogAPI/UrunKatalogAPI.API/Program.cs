@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.TeamFoundation.TestManagement.WebApi;
@@ -109,11 +110,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddPolicy(name:MyAllowSpecificOrigins, policy =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:3000")
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
@@ -154,15 +156,19 @@ if (app.Environment.IsDevelopment())
 }
 //app.UseCustomGlobalException();
 
+
+app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpLogging();
 app.UseHttpsRedirection();
 
+app.UseStaticFiles(new StaticFileOptions {FileProvider=new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath,"images")),RequestPath="/Resources" });
+
+
+
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-
-app.UseCors();
-
 app.MapControllers();
+
 
 app.Run();

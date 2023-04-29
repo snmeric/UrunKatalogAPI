@@ -9,14 +9,26 @@ import { useNavigate } from "react-router-dom";
 import COVER_IMAGE from '../assets/loginbg.png'
 import toast, { Toaster } from 'react-hot-toast';
 
+import {
+    Tabs,
+    TabsHeader,
+    TabsBody,
+    Tab,
+    TabPanel,
+} from "@material-tailwind/react";
+import Register from "./Register";
+
+
 
 function Login() {
 
     const [error, setError] = useState("");
     const signIn = useSignIn();
-    const [isButtonDisabled, setIsButtonDisabled] = React.useState(true);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const navigate = useNavigate();
-    const [isLoading,setisLoading]=useState();
+    const [isLoading, setisLoading] = useState();
+
+
 
     const onSubmit = async (values) => {
         console.log("Values: ", values);
@@ -28,14 +40,14 @@ function Login() {
         }
 
         const config = {
-            
+
             headers: {
                 "Content-Type": "application/json",
             },
         };
         try {
-            
-            
+
+
             const response = await axios.post(
                 "https://localhost:7104/Authenticate/login",
                 data,
@@ -54,10 +66,10 @@ function Login() {
             toast('Giriş Başarılı', { icon: '👏' });
             setTimeout(() => {
                 navigate('/');
-              }, 2000); 
-        
-             
-          
+            }, 2000);
+
+
+
         } catch (err) {
             if (err && err instanceof AxiosError)
                 setError(err.response?.data.message);
@@ -65,10 +77,13 @@ function Login() {
             toast.error("Hatalı Giriş");
             console.log("Error: ", err);
         }
-        finally{
+        finally {
             setisLoading(false);
         }
     };
+
+
+
     const formik = useFormik({
         initialValues: {
             email: "",
@@ -78,6 +93,7 @@ function Login() {
 
 
     });
+
 
     const { value, reset, bindings } = useInput("");
 
@@ -118,18 +134,72 @@ function Login() {
         };
     }, [formik.values.password]);
 
+    const data = [
+        {
+            label: "Giriş Yap",
+            value: "giris",
+            pageContent: () => {
+                return (
 
-    React.useEffect(() => {
-        if (helperEmail.color === "success" && helperPassword.color === "success") {
-            setIsButtonDisabled(false);
-        } else {
-            setIsButtonDisabled(true);
+                    <form onSubmit={formik.handleSubmit} className="w-80 flex flex-col ">
+                        {/* <Text>{error}</Text> */}
+                        <Input
+                            {...bindings}
+                            clearable
+                            shadow={false}
+                            onClearClick={reset}
+                            status={helperEmail.color}
+                            color={helperEmail.color}
+                            helperColor={helperEmail.color}
+                            helperText={helperEmail.text}
+                            name="email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            type="email"
+                            labelPlaceholder="Email"
+
+                        />
+                        <Spacer y={2} />
+                        <Input.Password
+                            clearable
+                            type="password"
+                            status={helperPassword.color}
+                            color={helperPassword.color}
+                            helperColor={helperPassword.color}
+                            helperText={helperPassword.text}
+                            name="password"
+                            onBlur={formik.handleBlur}
+                            labelPlaceholder="Şifre"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                        />
+                        <Spacer y={2} />
+
+                        <Button flat color="primary" type="submit" disabled={isLoading}>
+                            Giriş Yap
+                        </Button>
+                        <Toaster />
+                    </form>
+
+                );
+            },
+
+        },
+        {
+            label: "Kayıt Ol",
+            value: "kayit",
+            pageContent: () => {
+                return (
+
+                    <Register></Register>
+
+
+                );
+            },
         }
-    }, [helperEmail.color, helperPassword.color]);
 
-
-
-
+    ];
 
 
     return (
@@ -148,65 +218,37 @@ function Login() {
 
                 {/* LOGIN FORM */}
 
-                <div className="md:w-1/2 px-16 h-full  p-20 flex flex-col justify-center items-center">
+                <div className="md:w-1/2 h-full px-10 p-20 flex flex-col justify-center items-center">
                     <div className="w-full flex flex-col items-center justify-center">
-                        <h2 className="text-[#5A6180] font-bold text-2xl ">Giriş</h2>
-                        <Spacer y={2} />
-                        <form onSubmit={formik.handleSubmit} className="w-80 flex flex-col mb-5 ">
-                            <Text>{error}</Text>
-                            <Input
-                                {...bindings}
-                                clearable
-                                shadow={false}
 
-                                onClearClick={reset}
-                                status={helperEmail.color}
-                                color={helperEmail.color}
-                                helperColor={helperEmail.color}
-                                helperText={helperEmail.text}
-                                name="email"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                type="email"
-                                labelPlaceholder="Email"
-
-                            />
-                            <Spacer y={2} />
+                        <Tabs value="giris">
+                            <TabsHeader>
+                                {data.map(({ label, value }) => (
+                                    <Tab key={value} value={value}>
+                                        {label}
+                                    </Tab>
+                                ))}
+                            </TabsHeader>
+                            <TabsBody>
+                                {data.map(({ value, pageContent }) => (
+                                    <TabPanel key={value} value={value} className="h-96 w-full flex flex-col items-center justify-center">
+                                        {pageContent()}
+                                    </TabPanel>
+                                ))}
+                            </TabsBody>
+                        </Tabs>
+                    </div>
+                    {/* <h2 className="text-[#5A6180] font-bold text-2xl ">Giriş</h2> */}
 
 
 
-
-                            <Input.Password
-                                clearable
-                                type="password"
-                                status={helperPassword.color}
-                                color={helperPassword.color}
-                                helperColor={helperPassword.color}
-                                helperText={helperPassword.text}
-                                name="password"
-                                onBlur={formik.handleBlur}
-                                labelPlaceholder="Şifre"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-
-                            />
-
-                            <Spacer y={2} />
-
-                            <Button flat color="primary" type="submit" disabled={isLoading}>
-                                Giriş Yap
-                            </Button>
-                            <Toaster />
-                        </form>
-                        <Spacer y={0.5} />
-                        <p className="text-sm mt-4 text-gray-600">
+                    {/* <p className="text-sm mt-4 text-gray-600">
                             Hesabınız yok mu?
                             <Link block color="secondary" href="#">
                                 Kayıt Ol
                             </Link>
-                        </p>
-                    </div>
+                        </p> */}
+
                 </div>
             </div>
 
