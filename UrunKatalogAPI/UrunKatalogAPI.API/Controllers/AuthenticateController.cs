@@ -152,7 +152,7 @@ namespace UrunKatalogAPI.API.Controllers
 
 
 
-                if (!loginResult.Succeeded) // giriş başarılı
+                if (!loginResult.Succeeded) // giriş başarısız
                 {
 
                     var user = await _userManager.FindByEmailAsync(model.Email); //bul user değişkenine at
