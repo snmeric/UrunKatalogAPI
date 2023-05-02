@@ -38,6 +38,7 @@ namespace UrunKatalogAPI.API.Controllers
         [HttpGet] 
         public async Task<ActionResult<List<OfferDto>>> OffersThatIReceive()
         {
+
             var user = await _userManager.GetUserAsync(HttpContext.User); 
             var product = _unitOfWork.Product.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName); 
             if (product != null)
