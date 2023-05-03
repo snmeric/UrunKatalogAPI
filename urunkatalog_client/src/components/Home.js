@@ -43,19 +43,24 @@ function Home() {
   }, []);
 
   return (
-    <div className="pt-5">
+    <div className="pt-5 flex-col justify-center items-center">
       <ComplexNavbar />
       <div
         className="text-2xl flex-col h-screen 
             flex items-center w-540"
       >
-        <Grid.Container gap={3} justify="flex-start">
+        <Grid.Container gap={3}>
           {products.map((product, index) => (
-            <Grid xs={12} sm={4} lg={2} key={index}>
+            <Grid
+              xs={12}
+              sm={4}
+              lg={2}
+              key={index}
+              className="justify-center items-center"
+            >
               <Link
                 to={{
                   pathname: `/product/${product.id}`,
-                  
                 }}
               >
                 <Card className="w-96">
