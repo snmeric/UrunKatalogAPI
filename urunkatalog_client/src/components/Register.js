@@ -2,19 +2,11 @@ import { Input, useInput, Link, Grid, Spacer, Card, Text, Button } from "@nextui
 import { useSignIn } from "react-auth-kit";
 import { useFormik } from "formik";
 import axios, { AxiosError } from "axios";
-import { useState } from "react";
 import React from 'react'
 import { useNavigate } from "react-router-dom";
-import COVER_IMAGE from '../assets/loginbg.png'
+import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 
-import {
-    Tabs,
-    TabsHeader,
-    TabsBody,
-    Tab,
-    TabPanel,
-} from "@material-tailwind/react";
 
 
 export default function Register() {
@@ -59,13 +51,10 @@ export default function Register() {
             console.log(response);
             const token = await response.data.accessToken;
 
-
             toast('Kayıt Başarılı. Lütfen Giriş Yapınız', { icon: '👏' });
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
-
-
 
         } catch (err) {
             if (err && err instanceof AxiosError)

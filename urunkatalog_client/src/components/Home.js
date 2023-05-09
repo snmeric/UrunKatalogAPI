@@ -1,12 +1,9 @@
 import { Button } from "@nextui-org/react";
 import React from "react";
-import { useSignOut } from "react-auth-kit";
-import { useNavigate } from "react-router-dom";
 import { Card, Grid, Row, Text } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuthHeader } from "react-auth-kit";
-import { Navbar, useTheme } from "@nextui-org/react";
 import ComplexNavbar from "./navbar/ComplexNavbar";
 import { Link } from "react-router-dom";
 
@@ -20,9 +17,10 @@ import {
 } from "@material-tailwind/react";
 
 function Home() {
-  const authHeader = useAuthHeader();
+ 
 
   const [products, setProducts] = useState([]);
+  const authHeader = useAuthHeader();
   const config = {
     headers: {
       Accept: "text/plain",
@@ -30,7 +28,7 @@ function Home() {
       Authorization: `${authHeader()}`,
     },
   };
-  console.log(authHeader());
+
   useEffect(() => {
     axios
       .get("https://localhost:7104/api/Product", config)
@@ -49,6 +47,11 @@ function Home() {
         className="text-2xl flex-col h-screen 
             flex items-center w-540"
       >
+
+
+
+
+        
         <Grid.Container gap={3}>
           {products.map((product, index) => (
             <Grid
@@ -64,11 +67,11 @@ function Home() {
                 }}
               >
                 <Card className="w-96">
-                  <CardHeader shadow={false} floated={false} className="h-96">
+                  <CardHeader shadow={false} floated={false} className="h-70">
                     <img
                       src={"https://localhost:7104/resources/" + product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full object-cover"
                     />
                   </CardHeader>
                   <CardBody>
@@ -90,7 +93,7 @@ function Home() {
                   </CardBody>
                   <CardFooter className="pt-0 m-auto">
                     <div className="flex gap-2 pb-3">
-                      <Chip
+                      {/* <Chip
                         value={
                           <Typography
                             variant="small"
@@ -115,11 +118,11 @@ function Home() {
                         }
                         color={product.isOfferable ? "teal" : "pink"}
                         className="rounded-full py-1.5"
-                      />
+                      /> */}
                     </div>
                     <Button
                       ripple={false}
-                      fullWidth={true}
+                     
                       className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:shadow-none hover:scale-105 focus:shadow-none focus:scale-105 active:scale-100"
                     >
                       Detayları Görüntüle
