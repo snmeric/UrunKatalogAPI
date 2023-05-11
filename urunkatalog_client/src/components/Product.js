@@ -15,24 +15,18 @@ import * as yup from "yup";
 import { useAuthHeader } from "react-auth-kit";
 import { useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
-import {
-  Chip,
-  Slider,
-  Checkbox,
-  Typography,
-  Radio,
-} from "@material-tailwind/react";
+import { Chip, Checkbox, Typography, Radio } from "@material-tailwind/react";
 
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { PopoverDetail } from "./PopoverDetail";
+import { Slider } from "@mui/material";
+import ComplexNavbar from "./navbar/ComplexNavbar";
 
 const Product = () => {
-  const validationSchema = yup.object().shape({
-    offeredPrice: yup.string().max(2),
-  });
   const { id } = useParams();
-  const prodId=parseInt(id);
+
+  const prodId = parseInt(id);
   const [product, setProduct] = useState([]);
   const [selproduct, setSelProduct] = useState([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -41,61 +35,14 @@ const Product = () => {
   const { value, reset, bindings } = useInput("");
   const [error, setError] = useState("");
   const authHeader = useAuthHeader();
+  const formData = new FormData();
 
-  // console.log(id);
-  const getConfig = {
-    headers: {
-      Accept: "text/plain",
-      "Content-Type": "application/json",
-    },
-  };
   const config = {
     headers: {
-      "Accept": "*/*, application/json, text/plain",
-      Authorization: `${authHeader()}`
-    
+      Accept: "*/*, application/json, text/plain",
+      Authorization: `${authHeader()}`,
     },
   };
-
-  /* TEKLİF GÖNDER */
-  const onSubmit = async (values) => {
-    const data = {
-      productId: prodId,
-      isOfferPercentage: values.isOfferPercentage,
-      offeredPrice: values.offeredPrice,
-    };
-
-    console.log("Values: ", values);
-    setError("");
-
-    try {
-      const response = await axios.post(
-        `https://localhost:7104/Offers`,config,
-        data
-        
-      );
-      console.log("Offer: ", response);
-      toast("Teklif Başarılı.", { icon: "👏" });
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    } catch (err) {
-      if (err && err instanceof AxiosError)
-        setError(err.response?.data.message);
-      else if (err && err instanceof Error) setError(err.message);
-      toast.error(`Hata: ${err}`);
-      console.log("Error: ", err);
-    }
-  };
-  const formik = useFormik({
-    initialValues: {
-      productId:prodId,
-      isOfferPercentage: "",
-      offeredPrice: "",
-    },
-    validationSchema,
-    onSubmit,
-  });
 
   /* ÜRÜN DETAY */
   useEffect(() => {
@@ -129,12 +76,94 @@ const Product = () => {
     fetchData();
   }, [product, id]);
 
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
+  /* TEKLİF GÖNDER */
+  const onSubmit = async (values) => {
+    const data = {
+      productId: values.productId,
+      isOfferPercentage: values.isOfferPercentage,
+      offeredPrice: values.offeredPrice,
+    };
+
+    console.log("Values: ", values);
+    setError("");
+    console.log("TOKEEN:", authHeader());
+    axios
+      .post("https://localhost:7104/Offer", data, {
+        headers: {
+          Authorization: `${authHeader()}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+
+        toast("Teklif Başarılı.", { icon: "👌" });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  //   try {
+  //      const response =await axios.post(
+  //       `https://localhost:7104/Offers`,
+  //       data,{
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `${authHeader()}`,
+  //         },
+  //       }
+
+  //     );
+  //     console.log(response);
+  //     toast("Teklif Başarılı.", { icon: "👏" });
+  //     // setTimeout(() => {
+  //     //   window.location.reload();
+  //     // }, 2000);
+  //   } catch (err) {
+  //     if (err && err instanceof AxiosError)
+  //       setError(err.response?.data.message);
+  //     else if (err && err instanceof Error) setError(err.message);
+  //     toast.error(`Hata: ${err}`);
+  //     console.log("Error: ", err);
+  //   }
+  // };
+  const formik = useFormik({
+    initialValues: {
+      productId: prodId,
+      isOfferPercentage: true,
+      offeredPrice: 0,
+    },
+    onSubmit,
+  });
+
+  const validateOffer = (value, isPercentage) => {
+    const numValue = Number(value);
+    if (isPercentage) {
+      return numValue >= 0 && numValue <= 99;
+    } else {
+      return numValue.length <= 3;
+    }
+  };
+  const helperisOffer = React.useMemo(() => {
+    if (!formik.values.offeredPrice)
+      return {
+        text: "",
+        color: "",
+      };
+    const isOffer = validateOffer(
+      formik.values.offeredPrice,
+      formik.values.isOfferPercentage
+    );
+    return {
+      text: isOffer ? "Doğru" : "Yüzdeyi doğru giriniz",
+
+      color: isOffer ? "success" : "error",
+    };
+  }, [formik.values.offeredPrice, formik.values.isOfferPercentage]);
 
   return (
     <div>
+      <ComplexNavbar />
       <div className="flex flex-row justify-center items-center p-8">
         <div className="max-w-xl mx-auto md:block hidden w-1/2 p-5">
           <img
@@ -184,87 +213,79 @@ const Product = () => {
           <Chip color="blue" value="Renk" />
         </div>
       </div>
-      <div className="max-w-xl mx-auto flex flex-col items-center">
+      <div className="max-w-xl mx-auto flex flex-col items-center p-5">
         <form onSubmit={formik.handleSubmit}>
-          <div className="flex flex-col gap-3">
-            <Radio
-              type="radio"
-              value="true"
-              name="isOfferPercentage"
-              checked={formik.values.isOfferPercentage === true}
-              onChange={() => formik.setFieldValue("isOfferPercentage", true)}
-              onBlur={formik.handleBlur}
-              label="Yüzdesini vererek teklif vereceğim."
-              ripple={true}
-            />
-            <Radio
-              type="radio"
-              value="false"
-              name="isOfferPercentage"
-              checked={formik.values.isOfferPercentage === false}
-              onChange={() => formik.setFieldValue("isOfferPercentage", false)}
-              onBlur={formik.handleBlur}
-              label="Yüzdelik olmadan direk fiyat teklifi vereceğim."
-              ripple={false}
-            />
-          </div>
+          <div className="flex flex-row mx-auto items-center gap-5">
+            <div className="flex flex-col gap-3 ">
+              <Radio
+                type="radio"
+                value="true"
+                name="isOfferPercentage"
+                checked={formik.values.isOfferPercentage === true}
+                onChange={() => formik.setFieldValue("isOfferPercentage", true)}
+                onBlur={formik.handleBlur}
+                label="Yüzdesini vererek teklif vereceğim."
+                ripple={true}
+              />
+              <Radio
+                type="radio"
+                value="false"
+                name="isOfferPercentage"
+                checked={formik.values.isOfferPercentage === false}
+                onChange={() =>
+                  formik.setFieldValue("isOfferPercentage", false)
+                }
+                onBlur={formik.handleBlur}
+                label="Yüzdelik olmadan direk fiyat teklifi vereceğim."
+                ripple={false}
+              />
+            </div>
 
-          {/* <Radio.Group
-            type="radio"
-            name="isOfferPercentage"
-            label="Teklif"
-            value={formik.values.isOfferPercentage}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          >
-            <Radio value="true">Teklif yüzdesi olsun.</Radio>
-            <Radio value="false">Hayır, Teklif yüzdesi olmasın.</Radio>
-          </Radio.Group> */}
-          {/* <Checkbox
-            type="checkbox"
-            name="isOfferPercentage"
-            value={formik.values.isOfferPercentage}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            label={
-              <Typography color="blue-gray" className="font-medium flex">
-                Teklif Yüzdesi olsun.
-              </Typography>
-            }
-          /> */}
-          <br />
-          <Input
-            labelRight={!formik.values.isOfferPercentage ? "TL" : "%"}
-            label="Teklif Fiyatı"
-            value={formik.values.offeredPrice}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            name="offeredPrice"
-            type="number"
-            maxLength="5"
-          />
-          <br />
-          {formik.touched.offeredPrice && formik.errors.offeredPrice ? (
-            <div>{formik.errors.offeredPrice}</div>
-          ) : null}
-          <br />
-          <Tooltip
-            content={
-              !selproduct.isOfferable
-                ? "Ürün Teklife Kapalı"
-                : "Ürün Teklif Edilebilir"
-            }
-            trigger="hover"
-            color={selproduct.isOfferable ? "primary" : "error"}
-          >
-            <Button
-              type="submit"
-              disabled={!selproduct.isOfferable}
-              ripple={true}
-            >
-              Teklif Ver
-            </Button>
-          </Tooltip>
+            <br />
+            <div className="w-max gap-3 flex flex-col items-center">
+              <Input
+                status={
+                  formik.values.isOfferPercentage ? helperisOffer.color : ""
+                }
+                color={
+                  formik.values.isOfferPercentage ? helperisOffer.color : ""
+                }
+                helperColor={
+                  formik.values.isOfferPercentage ? helperisOffer.color : ""
+                }
+                helperText={
+                  formik.values.isOfferPercentage ? helperisOffer.text : ""
+                }
+                labelRight={!formik.values.isOfferPercentage ? "TL" : "%"}
+                label="Teklif Fiyatı"
+                value={formik.values.offeredPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="offeredPrice"
+                type="number"
+              />
+             
+             
+                <Tooltip
+                  content={
+                    !selproduct.isOfferable
+                      ? "Ürün Teklife Kapalı"
+                      : "Ürün Teklif Edilebilir"
+                  }
+                  trigger="hover"
+                  color={selproduct.isOfferable ? "primary" : "error"}
+                >
+                  <Button
+                    type="submit"
+                    disabled={!selproduct.isOfferable}
+                    ripple={true}
+                  >
+                    Teklif Ver
+                  </Button>
+                </Tooltip>
+             
+            </div>
+          </div>
           <Toaster />
         </form>
       </div>

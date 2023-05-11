@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,9 @@ using UrunKatalogAPI.Infrastructere.Repositories.OfferRepository;
 
 namespace UrunKatalogAPI.API.Controllers
 {
-    [Route("[controller]s")]
+    [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OfferController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;

@@ -207,6 +207,7 @@ const navListItems = [
   {
     label: "Hesap",
     icon: UserCircleIcon,
+    title:"/account"
   },
   {
     label: "Blocks",
@@ -215,6 +216,7 @@ const navListItems = [
   {
     label: "Docs",
     icon: CodeBracketSquareIcon,
+
   },
 ];
 
@@ -225,11 +227,11 @@ function NavList() {
   return (
     <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
       <NavListMenu />
-      {navListItems.map(({ label, icon }, key) => (
+      {navListItems.map(({ label, icon,title }, key) => (
         <Typography
           key={label}
           as="a"
-          href=""
+          href={title}
           variant="small"
           color="blue-gray"
           className="font-normal"
@@ -257,11 +259,11 @@ export default function ComplexNavbar() {
   }, []);
 
   return (
-    <Navbar className="mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6">
+    <Navbar className="mt-8 mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6">
       <div className="relative mx-auto flex items-center text-blue-gray-900">
         <Typography
           as="a"
-          href="#"
+          href="/"
           className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
         >
           Ürün Katalog Projem

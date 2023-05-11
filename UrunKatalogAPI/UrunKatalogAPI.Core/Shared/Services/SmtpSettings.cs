@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UrunKatalogAPI.Core.Shared.Services
+namespace UrunKatalogAPI.Core.Shared.Service
 {
     public class SmtpSettings
     {

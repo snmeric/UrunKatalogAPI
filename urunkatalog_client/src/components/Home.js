@@ -17,8 +17,6 @@ import {
 } from "@material-tailwind/react";
 
 function Home() {
- 
-
   const [products, setProducts] = useState([]);
   const authHeader = useAuthHeader();
   const config = {
@@ -41,17 +39,12 @@ function Home() {
   }, []);
 
   return (
-    <div className="pt-5 flex-col justify-center items-center">
+    <div className="flex-col justify-center items-center">
       <ComplexNavbar />
       <div
         className="text-2xl flex-col h-screen 
             flex items-center w-540"
       >
-
-
-
-
-        
         <Grid.Container gap={3}>
           {products.map((product, index) => (
             <Grid
@@ -92,101 +85,14 @@ function Home() {
                     </Typography>
                   </CardBody>
                   <CardFooter className="pt-0 m-auto">
-                    <div className="flex gap-2 pb-3">
-                      {/* <Chip
-                        value={
-                          <Typography
-                            variant="small"
-                            color="white"
-                            className="font-medium capitalize leading-none"
-                          >
-                            Teklif {product.isOfferable ? "Açık" : "Kapalı"}
-                          </Typography>
-                        }
-                        color={product.isOfferable ? "green" : "blue-gray"}
-                        className="rounded-full py-1.5"
-                      />
-                      <Chip
-                        value={
-                          <Typography
-                            variant="small"
-                            color="white"
-                            className="font-medium capitalize leading-none"
-                          >
-                            Ürün {product.isSold ? "Satıldı" : "Satılmadı"}
-                          </Typography>
-                        }
-                        color={product.isOfferable ? "teal" : "pink"}
-                        className="rounded-full py-1.5"
-                      /> */}
-                    </div>
                     <Button
                       ripple={false}
-                     
                       className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:shadow-none hover:scale-105 focus:shadow-none focus:scale-105 active:scale-100"
                     >
                       Detayları Görüntüle
                     </Button>
                   </CardFooter>
                 </Card>
-                {/* <Card className="w-96">
-                  <CardHeader color="blue" className="relative h-56">
-                    <Card.Image
-                      src={"https://localhost:7104/resources/" + product.image}
-                      objectFit="cover"
-                      height="100%"
-                      alt={product.name}
-                    />
-                  </CardHeader>
-                  <CardBody className="text-center">
-                    <Typography variant="h5" className="mb-2">
-                      {product.name}
-                    </Typography>
-                    <Typography>{product.description}</Typography>
-                  </CardBody>
-                  <CardFooter
-                    divider
-                    className="flex flex-col items-center justify-between py-3"
-                  >
-                    <Text weight="bold" size="$xl">
-                      {product.price} TL
-                    </Text>
-
-                    <Typography
-                      variant="small"
-                      color="gray"
-                      className="flex gap-1"
-                    >
-                      <i className="fas fa-map-marker-alt fa-sm mt-[3px]" />
-                      <Chip
-                        value={
-                          <Typography
-                            variant="small"
-                            color="white"
-                            className="font-medium capitalize leading-none"
-                          >
-                            Teklif {product.isOfferable ? "Açık" : "Kapalı"}
-                          </Typography>
-                        }
-                        color={product.isOfferable ? "teal" : "pink"}
-                        className="rounded-full py-1.5"
-                      />
-                      <Chip
-                        value={
-                          <Typography
-                            variant="small"
-                            color="white"
-                            className="font-medium capitalize leading-none"
-                          >
-                            Ürün {product.isSold ? "Satıldı" : "Satılmadı"}
-                          </Typography>
-                        }
-                        color={product.isOfferable ? "teal" : "pink"}
-                        className="rounded-full py-1.5"
-                      />
-                    </Typography>
-                  </CardFooter>
-                </Card> */}
               </Link>
             </Grid>
           ))}
@@ -197,36 +103,3 @@ function Home() {
 }
 
 export default Home;
-
-{
-  /* <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Color</th>
-                            <th>Brand</th>
-                            <th>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {products.map(product => (
-                            <tr key={product.id}>
-                                <p>Name: {product.name}</p>
-                                <p>Description: {product.description}</p>
-                                <p>Color: {product.color}</p>
-                                <p>Brand: {product.brand}</p>
-                                <p>Product Condition: {product.productCondition}</p>
-                                <img src={"https://localhost:7104/resources/" + product.image} alt={product.name} />
-                                <p>User Name: {product.userName}</p>
-                                <p>Price: {product.price}</p>
-                                <p>Is Offerable: {product.isOfferable ? "Yes" : "No"}</p>
-                                <p>Is Sold: {product.isSold ? "Yes" : "No"}</p>
-                                <p>Category Id: {product.categoryId}</p>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div> */
-}
