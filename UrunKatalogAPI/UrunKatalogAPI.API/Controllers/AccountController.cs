@@ -39,22 +39,33 @@ namespace UrunKatalogAPI.API.Controllers
         public async Task<ActionResult<List<OfferDto>>> OffersThatIReceive()
         {
 
-            var user = await _userManager.GetUserAsync(HttpContext.User); 
-            var product = _unitOfWork.Product.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName); 
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var product = _unitOfWork.Product.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName);
+
             if (product != null)
             {
-                List<int> list2 = new List<int>(); 
-                var sonuc = new List<OfferDto>(); 
-                product.ForEach(n => list2.Add(n.Id)); 
+                List<int> list2 = new List<int>();
+                var sonuc = new List<OfferDto>();
+                product.ForEach(n => list2.Add(n.Id));
                 for (int i = 0; i < list2.Count(); i++)
                 {
                     var offer = _unitOfWork.Offer.GetAll().Result.Result.Find(x => x.ProductId == list2[i]);
-                    sonuc.Add(offer);
+
+                    // Teklif null değilse sonuç listesine ekle
+                    if (offer != null)
+                    {
+                        sonuc.Add(offer);
+                    }
                 }
-                return sonuc;
+
+                // Sonuç listesi boş değilse, 200 kodu ile birlikte sonuçları dön
+                if (sonuc.Count > 0)
+                {
+                    return Ok(sonuc);
+                }
             }
 
-
+            // Ürünlere ait teklifler bulunamadıysa, BadRequest döndür
             return BadRequest("Teklif bulunmamaktadır.");
         }
 

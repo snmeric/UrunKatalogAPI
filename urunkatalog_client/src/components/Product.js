@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 import {
   useInput,
   Card,
@@ -19,8 +21,7 @@ import { Chip, Checkbox, Typography, Radio } from "@material-tailwind/react";
 
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
-import { PopoverDetail } from "./PopoverDetail";
-import { Slider } from "@mui/material";
+
 import ComplexNavbar from "./navbar/ComplexNavbar";
 
 const Product = () => {
@@ -31,7 +32,15 @@ const Product = () => {
   const [selproduct, setSelProduct] = useState([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
+  let [isOpen, setIsOpen] = useState(false);
 
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
   const { value, reset, bindings } = useInput("");
   const [error, setError] = useState("");
   const authHeader = useAuthHeader();
@@ -47,17 +56,13 @@ const Product = () => {
   /* ÜRÜN DETAY */
   useEffect(() => {
     const getProduct = async () => {
-      setLoading(true);
+      setLoading(false);
       await axios
         .get(`https://localhost:7104/api/Product`, config)
         .then((response) => setProduct(response.data.result))
         .catch((error) => console.log(error));
 
-      setLoading(false);
-
-      selproduct.isOfferable
-        ? setIsButtonDisabled(false)
-        : setIsButtonDisabled(true);
+      setLoading(true);
 
       console.log("Responsee", product);
     };
@@ -96,11 +101,12 @@ const Product = () => {
       })
       .then((response) => {
         console.log(response.data);
-
+        openModal();
         toast("Teklif Başarılı.", { icon: "👌" });
       })
-      .catch((error) => {
-        console.error(error);
+      .catch((err) => {
+        toast.error(`Hata: ${err}`);
+        console.error(err);
       });
   };
   //   try {
@@ -154,6 +160,14 @@ const Product = () => {
       formik.values.offeredPrice,
       formik.values.isOfferPercentage
     );
+    if (
+      selproduct.isOfferable &&
+      (isOffer || !formik.values.isOfferPercentage)
+    ) {
+      setIsButtonDisabled(false);
+    } else {
+      setIsButtonDisabled(true);
+    }
     return {
       text: isOffer ? "Doğru" : "Yüzdeyi doğru giriniz",
 
@@ -165,9 +179,9 @@ const Product = () => {
     <div>
       <ComplexNavbar />
       <div className="flex flex-row justify-center items-center p-8">
-        <div className="max-w-xl mx-auto md:block hidden w-1/2 p-5">
+        <div className="max-w-xl mx-auto md:block w-1/2 p-5">
           <img
-            className="h-full w-full rounded-lg shadow-xl shadow-blue-gray-900/50"
+            className="h-full w-full rounded-lg shadow-md shadow-blue-gray-200"
             src={"https://localhost:7104/resources/" + selproduct.image}
             alt="nature image"
           />
@@ -211,6 +225,7 @@ const Product = () => {
             </Button>
           </Tooltip>
           <Chip color="blue" value="Renk" />
+          <h4 className="text-gray-900 mb-4">Fiyat: {selproduct.price} TL</h4>
         </div>
       </div>
       <div className="max-w-xl mx-auto flex flex-col items-center p-5">
@@ -241,8 +256,91 @@ const Product = () => {
               />
             </div>
 
+            {isOpen ? (
+              <Transition appear show={isOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={closeModal}>
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                  </Transition.Child>
+
+                  <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                      <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0 scale-95"
+                        enterTo="opacity-100 scale-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100 scale-100"
+                        leaveTo="opacity-0 scale-95"
+                      >
+                        <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                          <Dialog.Title
+                            as="h3"
+                            className="text-xl font-medium leading-6 text-gray-900"
+                          >
+                            Teklif Başarılı
+                          </Dialog.Title>
+                          <div className="mt-2">
+                            <img
+                              className=" w-40 rounded-lg mx-auto p-3"
+                              src={
+                                "https://localhost:7104/resources/" +
+                                selproduct.image
+                              }
+                              alt="nature image"
+                            />
+                            <p className="text-md text-gray-700">
+                              Başarılı bir şekilde ürüne teklif verdiniz.
+                            </p>
+                            <br />
+                            <p className="text-lg text-gray-700">
+                              Ürün Adı: {selproduct.name}
+                            </p>
+                            <p className="text-lg text-gray-700">
+                              Verilen Teklif:{" "}
+                              {!formik.values.isOfferPercentage
+                                ? formik.values.offeredPrice
+                                : (
+                                    selproduct.price -
+                                    (selproduct.price *
+                                      formik.values.offeredPrice) /
+                                      100
+                                  )
+                                    .toString()
+                                    .slice(0, 6)}{" "}
+                              TL
+                            </p>
+
+                            <br />
+                          </div>
+
+                          <div className="mt-4 text-right">
+                            <button
+                              type="button"
+                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                              onClick={closeModal}
+                            >
+                              Anladım
+                            </button>
+                          </div>
+                        </Dialog.Panel>
+                      </Transition.Child>
+                    </div>
+                  </div>
+                </Dialog>
+              </Transition>
+            ) : null}
             <br />
-            <div className="w-max gap-3 flex flex-col items-center">
+            <div className="w-max gap-7 flex flex-col items-center">
               <Input
                 status={
                   formik.values.isOfferPercentage ? helperisOffer.color : ""
@@ -264,28 +362,19 @@ const Product = () => {
                 name="offeredPrice"
                 type="number"
               />
-             
-             
-                <Tooltip
-                  content={
-                    !selproduct.isOfferable
-                      ? "Ürün Teklife Kapalı"
-                      : "Ürün Teklif Edilebilir"
-                  }
-                  trigger="hover"
-                  color={selproduct.isOfferable ? "primary" : "error"}
-                >
-                  <Button
-                    type="submit"
-                    disabled={!selproduct.isOfferable}
-                    ripple={true}
-                  >
-                    Teklif Ver
-                  </Button>
-                </Tooltip>
-             
+
+              <Tooltip
+                content={!selproduct.isOfferable ? "Ürün Teklife Kapalı" : ""}
+                trigger="hover"
+                color={selproduct.isOfferable ? "primary" : "error"}
+              >
+                <Button type="submit" disabled={isButtonDisabled} ripple={true}>
+                  Teklif Ver
+                </Button>
+              </Tooltip>
             </div>
           </div>
+
           <Toaster />
         </form>
       </div>

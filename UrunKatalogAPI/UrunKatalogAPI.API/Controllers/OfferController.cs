@@ -32,7 +32,7 @@ namespace UrunKatalogAPI.API.Controllers
             var rr = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == input.ProductId); //girilen inputtaki productid product tablosundaki id ise rr'ye at
             var user = await _userManager.GetUserAsync(HttpContext.User); //kullanıcıyı al
 
-            if (rr.IsOfferable == true) //eğer ürün teklife açıksa
+            if (rr.IsOfferable == true && rr!=null) //eğer ürün teklife açıksa
             {
                 if (input.IsOfferPercentage) // ürünün teklifi yüzdelik ise
                 {

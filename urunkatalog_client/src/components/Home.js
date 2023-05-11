@@ -42,7 +42,7 @@ function Home() {
     <div className="flex-col justify-center items-center">
       <ComplexNavbar />
       <div
-        className="text-2xl flex-col h-screen 
+        className="text-2xl mx-9 flex-col h-screen 
             flex items-center w-540"
       >
         <Grid.Container gap={3}>
@@ -70,7 +70,9 @@ function Home() {
                   <CardBody>
                     <div className="flex items-center justify-between mb-2">
                       <Typography color="blue-gray" className="font-medium">
-                        {product.name}
+                      {product.name.length > 15
+                        ? product.name.substring(0, 15) + "..."
+                        : product.name}
                       </Typography>
                       <Typography color="blue-gray" className="font-medium">
                         {product.price} TL
@@ -81,7 +83,9 @@ function Home() {
                       color="gray"
                       className="font-normal opacity-75"
                     >
-                      {product.description}
+                      {product.description.length > 20
+                        ? product.description.substring(0, 20) + "..."
+                        : product.description}
                     </Typography>
                   </CardBody>
                   <CardFooter className="pt-0 m-auto">

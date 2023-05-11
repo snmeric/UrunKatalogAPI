@@ -12,6 +12,7 @@ import {
   Card,
   IconButton,
 } from "@material-tailwind/react";
+import { FaUser } from "react-icons/fa";
 import {
   CubeTransparentIcon,
   UserCircleIcon,
@@ -30,17 +31,13 @@ import { useSignOut } from "react-auth-kit";
 
 // profile menu component
 
-
-
-
 function ProfileMenu() {
-
   const profileMenuItems = [
     {
       label: "Profilim",
       icon: UserCircleIcon,
     },
-  
+
     {
       label: "Gelen Kutusu",
       icon: InboxArrowDownIcon,
@@ -52,19 +49,18 @@ function ProfileMenu() {
     {
       label: "Çıkış Yap",
       icon: PowerIcon,
-      onClick:()=>{
-          logout();
-      }
-   
+      onClick: () => {
+        logout();
+      },
     },
   ];
 
   const navigate = useNavigate();
-const signOut = useSignOut();
-const logout = () => {
-  signOut();
-  navigate("/login");
-}
+  const signOut = useSignOut();
+  const logout = () => {
+    signOut();
+    navigate("/login");
+  };
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const closeMenu = () => setIsMenuOpen(false);
@@ -77,31 +73,37 @@ const logout = () => {
           color="blue-gray"
           className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
         >
-          <Avatar
+         
+            <FaUser className="h-6 w-7 to-blue-gray-300" />
+       
+          {/* <Avatar
             variant="circular"
             size="sm"
             alt="candice wu"
             className="border border-blue-500 p-0.5"
-            src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
-          />
+           
+            // src="https://unsplash.com/photos/yLekT4doS4k&auto=format&fit=crop&w=1480&q=80"
+          /> */}
           <ChevronDownIcon
             strokeWidth={2.5}
-            className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
-              }`}
+            className={`h-3 w-3 transition-transform ${
+              isMenuOpen ? "rotate-180" : ""
+            }`}
           />
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
-        {profileMenuItems.map(({ label, icon,onClick }, key) => {
+        {profileMenuItems.map(({ label, icon, onClick }, key) => {
           const isLastItem = key === profileMenuItems.length - 1;
           return (
             <MenuItem
               key={label}
               onClick={onClick}
-              className={`flex items-center gap-2 rounded ${isLastItem
+              className={`flex items-center gap-2 rounded ${
+                isLastItem
                   ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
                   : ""
-                }`}
+              }`}
             >
               {React.createElement(icon, {
                 className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
@@ -109,7 +111,6 @@ const logout = () => {
               })}
               <Typography
                 as="span"
-              
                 variant="small"
                 className="font-normal"
                 color={isLastItem ? "red" : "inherit"}
@@ -138,8 +139,7 @@ const navListMenuItems = [
   },
   {
     title: "Ev, Yaşam, Kırtasiye, Ofis",
-    description:
-      "Yemek & Kahvaltı Takımı, Abajur, Masa Lambası, Ampul ",
+    description: "Yemek & Kahvaltı Takımı, Abajur, Masa Lambası, Ampul ",
   },
 ];
 
@@ -176,8 +176,9 @@ function NavListMenu() {
               <Square3Stack3DIcon className="h-[18px] w-[18px]" /> Pages{" "}
               <ChevronDownIcon
                 strokeWidth={2}
-                className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
-                  }`}
+                className={`h-3 w-3 transition-transform ${
+                  isMenuOpen ? "rotate-180" : ""
+                }`}
               />
             </MenuItem>
           </Typography>
@@ -186,7 +187,6 @@ function NavListMenu() {
           {...triggers}
           className="hidden w-[30rem] grid-cols-4 gap-3 overflow-visible lg:grid"
         >
-          
           <ul className="col-span-4 flex w-full flex-col gap-1 pr-10">
             {renderItems}
           </ul>
@@ -207,7 +207,7 @@ const navListItems = [
   {
     label: "Hesap",
     icon: UserCircleIcon,
-    title:"/account"
+    title: "/account",
   },
   {
     label: "Blocks",
@@ -216,18 +216,14 @@ const navListItems = [
   {
     label: "Docs",
     icon: CodeBracketSquareIcon,
-
   },
 ];
-
-
-
 
 function NavList() {
   return (
     <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
       <NavListMenu />
-      {navListItems.map(({ label, icon,title }, key) => (
+      {navListItems.map(({ label, icon, title }, key) => (
         <Typography
           key={label}
           as="a"
@@ -247,7 +243,6 @@ function NavList() {
 }
 
 export default function ComplexNavbar() {
- 
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
