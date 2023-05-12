@@ -20,10 +20,11 @@ import {
   Tooltip,
   Input,
 } from "@material-tailwind/react";
+import toast, { Toaster } from "react-hot-toast";
 import ComplexNavbar from "./navbar/ComplexNavbar";
 import { useAuthHeader } from "react-auth-kit";
 
-const TABLE_HEAD = ["Ürün", "Fiyat", "Tarih", "Teklif Eden", "Kaldır"];
+const TABLE_HEAD = ["ID","Ürün", "Fiyat", "Tarih", "Teklif Eden", "Kaldır"];
 
 function Account() {
   const [selproduct, setSelProduct] = useState([]);
@@ -75,18 +76,31 @@ function Account() {
     getProduct();
   }, []);
  
-  const id = offers.id;
-  /*ÜRÜN ID SİNE GÖRE ÇAĞIRMA */
-  useEffect(() => {
-    async function fetchData() {
-      if (product.length > 0) {
-        const filteredProduct = product.find((p) => p.id === parseInt(id));
-        setSelProduct(filteredProduct);
-      }
-    }
+/* OFFER SİLME */ 
 
-    fetchData();
-  }, [product, id]);
+
+
+const RemoveOfferId=(offerId)=>{
+  axios.delete(`https://localhost:7104/Offer/${offerId}`, config)
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+}
+  // const id = offers.id;
+  // /*ÜRÜN ID SİNE GÖRE ÇAĞIRMA */
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     if (product.length > 0) {
+  //       const filteredProduct = product.find((p) => p.id === parseInt(id));
+  //       setSelProduct(filteredProduct);
+  //     }
+  //   }
+
+  //   fetchData();
+  // }, [product, id]);
   return (
     <div className="h-full gap-5 flex flex-col items-center justify-center ">
       <ComplexNavbar />
@@ -135,6 +149,15 @@ function Account() {
 
                 return (
                   <tr key={offer.name}>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {offer.id }
+                      </Typography>
+                    </td>
                     <td className={classes}>
                       <div className="flex items-center gap-3">
                         <Avatar
@@ -278,6 +301,15 @@ function Account() {
 
                 return (
                   <tr key={myOffers.name}>
+                     <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {myOffers.id }
+                      </Typography>
+                    </td>
                     <td className={classes}>
                       <div className="flex items-center gap-3">
                         <Avatar
