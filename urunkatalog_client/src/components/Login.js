@@ -8,7 +8,7 @@ import {
   Text,
   Button,
 } from "@nextui-org/react";
-
+import { Loading } from "@nextui-org/react";
 import { useSignIn } from "react-auth-kit";
 import { useFormik } from "formik";
 import axios, { AxiosError } from "axios";
@@ -180,7 +180,13 @@ function Login() {
       },
     },
   ];
-
+  if (isLoading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <Loading type="spinner" size="lg" />
+      </div>
+    );
+  }
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center">
       <div className="rounded-2xl bg-[#E5EDF9] shadow-lg flex max-w-3xl">

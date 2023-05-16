@@ -18,7 +18,7 @@ import { useAuthHeader } from "react-auth-kit";
 import { useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { Chip, Checkbox, Typography, Radio } from "@material-tailwind/react";
-
+import { Loading } from "@nextui-org/react";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -30,8 +30,9 @@ const Product = () => {
   const prodId = parseInt(id);
   const [product, setProduct] = useState([]);
   const [selproduct, setSelProduct] = useState([]);
+  const [buyproduct, setBuyProduct] = useState([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setloading] = useState(false);
   let [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -56,21 +57,22 @@ const Product = () => {
   /* ÜRÜN DETAY */
   useEffect(() => {
     const getProduct = async () => {
-      setLoading(false);
+      setloading(true);
+
       await axios
         .get(`https://localhost:7104/api/Product`, config)
         .then((response) => setProduct(response.data.result))
         .catch((error) => console.log(error));
 
-      setLoading(true);
-
       console.log("Responsee", product);
     };
 
     getProduct();
+    setloading(false);
   }, []);
 
   useEffect(() => {
+    setloading(true);
     async function fetchData() {
       if (product.length > 0) {
         const filteredProduct = product.find((p) => p.id === parseInt(id));
@@ -79,10 +81,12 @@ const Product = () => {
     }
 
     fetchData();
+    setloading(false);
   }, [product, id]);
 
   /* TEKLİF GÖNDER */
   const onSubmit = async (values) => {
+    setloading(true);
     const data = {
       productId: values.productId,
       isOfferPercentage: values.isOfferPercentage,
@@ -104,35 +108,43 @@ const Product = () => {
         openModal();
         toast("Teklif Başarılı.", { icon: "👌" });
       })
-      .catch((err) => {
-        toast.error(`Hata: ${err}`);
-        console.error(err);
+      .catch((error) => {
+        const errorMessage = error.response.data;
+        toast.error(`${errorMessage}`);
+        console.error(error);
       });
+    setloading(false);
   };
-  //   try {
-  //      const response =await axios.post(
-  //       `https://localhost:7104/Offers`,
-  //       data,{
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `${authHeader()}`,
-  //         },
-  //       }
 
-  //     );
-  //     console.log(response);
-  //     toast("Teklif Başarılı.", { icon: "👏" });
-  //     // setTimeout(() => {
-  //     //   window.location.reload();
-  //     // }, 2000);
-  //   } catch (err) {
-  //     if (err && err instanceof AxiosError)
-  //       setError(err.response?.data.message);
-  //     else if (err && err instanceof Error) setError(err.message);
-  //     toast.error(`Hata: ${err}`);
-  //     console.log("Error: ", err);
-  //   }
-  // };
+  /* SATIN AL */
+
+  function handleBuyButtonClick() {
+    axios
+      .put(`https://localhost:7104/api/Product/${id}`, config)
+      .then((response) => {
+        setBuyProduct(response.data.result);
+        console.log("Responsee:", product);
+      })
+      .catch((error) => console.log(error));
+
+    
+  }
+  useEffect(() => {
+    setloading(true);
+    const buyProduct = async () => {
+      await axios
+        .put(`https://localhost:7104/api/Product/${id}`, config)
+        .then((response) => {
+          setBuyProduct(response.data.result);
+        })
+        .catch((error) => console.log(error));
+
+      console.log("Responsee", product);
+    };
+    setloading(false);
+    buyProduct();
+  });
+
   const formik = useFormik({
     initialValues: {
       productId: prodId,
@@ -174,7 +186,13 @@ const Product = () => {
       color: isOffer ? "success" : "error",
     };
   }, [formik.values.offeredPrice, formik.values.isOfferPercentage]);
-
+  if (loading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <Loading type="spinner" size="lg" />
+      </div>
+    );
+  }
   return (
     <div>
       <ComplexNavbar />
@@ -226,6 +244,10 @@ const Product = () => {
           </Tooltip>
           <Chip color="blue" value="Renk" />
           <h4 className="text-gray-900 mb-4">Fiyat: {selproduct.price} TL</h4>
+
+          <Button disabled={!selproduct.isOfferable} ripple={true}>
+            Satın Al
+          </Button>
         </div>
       </div>
       <div className="max-w-xl mx-auto flex flex-col items-center p-5">
@@ -324,14 +346,7 @@ const Product = () => {
                           </div>
 
                           <div className="mt-4 text-right">
-
-
-
-
-
-
-                            
-                                        <button
+                            <button
                               type="button"
                               className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                               onClick={closeModal}

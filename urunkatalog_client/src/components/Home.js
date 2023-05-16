@@ -15,9 +15,21 @@ import {
   Chip,
   Avatar,
 } from "@material-tailwind/react";
+import { Loading } from "@nextui-org/react";
+import {useIsAuthenticated} from 'react-auth-kit';
+import Login from "./Login";
+import { useNavigate } from "react-router-dom";
+
+
+
+
+
+
 
 function Home() {
+
   const [products, setProducts] = useState([]);
+  const [loading, setloading] = useState(false);
   const authHeader = useAuthHeader();
   const config = {
     headers: {
@@ -28,6 +40,7 @@ function Home() {
   };
 
   useEffect(() => {
+    setloading(true);
     axios
       .get("https://localhost:7104/api/Product", config)
       .then((response) => {
@@ -36,11 +49,22 @@ function Home() {
       .catch((error) => {
         console.log(error);
       });
+      setloading(false);
   }, []);
-
+  if (loading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <Loading type="spinner" size="lg" />
+        
+      </div>
+    );
+  }
   return (
+    
     <div className="flex-col justify-center items-center">
+      
       <ComplexNavbar />
+     
       <div
         className="text-2xl mx-9 flex-col h-screen 
             flex items-center w-540"

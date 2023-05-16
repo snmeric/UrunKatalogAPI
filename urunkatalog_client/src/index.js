@@ -7,10 +7,9 @@ import { createTheme, NextUIProvider } from '@nextui-org/react';
 import { AuthProvider } from 'react-auth-kit';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from "@material-tailwind/react";
-
+import {useIsAuthenticated} from 'react-auth-kit';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-
 
 
 
@@ -56,6 +55,7 @@ root.render(
         <ThemeProvider>
           <NextUIProvider>
             <App />
+           
           </NextUIProvider>
         </ThemeProvider>
       </BrowserRouter>
