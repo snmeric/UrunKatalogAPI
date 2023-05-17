@@ -4,9 +4,10 @@ import Home from "./components/Home";
 import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "react-auth-kit";
 import Product from "./components/Product";
-import Account from "./components/Account";
 import { useNavigate } from "react-router-dom";
 import {useIsAuthenticated} from 'react-auth-kit';
+import Offer from "./components/Offer";
+import CreateProduct from "./components/CreateProduct";
 
 // const AnyComponent = () => {
 //   const navigate = useNavigate();
@@ -34,7 +35,8 @@ function App() {
             </RequireAuth>
           }
         ></Route>
-        <Route path="/account" element={<Account />}></Route>
+        <Route path="/offer" element={<Offer />}></Route>
+        <Route path="/createProduct" element={<CreateProduct />}></Route>
         <Route path="/product/:id" element={<Product />}></Route>
       </Routes>
     

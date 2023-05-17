@@ -39,8 +39,11 @@ function ProfileMenu() {
     },
 
     {
-      label: "Gelen Kutusu",
+      label: "Teklifler",
       icon: InboxArrowDownIcon,
+      onClick: () => {
+        navigate("/offer");
+      },
     },
     {
       label: "Yardım",
@@ -207,11 +210,12 @@ const navListItems = [
   {
     label: "Hesap",
     icon: UserCircleIcon,
-    title: "/account",
+    
   },
   {
-    label: "Blocks",
+    label: "Ürün Oluştur",
     icon: CubeTransparentIcon,
+    title:"/createProduct"
   },
   {
     label: "Docs",

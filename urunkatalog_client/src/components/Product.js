@@ -21,7 +21,7 @@ import { Chip, Checkbox, Typography, Radio } from "@material-tailwind/react";
 import { Loading } from "@nextui-org/react";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
-
+import { Breadcrumbs } from "@material-tailwind/react";
 import ComplexNavbar from "./navbar/ComplexNavbar";
 
 const Product = () => {
@@ -126,24 +126,22 @@ const Product = () => {
         console.log("Responsee:", product);
       })
       .catch((error) => console.log(error));
-
-    
   }
-  useEffect(() => {
-    setloading(true);
-    const buyProduct = async () => {
-      await axios
-        .put(`https://localhost:7104/api/Product/${id}`, config)
-        .then((response) => {
-          setBuyProduct(response.data.result);
-        })
-        .catch((error) => console.log(error));
+  // useEffect(() => {
+  //   setloading(true);
+  //   const buyProduct = async () => {
+  //     await axios
+  //       .put(`https://localhost:7104/api/Product/${id}`, config)
+  //       .then((response) => {
+  //         setBuyProduct(response.data.result);
+  //       })
+  //       .catch((error) => console.log(error));
 
-      console.log("Responsee", product);
-    };
-    setloading(false);
-    buyProduct();
-  });
+  //     console.log("Responsee", product);
+  //   };
+  //   setloading(false);
+  //   buyProduct();
+  // });
 
   const formik = useFormik({
     initialValues: {
@@ -196,6 +194,22 @@ const Product = () => {
   return (
     <div>
       <ComplexNavbar />
+      <div className="flex justify-center p-2">
+        <Breadcrumbs className="mx-auto ">
+          <a href="/" className="opacity-60">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+          </a>
+          
+          <a href="#">{selproduct.name}</a>
+        </Breadcrumbs>
+      </div>
       <div className="flex flex-row justify-center items-center p-8">
         <div className="max-w-xl mx-auto md:block w-1/2 p-5">
           <img

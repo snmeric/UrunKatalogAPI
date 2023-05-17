@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 import moment from "moment";
 import { Loading } from "@nextui-org/react";
+import { HiCheck } from "react-icons/hi2";
+import { HiArchiveBox } from "react-icons/hi2";
 import { useAuthUser } from "react-auth-kit";
 import {
   Card,
@@ -23,8 +25,9 @@ import ComplexNavbar from "./navbar/ComplexNavbar";
 import { useAuthHeader } from "react-auth-kit";
 
 const TABLE_HEAD = ["ID", "Ürün", "Fiyat", "Tarih", "Teklif Eden", "Kaldır"];
+const TABLE_HEAD_OFFER = ["ID", "Ürün", "Fiyat", "Tarih", "Teklif Eden", "Onayla"];
 
-function Account() {
+function Offer() {
   const [selproduct, setSelProduct] = useState([]);
   const [loading, setloading] = useState(false);
   const [myOffer, setmyOffer] = useState([]);
@@ -152,6 +155,29 @@ function Account() {
         setloading(true);
       });
   };
+
+
+/* GELEN TEKLİFLERİ ONAYLAMA */
+
+const offerAccept = (offerId) => {
+  setloading(true);
+  
+
+  axios.put(`https://localhost:7104/api/Account/${offerId}`, config
+  )
+  .then(response => {
+    toast("Teklif Onaylandı.", { icon: "👍🏻" });
+    console.log('İstek başarılı:', response.data);
+  })
+  .catch(error => {
+    const errorMessage = error.response.data;
+        toast.error(`${errorMessage}`);
+        console.log("Başarısız: ",errorMessage);
+  });
+};
+
+
+
   const auth = useAuthUser();
 
   if (!loading) {
@@ -184,7 +210,7 @@ function Account() {
           <table className="w-full min-w-max table-auto text-left">
             <thead>
               <tr>
-                {TABLE_HEAD.map((head) => (
+                {TABLE_HEAD_OFFER.map((head) => (
                   <th
                     key={head}
                     className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
@@ -280,13 +306,13 @@ function Account() {
                           </div>
                         </td>
                         <td className={classes}>
-                          <Tooltip content="Teklifi Kaldır">
+                          <Tooltip content="Teklifi Onayla">
                             <IconButton
                               variant="text"
                               color="blue-gray"
-                              onClick={() => removeOffer(item.id)}
+                              onClick={() => offerAccept(item.id)}
                             >
-                              <MdDelete className="h-4 w-4" />
+                              <HiCheck className="h-4 w-4" />
                             </IconButton>
                           </Tooltip>
                         </td>
@@ -460,7 +486,7 @@ function Account() {
                               color="blue-gray"
                               onClick={() => removeOffer(item.id)}
                             >
-                              <MdDelete className="h-4 w-4" />
+                              <HiArchiveBox className="h-4 w-4" />
                             </IconButton>
                           </Tooltip>
                         </td>
@@ -517,4 +543,4 @@ function Account() {
   );
 }
 
-export default Account;
+export default Offer;
