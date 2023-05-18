@@ -25,7 +25,14 @@ import ComplexNavbar from "./navbar/ComplexNavbar";
 import { useAuthHeader } from "react-auth-kit";
 
 const TABLE_HEAD = ["ID", "Ürün", "Fiyat", "Tarih", "Teklif Eden", "Kaldır"];
-const TABLE_HEAD_OFFER = ["ID", "Ürün", "Fiyat", "Tarih", "Teklif Eden", "Onayla"];
+const TABLE_HEAD_OFFER = [
+  "ID",
+  "Ürün",
+  "Fiyat",
+  "Tarih",
+  "Teklif Eden",
+  "Onayla",
+];
 
 function Offer() {
   const [selproduct, setSelProduct] = useState([]);
@@ -61,10 +68,7 @@ function Offer() {
     setmyOfferCurrentPage(pageNumber);
   };
 
-
   /* GELEN TEKLİFLERİ SAYFALANDIRMA */
-
-
 
   const [offerCurrentPage, setofferCurrentPage] = useState(1); // Şu anki sayfa numarası
   const OFFER_PAGE_SIZE = 3; // Örnek olarak 3 satır veri gösterilsin
@@ -84,8 +88,6 @@ function Offer() {
   const offerHandlePageClick = (offerPageNumber) => {
     setofferCurrentPage(offerPageNumber);
   };
-
-
 
   /*OFFER */
   useEffect(() => {
@@ -156,27 +158,27 @@ function Offer() {
       });
   };
 
+  /* GELEN TEKLİFLERİ ONAYLAMA */
 
-/* GELEN TEKLİFLERİ ONAYLAMA */
+  const offerAccept = (offerId) => {
+    setloading(true);
+    const data = {
+      id: offerId,
+    };
 
-const offerAccept = (offerId) => {
-  setloading(true);
-  
-
-  axios.put(`https://localhost:7104/api/Account/${offerId}`, config
-  )
-  .then(response => {
-    toast("Teklif Onaylandı.", { icon: "👍🏻" });
-    console.log('İstek başarılı:', response.data);
-  })
-  .catch(error => {
-    const errorMessage = error.response.data;
+    axios
+      .put(`https://localhost:7104/api/Account/${offerId}`, data, config)
+      .then((response) => {
+        toast("Teklif Onaylandı.", { icon: "👍🏻" });
+        
+        console.log("İstek başarılı:", response.data);
+      })
+      .catch((error) => {
+        const errorMessage = error.response.data;
         toast.error(`${errorMessage}`);
-        console.log("Başarısız: ",errorMessage);
-  });
-};
-
-
+        console.log("Başarısız: ", errorMessage);
+      });
+  };
 
   const auth = useAuthUser();
 
@@ -191,7 +193,7 @@ const offerAccept = (offerId) => {
     <div className="h-full gap-5 flex flex-col items-center justify-center ">
       <ComplexNavbar />
       <Typography variant="h2" color="blue-gray">
-        Hoşgeldiniz {auth().email}
+        Hoşgeldiniz {auth().username}
       </Typography>
       <Card className="h-full w-2/3 ">
         <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -227,7 +229,7 @@ const offerAccept = (offerId) => {
               </tr>
             </thead>
             <tbody>
-            {offerCurrentData.map((item,index) =>  {
+              {offerCurrentData.map((item, index) => {
                 const selectedProduct = product.find(
                   (p) => p.id === item.productId
                 );
@@ -238,86 +240,84 @@ const offerAccept = (offerId) => {
 
                 return (
                   <>
-                   
-                      <tr key={item.name}>
-                        <td className={classes}>
+                    <tr key={item.name}>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {item.id}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            src={
+                              selectedProduct && selectedProduct.image
+                                ? "https://localhost:7104/resources/" +
+                                  selectedProduct.image
+                                : ""
+                            }
+                            alt={item.name}
+                            size="xl"
+                            className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
+                          />
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-normal"
+                            className="font-bold"
                           >
-                            {item.id}
+                            {item.name}
                           </Typography>
-                        </td>
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <Avatar
-                              src={
-                                selectedProduct && selectedProduct.image
-                                  ? "https://localhost:7104/resources/" +
-                                    selectedProduct.image
-                                  : ""
-                              }
-                              alt={item.name}
-                              size="xl"
-                              className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
-                            />
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {item.offeredPrice} TL
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {moment(`${item.modifiedDate}`).format(
+                            "DD/MM/YYYY HH:mm"
+                          )}
+                        </Typography>
+                      </td>
+
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <div className="flex flex-col">
                             <Typography
                               variant="small"
-                              color="blue-gray"
-                              className="font-bold"
+                              color="black"
+                              className="font-normal opacity-70"
                             >
-                              {item.name}
+                              {item.modifiedBy}
                             </Typography>
                           </div>
-                        </td>
-                        <td className={classes}>
-                          <Typography
-                            variant="small"
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Tooltip content="Teklifi Onayla">
+                          <IconButton
+                            variant="text"
                             color="blue-gray"
-                            className="font-normal"
+                            onClick={() => offerAccept(item.id)}
                           >
-                            {item.offeredPrice} TL
-                          </Typography>
-                        </td>
-                        <td className={classes}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {moment(`${item.modifiedDate}`).format(
-                              "DD/MM/YYYY HH:mm"
-                            )}
-                          </Typography>
-                        </td>
-
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-col">
-                              <Typography
-                                variant="small"
-                                color="black"
-                                className="font-normal opacity-70"
-                              >
-                                {item.modifiedBy}
-                              </Typography>
-                            </div>
-                          </div>
-                        </td>
-                        <td className={classes}>
-                          <Tooltip content="Teklifi Onayla">
-                            <IconButton
-                              variant="text"
-                              color="blue-gray"
-                              onClick={() => offerAccept(item.id)}
-                            >
-                              <HiCheck className="h-4 w-4" />
-                            </IconButton>
-                          </Tooltip>
-                        </td>
-                      </tr>
-                  
+                            <HiCheck className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
                   </>
                 );
               })}
@@ -325,48 +325,46 @@ const offerAccept = (offerId) => {
           </table>
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          
-            {/* Önceki sayfa düğmesi */}
-            <Button
-              variant="outlined"
-              color="blue-gray"
-              size="sm"
-              disabled={offerCurrentPage === 1}
-              onClick={() => setofferCurrentPage(offerCurrentPage - 1)}
-            >
-              Önceki
-            </Button>
+          {/* Önceki sayfa düğmesi */}
+          <Button
+            variant="outlined"
+            color="blue-gray"
+            size="sm"
+            disabled={offerCurrentPage === 1}
+            onClick={() => setofferCurrentPage(offerCurrentPage - 1)}
+          >
+            Önceki
+          </Button>
 
-            {/* Sayfa numaraları */}
-            <div className="flex items-center gap-2">
-              {offerPageNumbers.map((offerPageNumber) => (
-                <IconButton
-                  key={offerPageNumber}
-                  variant={offerCurrentPage === offerPageNumber ? "contained" : "text"}
-                  color="blue-gray"
-                  size="sm"
-                 
-                >
-                  {offerPageNumber}
-                </IconButton>
-              ))}
-            </div>
-            {/* Sonraki sayfa düğmesi */}
-            <Button
-              variant="outlined"
-              color="blue-gray"
-              size="sm"
-              disabled={offerCurrentPage === offertotalPages}
-              onClick={() => offerHandlePageClick(offerCurrentPage + 1)}
-            >
-              Sonraki
-            </Button>
-        
+          {/* Sayfa numaraları */}
+          <div className="flex items-center gap-2">
+            {offerPageNumbers.map((offerPageNumber) => (
+              <IconButton
+                key={offerPageNumber}
+                variant={
+                  offerCurrentPage === offerPageNumber ? "contained" : "text"
+                }
+                color="blue-gray"
+                size="sm"
+              >
+                {offerPageNumber}
+              </IconButton>
+            ))}
+          </div>
+          {/* Sonraki sayfa düğmesi */}
+          <Button
+            variant="outlined"
+            color="blue-gray"
+            size="sm"
+            disabled={offerCurrentPage === offertotalPages}
+            onClick={() => offerHandlePageClick(offerCurrentPage + 1)}
+          >
+            Sonraki
+          </Button>
         </CardFooter>
       </Card>
 
-
-      { /*TEKLİF ETTİKLERİM */ }
+      {/*TEKLİF ETTİKLERİM */}
       <Card className="h-full w-2/3 ">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
@@ -401,7 +399,7 @@ const offerAccept = (offerId) => {
               </tr>
             </thead>
             <tbody>
-            {currentData.map((item,index) =>  {
+              {currentData.map((item, index) => {
                 const selectedProduct = product.find(
                   (p) => p.id === item.productId
                 );
@@ -412,86 +410,84 @@ const offerAccept = (offerId) => {
 
                 return (
                   <>
-                   
-                      <tr key={item.name}>
-                        <td className={classes}>
+                    <tr key={item.name}>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {item.id}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            src={
+                              selectedProduct && selectedProduct.image
+                                ? "https://localhost:7104/resources/" +
+                                  selectedProduct.image
+                                : ""
+                            }
+                            alt={item.name}
+                            size="xl"
+                            className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
+                          />
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-normal"
+                            className="font-bold"
                           >
-                            {item.id}
+                            {item.name}
                           </Typography>
-                        </td>
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <Avatar
-                              src={
-                                selectedProduct && selectedProduct.image
-                                  ? "https://localhost:7104/resources/" +
-                                    selectedProduct.image
-                                  : ""
-                              }
-                              alt={item.name}
-                              size="xl"
-                              className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
-                            />
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {item.offeredPrice} TL
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {moment(`${item.createdDate}`).format(
+                            "DD/MM/YYYY HH:mm"
+                          )}
+                        </Typography>
+                      </td>
+
+                      <td className={classes}>
+                        <div className="flex items-center gap-3">
+                          <div className="flex flex-col">
                             <Typography
                               variant="small"
-                              color="blue-gray"
-                              className="font-bold"
+                              color="black"
+                              className="font-normal opacity-70"
                             >
-                              {item.name}
+                              {item.modifiedBy}
                             </Typography>
                           </div>
-                        </td>
-                        <td className={classes}>
-                          <Typography
-                            variant="small"
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Tooltip content="Teklifi Kaldır">
+                          <IconButton
+                            variant="text"
                             color="blue-gray"
-                            className="font-normal"
+                            onClick={() => removeOffer(item.id)}
                           >
-                            {item.offeredPrice} TL
-                          </Typography>
-                        </td>
-                        <td className={classes}>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {moment(`${item.createdDate}`).format(
-                              "DD/MM/YYYY HH:mm"
-                            )}
-                          </Typography>
-                        </td>
-
-                        <td className={classes}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-col">
-                              <Typography
-                                variant="small"
-                                color="black"
-                                className="font-normal opacity-70"
-                              >
-                                {item.modifiedBy}
-                              </Typography>
-                            </div>
-                          </div>
-                        </td>
-                        <td className={classes}>
-                          <Tooltip content="Teklifi Kaldır">
-                            <IconButton
-                              variant="text"
-                              color="blue-gray"
-                              onClick={() => removeOffer(item.id)}
-                            >
-                              <HiArchiveBox className="h-4 w-4" />
-                            </IconButton>
-                          </Tooltip>
-                        </td>
-                      </tr>
-                  
+                            <HiArchiveBox className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
                   </>
                 );
               })}
@@ -499,43 +495,43 @@ const offerAccept = (offerId) => {
           </table>
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-         
-            {/* Önceki sayfa düğmesi */}
-            <Button
-              variant="outlined"
-              color="blue-gray"
-              size="sm"
-              disabled={myOfferCurrentPage === 1}
-              onClick={() => setmyOfferCurrentPage(myOfferCurrentPage - 1)}
-            >
-              Önceki
-            </Button>
+          {/* Önceki sayfa düğmesi */}
+          <Button
+            variant="outlined"
+            color="blue-gray"
+            size="sm"
+            disabled={myOfferCurrentPage === 1}
+            onClick={() => setmyOfferCurrentPage(myOfferCurrentPage - 1)}
+          >
+            Önceki
+          </Button>
 
-            {/* Sayfa numaraları */}
-            <div className="flex items-center gap-2">
-              {pageNumbers.map((pageNumber) => (
-                <IconButton
-                  key={pageNumber}
-                  variant={myOfferCurrentPage === pageNumber ? "contained" : "text"}
-                  color="blue-gray"
-                  size="sm"
-                  onClick={() => myOfferHandlePageClick (pageNumber)}
-                >
-                  {pageNumber}
-                </IconButton>
-              ))}
-            </div>
-            {/* Sonraki sayfa düğmesi */}
-            <Button
-              variant="outlined"
-              color="blue-gray"
-              size="sm"
-              disabled={myOfferCurrentPage === totalPages}
-              onClick={() => setmyOfferCurrentPage(myOfferCurrentPage + 1)}
-            >
-              Sonraki
-            </Button>
-       
+          {/* Sayfa numaraları */}
+          <div className="flex items-center gap-2">
+            {pageNumbers.map((pageNumber) => (
+              <IconButton
+                key={pageNumber}
+                variant={
+                  myOfferCurrentPage === pageNumber ? "contained" : "text"
+                }
+                color="blue-gray"
+                size="sm"
+                onClick={() => myOfferHandlePageClick(pageNumber)}
+              >
+                {pageNumber}
+              </IconButton>
+            ))}
+          </div>
+          {/* Sonraki sayfa düğmesi */}
+          <Button
+            variant="outlined"
+            color="blue-gray"
+            size="sm"
+            disabled={myOfferCurrentPage === totalPages}
+            onClick={() => setmyOfferCurrentPage(myOfferCurrentPage + 1)}
+          >
+            Sonraki
+          </Button>
         </CardFooter>
       </Card>
       <Toaster />

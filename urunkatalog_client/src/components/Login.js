@@ -55,12 +55,13 @@ function Login() {
         config
       );
       console.log(response);
-      const token = await response.data.accessToken;
+      const token = await response.data.token.accessToken;
+      const username = await response.data.userName;
       signIn({
         token: token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: values.email },
+        authState: { email: values.email,username:username},
       });
 
       toast("Giriş Başarılı", { icon: "👏" });

@@ -161,7 +161,7 @@ namespace UrunKatalogAPI.API.Controllers
             var jwt = new JwtSecurityToken(
                 issuer: _configuration["JwtConfig:ValidIssuer"],
                 audience: _configuration["JwtConfig:ValidAudience"],
-                expires: DateTime.Now.AddHours(3),
+                expires: DateTime.Now.AddHours(5),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
@@ -228,8 +228,12 @@ namespace UrunKatalogAPI.API.Controllers
                     return BadRequest("Giriş yapılamadı. Bilgilerinizi kontrol ediniz."); // giriş başarısızsa
                     }
                     var user1 = await _userManager.FindByEmailAsync(model.Email);
-
-                    return Ok(GetTokenResponse(user1)); // model state valid ise
+                var response = new
+                {
+                    UserName = user1.UserName, // Kullanıcının adını (username) döndür
+                    Token = GetTokenResponse(user1)
+                };
+                return Ok(response); // model state valid ise
                 }
                 return BadRequest(ModelState); // model state valid değil ise
             }

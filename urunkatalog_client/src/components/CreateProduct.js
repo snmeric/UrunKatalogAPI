@@ -3,7 +3,7 @@ import { Listbox } from "@headlessui/react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useEffect, useState, useRef } from "react";
-import { useAuthHeader } from "react-auth-kit";
+import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import {
   Card,
   Input,
@@ -18,6 +18,7 @@ import { CloudArrowUpIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ComplexNavbar from "./navbar/ComplexNavbar";
 import toast, { Toaster } from "react-hot-toast";
 import axios, { AxiosError } from "axios";
+
 function CreateProduct() {
   const [files, setFiles] = useState();
   const [previews, setPreviews] = useState();
@@ -45,6 +46,7 @@ function CreateProduct() {
   function openModal() {
     setIsOpen(true);
   }
+  const auth = useAuthUser();
   const authHeader = useAuthHeader();
   const config = {
     headers: {
@@ -81,7 +83,7 @@ function CreateProduct() {
     const objectUrls = tmp;
     setPreviews(objectUrls);
     setFileNames(tmpFileNames);
-
+   
     for (let i = 0; i < objectUrls.length; i++) {
       return () => {
         URL.revokeObjectURL(objectUrls[i]);
@@ -108,8 +110,10 @@ function CreateProduct() {
     setFileNames(updatedFileNames);
   };
   const [loading, setloading] = useState(false);
-
+  const imageName=JSON.stringify(fileNames);
+  console.log("RESİM ADI:",imageName);
   const onSubmit = async (values) => {
+    console.log("USERNMA:",auth().userName)
     setloading(true);
     const data = {
       name: values.name,
@@ -117,17 +121,16 @@ function CreateProduct() {
       color: values.color,
       brand: values.brand,
       productCondition: values.productCondition,
-      image: fileNames,
-      userName: values.userName,
+      image: values.image,
+      userName: auth().userName,
       price: values.price,
-      isOfferable: values.isOfferable,
+      isOfferable: Boolean(values.isOfferable),
       isSold: values.isSold,
       categoryId: parseInt(values.categoryId),
     };
 
     console.log("Values: ", values);
 
-    console.log("TOKEEN:", authHeader());
     axios
       .post("https://localhost:7104/Product", data, {
         headers: {
@@ -154,20 +157,20 @@ function CreateProduct() {
       color: "",
       brand: "",
       productCondition: "",
-      image: fileNames,
+      image: "",
       userName: "",
       price: 0,
       isOfferable: true,
       isSold: false,
       categoryId: 0,
     },
-  
+
     onSubmit,
   });
 
   return (
     <>
-      {" "}
+      
       <ComplexNavbar />
       <div className="flex min-h-screen flex-col py-5 items-center">
         <Typography variant="h4" color="blue-gray">
@@ -193,37 +196,35 @@ function CreateProduct() {
 
               <Select
                 name="color"
-                onChange={formik.handleChange}
                 value={formik.values.color}
-               
+                onChange={value=>formik.setFieldValue('color',value)}
+                onBlur={formik.handleBlur}
                 variant="outlined"
                 label="Renk"
               >
-                <Option>Blue</Option>
-                <Option>Red</Option>
-                <Option>Green</Option>
-                <Option>Umber</Option>
+                <Option value="blue">Blue</Option>
+                <Option value="red">Red</Option>
+                <Option value="green">Green</Option>
+                <Option value="umber">Umber</Option>
               </Select>
               <Input
                 name="brand"
                 onChange={formik.handleChange}
                 value={formik.values.brand}
-                
                 size="lg"
                 label="Marka"
               />
 
               <Select
                 name="productCondition"
-                onChange={formik.handleChange}
+                onChange={value=>formik.setFieldValue('productCondition',value)}
                 onBlur={formik.handleBlur}
                 value={formik.values.productCondition}
-              
                 variant="outlined"
                 label="Ürünün Durumu"
               >
-                <Option>Sıfır</Option>
-                <Option>İkinci El</Option>
+                <Option value="Sıfır">Sıfır</Option>
+                <Option value="İkinci El">İkinci El</Option>
               </Select>
               <Input
                 name="price"
@@ -236,47 +237,47 @@ function CreateProduct() {
               />
               <Select
                 name="isOfferable"
-                onChange={formik.handleChange}
+                onChange={value=>formik.setFieldValue('isOfferable',value)}
                 value={formik.values.isOfferable}
                 error={formik.touched.isOfferable && formik.errors.isOfferable}
                 variant="outlined"
                 label="Teklif Durumu"
               >
-                <Option>Açık</Option>
-                <Option>Kapalı</Option>
+                <Option value={true}>Açık</Option>
+                <Option value={false}>Kapalı</Option>
               </Select>
               <Select
                 name="isSold"
-                onChange={formik.handleChange}
+                onChange={value=>formik.setFieldValue('isSold',value)}
                 value={formik.values.isSold}
                 error={formik.touched.isSold && formik.errors.isSold}
                 variant="outlined"
                 label="Ürün Satış Durumu"
               >
-                <Option>Satıldı</Option>
-                <Option>Mevcut</Option>
+                <Option value={false}>Mevcut</Option>
+                <Option value={true}>Satıldı</Option>
               </Select>
 
               <Select
                 name="categoryId"
-                onChange={formik.handleChange}
+                onChange={value=>formik.setFieldValue('categoryId',value)}
                 value={formik.values.categoryId}
-                error={formik.touched.categoryId && formik.errors.categoryId}
+               
                 variant="outlined"
                 label="Kategori"
               >
                 {categories.map((category, index) => (
-                  <Option key={index} value={String(category.id)}>
+                  <Option key={index} value={category.id}>
                     {category.name}
                   </Option>
                 ))}
               </Select>
             </div>
             <Textarea
-               name="description"
-               onChange={formik.handleChange}
-               value={formik.values.description}
-               error={formik.touched.description && formik.errors.description}
+              name="description"
+              onChange={formik.handleChange}
+              value={formik.values.description}
+              error={formik.touched.description && formik.errors.description}
               variant="outlined"
               label="Açıklama"
             />
