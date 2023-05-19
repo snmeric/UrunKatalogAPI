@@ -32,6 +32,9 @@ namespace UrunKatalogAPI.API.Controllers
 
 
 
+
+
+
         public AuthenticateController(UserManager<ApplicationUser> userManager, IConfiguration configuration, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork, ISendEmailJob sendEmailJob)
         {
             _userManager = userManager;

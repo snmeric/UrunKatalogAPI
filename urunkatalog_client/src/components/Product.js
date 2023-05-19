@@ -14,7 +14,7 @@ import {
   Grid,
 } from "@nextui-org/react";
 import * as yup from "yup";
-import { useAuthHeader } from "react-auth-kit";
+import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import { useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { Chip, Checkbox, Typography, Radio } from "@material-tailwind/react";
@@ -26,7 +26,7 @@ import ComplexNavbar from "./navbar/ComplexNavbar";
 
 const Product = () => {
   const { id } = useParams();
-
+  const auth = useAuthUser();
   const prodId = parseInt(id);
   const [product, setProduct] = useState([]);
   const [selproduct, setSelProduct] = useState([]);
@@ -83,7 +83,10 @@ const Product = () => {
     fetchData();
     setloading(false);
   }, [product, id]);
+  console.log("Kim Tarafından: ",selproduct.createdBy);
 
+  console.log("Auth Adı:",auth().username);
+  console.log(`${!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false}`);
   /* TEKLİF GÖNDER */
   const onSubmit = async (values) => {
     setloading(true);
@@ -206,7 +209,7 @@ const Product = () => {
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
           </a>
-          
+
           <a href="#">{selproduct.name}</a>
         </Breadcrumbs>
       </div>
@@ -256,10 +259,15 @@ const Product = () => {
               Ürün {selproduct.isSold ? "Satıldı" : "Mevcut"}
             </Button>
           </Tooltip>
-          <Chip color="blue" value="Renk" />
-          <h4 className="text-gray-900 mb-4">Fiyat: {selproduct.price} TL</h4>
+          <h4 className="text-gray-700 mb-4 mt-4">
+            Renk: {selproduct.color === "none" ? "Renk Yok" : selproduct.color}
+          </h4>
+         
+          <h2 className="text-gray-900 mb-4">
+            
+            {selproduct.price} TL</h2>
 
-          <Button disabled={!selproduct.isOfferable} ripple={true}>
+          <Button disabled={!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false} ripple={true}>
             Satın Al
           </Button>
         </div>
@@ -404,7 +412,7 @@ const Product = () => {
                 trigger="hover"
                 color={selproduct.isOfferable ? "primary" : "error"}
               >
-                <Button type="submit" disabled={isButtonDisabled} ripple={true}>
+                <Button type="submit" disabled={!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false} ripple={true}>
                   Teklif Ver
                 </Button>
               </Tooltip>

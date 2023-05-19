@@ -49,11 +49,20 @@ namespace UrunKatalogAPI.API.Controllers
                 product.ForEach(n => list2.Add(n.Id));
                 for (int i = 0; i < list2.Count(); i++)
                 {
-                    var offer = _unitOfWork.Offer.GetAll().Result.Result.Find(x => x.ProductId == list2[i]); // ürün idleri ile eşleşen ve kullanıcı tarafından oluşturulmuş ürünleri bul
-                    sonuc.Add(offer); // listeye at
+                    var offer = _unitOfWork.Offer.GetAll().Result.Result.Find(x => x.ProductId == list2[i]);
+
+                    // Teklif null değilse sonuç listesine ekle
+                    if (offer != null)
+                    {
+                        sonuc.Add(offer);
+                    }
                 }
 
-                return (sonuc);
+                // Sonuç listesi boş değilse, 200 kodu ile birlikte sonuçları dön
+                if (sonuc.Count > 0)
+                {
+                    return Ok(sonuc);
+                }
             }
 
             // Ürünlere ait teklifler bulunamadıysa, BadRequest döndür

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import {useIsAuthenticated} from 'react-auth-kit';
 import Offer from "./components/Offer";
 import CreateProduct from "./components/CreateProduct";
+import Category from "./components/Category";
 
 // const AnyComponent = () => {
 //   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function App() {
         ></Route>
         <Route path="/offer" element={<Offer />}></Route>
         <Route path="/createProduct" element={<CreateProduct />}></Route>
+        <Route path="/category" element={<Category />}></Route>
         <Route path="/product/:id" element={<Product />}></Route>
       </Routes>
     

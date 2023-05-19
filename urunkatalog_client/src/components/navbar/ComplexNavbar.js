@@ -46,8 +46,11 @@ function ProfileMenu() {
       },
     },
     {
-      label: "Yardım",
+      label: "Kategori",
       icon: LifebuoyIcon,
+      onClick: () => {
+        navigate("/category");
+      },
     },
     {
       label: "Çıkış Yap",
