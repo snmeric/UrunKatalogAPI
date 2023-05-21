@@ -10,6 +10,8 @@ namespace UrunKatalogAPI.Infrastructere.Context
 {
     public interface IApplicationDbContext
     {
+        DbSet<Color> Colors { get; }
+        DbSet<Brand> Brandies { get; }
         DbSet<Category> Categories { get; }
         DbSet<Product> Products { get; }
         DbSet<Offer> Offers { get; }

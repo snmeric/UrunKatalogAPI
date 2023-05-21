@@ -13,8 +13,8 @@ namespace UrunKatalogAPI.Infrastructere.DTO
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Color { get; set; }
-        public string Brand { get; set; }
+        public virtual int? ColorId { get; set; }
+        public virtual int? BrandId { get; set; }
         public string ProductCondition { get; set; }
         public string Image { get; set; }
         public string UserName { get; set; }
@@ -29,8 +29,8 @@ namespace UrunKatalogAPI.Infrastructere.DTO
         public string Name { get; set; }
         [Required]
         public string Description { get; set; }
-        public string Color { get; set; }
-        public string Brand { get; set; }
+        public virtual int? ColorId { get; set; }
+        public virtual int? BrandId { get; set; }
         [Required]
         public string ProductCondition { get; set; }
         [JsonIgnore]

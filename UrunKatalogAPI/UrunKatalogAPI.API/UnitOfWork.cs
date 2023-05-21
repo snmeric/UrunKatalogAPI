@@ -8,7 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UrunKatalogAPI.Infrastructere;
+using UrunKatalogAPI.Infrastructere.Repositories.BrandRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.CategoryRepository;
+using UrunKatalogAPI.Infrastructere.Repositories.ColorRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.MailRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.OfferRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.ProductRepository;
@@ -22,6 +24,8 @@ namespace UrunKatalogAPI.API
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
+        public IColorRepository Color { get; private set; }
+        public IBrandRepository Brand { get; private set; }
         public ICategoryRepository Category { get; private set; }
 
         public IProductRepository Product { get; private set; }
@@ -37,7 +41,9 @@ namespace UrunKatalogAPI.API
             _logger = loggerFactory.CreateLogger("Project");
             _mapper = mapper;
 
-           Category = new CategoryRepository(_context, _mapper);
+            Color = new ColorRepository(_context, _mapper);
+            Brand = new BrandRepository(_context, _mapper);
+            Category = new CategoryRepository(_context, _mapper);
            Product = new ProductRepository(_context, _mapper);
            Offer = new OfferRepository(_context, _mapper);
            Mail = new MailRepository(_context, _mapper);

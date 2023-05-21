@@ -13,6 +13,28 @@ namespace UrunKatalogAPI.Infrastructere.Mapping
     {
         public AutoMapperProfile()
         {
+            // Color
+            CreateMap<ColorDto, Color>();
+            CreateMap<Color, ColorDto>();
+            CreateMap<CreateColorInput, Color>()
+                .ForMember(x => x.ModifiedBy, opt => opt.Ignore())
+                .ForMember(x => x.ModifiedById, opt => opt.Ignore())
+                .ForMember(x => x.CreatedDate, opt => opt.MapFrom(s => DateTime.UtcNow))
+                .ForMember(x => x.ModifiedDate, opt => opt.Ignore())
+                .ForMember(x => x.Id, opt => opt.Ignore());
+            CreateMap<Color, CreateColorInput>();
+
+            // Brand
+            CreateMap<BrandDto, Brand>();
+            CreateMap<Brand, BrandDto>();
+            CreateMap<CreateBrandInput, Brand>()
+                .ForMember(x => x.ModifiedBy, opt => opt.Ignore())
+                .ForMember(x => x.ModifiedById, opt => opt.Ignore())
+                .ForMember(x => x.CreatedDate, opt => opt.MapFrom(s => DateTime.UtcNow))
+                .ForMember(x => x.ModifiedDate, opt => opt.Ignore())
+                .ForMember(x => x.Id, opt => opt.Ignore());
+            CreateMap<Brand, CreateBrandInput>();
+
             // Category
             CreateMap<CategoryDto, Category>();
             CreateMap<Category, CategoryDto>();

@@ -91,9 +91,9 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.ProductRepository
                     Name = product.Name,
                     UserName = product.UserName,
                     CreatedDate = product.CreatedDate,
-                    Brand = product.Brand,
+                    BrandId = product.BrandId,
                     CategoryId = product.CategoryId,
-                    Color = product.Color,
+                    ColorId = product.ColorId,
                     Description = product.Description,
                     Image = product.Image,
                     IsOfferable = product.IsOfferable,
@@ -132,9 +132,9 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.ProductRepository
                     Name = product.Name,
                     UserName = product.UserName,
                     CreatedDate = product.CreatedDate,
-                    Brand = product.Brand,
+                    BrandId = product.BrandId,
                     CategoryId = product.CategoryId,
-                    Color = product.Color,
+                    ColorId = product.ColorId,
                     Description = product.Description,
                     Image = product.Image,
                     IsOfferable = product.IsOfferable,
@@ -178,9 +178,9 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.ProductRepository
 
                 getExistProduct.Id = input.Id;
                 getExistProduct.Name = input.Name;
-                getExistProduct.Brand = input.Brand;
+                getExistProduct.BrandId = input.BrandId;
                 getExistProduct.CategoryId = input.CategoryId;
-                getExistProduct.Color = input.Color;
+                getExistProduct.ColorId = input.ColorId;
                 getExistProduct.Description = input.Description;
                 getExistProduct.Image = input.Image;
                 getExistProduct.UserName = input.UserName;
@@ -207,9 +207,9 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.ProductRepository
                         ModifiedDate = getExistProduct.ModifiedDate,
                         Name = getExistProduct.Name,
                         CreatedDate = getExistProduct.CreatedDate,
-                        Brand = getExistProduct.Brand,
+                        BrandId = getExistProduct.BrandId,
                         CategoryId = getExistProduct.CategoryId,
-                        Color = getExistProduct.Color,
+                        ColorId = getExistProduct.ColorId,
                         Description = getExistProduct.Description,
                         Image = getExistProduct.Image,
                         UserName = getExistProduct.UserName,

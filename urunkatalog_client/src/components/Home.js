@@ -19,6 +19,7 @@ import { Loading } from "@nextui-org/react";
 import {useIsAuthenticated} from 'react-auth-kit';
 import Login from "./Login";
 import { useNavigate } from "react-router-dom";
+import FormatPrice from "./helper/FormatPrice";
 
 
 
@@ -99,7 +100,7 @@ function Home() {
                         : product.name}
                       </Typography>
                       <Typography color="blue-gray" className="font-medium">
-                        {product.price} TL
+                      {<FormatPrice price={ product.price }/>}
                       </Typography>
                     </div>
                     <Typography

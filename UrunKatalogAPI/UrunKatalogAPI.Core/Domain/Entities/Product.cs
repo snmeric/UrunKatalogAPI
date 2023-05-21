@@ -12,8 +12,13 @@ namespace UrunKatalogAPI.Core.Domain.Entities
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Color { get; set; }
-        public string Brand { get; set; }
+
+        [ForeignKey("ColorId")]
+        public virtual Color Color { get; set; }
+        public virtual int? ColorId { get; set; }
+        [ForeignKey("BrandId")]
+        public virtual Brand Brand { get; set; }
+        public virtual int? BrandId { get; set; }
         public string ProductCondition { get; set; }
         public string Image { get; set; }
         public int Price { get; set; }

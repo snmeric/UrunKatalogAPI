@@ -18,6 +18,8 @@ namespace UrunKatalogAPI.Infrastructere
         {
             base.OnModelCreating(builder);
         }
+        public DbSet<Color> Colors { get; set; }
+        public DbSet<Brand> Brandies { get; set; }
         public DbSet<Category> Categories { get; set; }
 
         public DbSet<Product> Products { get; set; }

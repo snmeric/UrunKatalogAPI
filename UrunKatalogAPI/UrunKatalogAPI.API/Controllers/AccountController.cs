@@ -86,8 +86,8 @@ namespace UrunKatalogAPI.API.Controllers
                     {
 
                         Id = product.Id,
-                        Brand = product.Brand,
-                        Color = product.Color,
+                        BrandId = product.BrandId,
+                        ColorId = product.ColorId,
                         CategoryId = product.CategoryId,
                         Description = product.Description,
                         UserName = product.UserName,             
@@ -109,8 +109,8 @@ namespace UrunKatalogAPI.API.Controllers
                     {
 
                         Id = product.Id,
-                        Brand = product.Brand,
-                        Color = product.Color,
+                        BrandId = product.BrandId,
+                        ColorId = product.ColorId,
                         CategoryId = product.CategoryId,
                         Description = product.Description,
                         UserName = product.UserName,             

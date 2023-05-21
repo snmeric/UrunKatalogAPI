@@ -55,9 +55,9 @@ namespace UrunKatalogAPI.API.Controllers
             string uniqueFileName = ImageFile(image); 
             var n = new CreateProductInput
             {
-                Brand = input.Brand,
+                BrandId = input.BrandId,
                 CategoryId = input.CategoryId,
-                Color = input.Color,
+                ColorId = input.ColorId,
                 Description = input.Description,
                 Image = uniqueFileName,
                 IsOfferable = true,                          
@@ -91,8 +91,8 @@ namespace UrunKatalogAPI.API.Controllers
                     new UpdateProductInput
                     {
                         Id = result.Result.Id,
-                        Brand = result.Result.Brand,
-                        Color = result.Result.Color,
+                        BrandId = result.Result.BrandId,
+                        ColorId = result.Result.ColorId,
                         CategoryId = result.Result.CategoryId,
                         Description = result.Result.Description,                   //yeni bir update inputu oluştur ve satıldı mı alanını true, 
                         UserName = result.Result.UserName,                          //teklif yapılabilir mi alanını false setle

@@ -15,7 +15,7 @@ import {
 } from "@nextui-org/react";
 import * as yup from "yup";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { Chip, Checkbox, Typography, Radio } from "@material-tailwind/react";
 import { Loading } from "@nextui-org/react";
@@ -23,29 +23,45 @@ import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Breadcrumbs } from "@material-tailwind/react";
 import ComplexNavbar from "./navbar/ComplexNavbar";
+import FormatPrice from "./helper/FormatPrice";
+import { fetchBrands, fetchCategories, fetchColors, fetchProduct } from "./service/api";
 
 const Product = () => {
   const { id } = useParams();
   const auth = useAuthUser();
   const prodId = parseInt(id);
   const [product, setProduct] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [colors, setColors] = useState([]);
   const [selproduct, setSelProduct] = useState([]);
   const [buyproduct, setBuyProduct] = useState([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [loading, setloading] = useState(false);
   let [isOpen, setIsOpen] = useState(false);
+  let [isBuyOpen, setBuyIsOpen] = useState(false);
+
 
   function closeModal() {
     setIsOpen(false);
+    navigate("/");
   }
 
   function openModal() {
     setIsOpen(true);
   }
+  function closeBuyModal() {
+    setBuyIsOpen(false);
+    navigate("/");
+  }
+  function openBuyModal() {
+    setBuyIsOpen(true);
+  }
   const { value, reset, bindings } = useInput("");
   const [error, setError] = useState("");
   const authHeader = useAuthHeader();
   const formData = new FormData();
+  const navigate=useNavigate();
 
   const config = {
     headers: {
@@ -53,33 +69,60 @@ const Product = () => {
       Authorization: `${authHeader()}`,
     },
   };
+// COLOR ENDPOINTI
+useEffect(() => {
+  const fetchData = async () => {
+    const colors = await fetchColors(config);
+    setColors(colors);
+  };
 
+  fetchData();
+}, []);
+
+// BRAND ENDPOINTI
+useEffect(() => {
+  const fetchData = async () => {
+    const brands = await fetchBrands(config);
+    setBrands(brands);
+  };
+
+  fetchData();
+}, []);
+
+// KATEGORİ ENDPOINTİ
+useEffect(() => {
+  const fetchData = async () => {
+    const categories = await fetchCategories(config);
+    setCategories(categories);
+  };
+
+  fetchData();
+}, []);
   /* ÜRÜN DETAY */
   useEffect(() => {
     const getProduct = async () => {
       setloading(true);
-
-      await axios
-        .get(`https://localhost:7104/api/Product`, config)
-        .then((response) => setProduct(response.data.result))
-        .catch((error) => console.log(error));
-
-      console.log("Responsee", product);
+  
+      const productData = await fetchProduct(config);
+      setProduct(productData);
+  
+      console.log('Response', productData);
+      setloading(false);
     };
-
+  
     getProduct();
-    setloading(false);
   }, []);
-
+  
   useEffect(() => {
     setloading(true);
-    async function fetchData() {
+  
+    const fetchData = async () => {
       if (product.length > 0) {
         const filteredProduct = product.find((p) => p.id === parseInt(id));
         setSelProduct(filteredProduct);
       }
-    }
-
+    };
+  
     fetchData();
     setloading(false);
   }, [product, id]);
@@ -123,28 +166,16 @@ const Product = () => {
 
   function handleBuyButtonClick() {
     axios
-      .put(`https://localhost:7104/api/Product/${id}`, config)
+      .get(`https://localhost:7104/api/Product/${id}`, config)
       .then((response) => {
+        toast("Satın Alma Başarılı.", { icon: "👌" });
+        openBuyModal();
         setBuyProduct(response.data.result);
         console.log("Responsee:", product);
       })
       .catch((error) => console.log(error));
   }
-  // useEffect(() => {
-  //   setloading(true);
-  //   const buyProduct = async () => {
-  //     await axios
-  //       .put(`https://localhost:7104/api/Product/${id}`, config)
-  //       .then((response) => {
-  //         setBuyProduct(response.data.result);
-  //       })
-  //       .catch((error) => console.log(error));
-
-  //     console.log("Responsee", product);
-  //   };
-  //   setloading(false);
-  //   buyProduct();
-  // });
+  
 
   const formik = useFormik({
     initialValues: {
@@ -226,7 +257,7 @@ const Product = () => {
           <h4 className="text-gray-700 mb-4">
             Açıklama: {selproduct.description}
           </h4>
-          <h4 className="text-gray-700 mb-4">Marka: {selproduct.brand}</h4>
+          <h4 className="text-gray-700 mb-4">Marka: {}</h4>
           <Tooltip
             content={
               !selproduct.isOfferable
@@ -265,9 +296,9 @@ const Product = () => {
          
           <h2 className="text-gray-900 mb-4">
             
-            {selproduct.price} TL</h2>
+           {<FormatPrice price={selproduct.price} />}</h2>
 
-          <Button disabled={!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false} ripple={true}>
+          <Button disabled={!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false} ripple={true} onClick={handleBuyButtonClick}>
             Satın Al
           </Button>
         </div>
@@ -384,6 +415,89 @@ const Product = () => {
               </Transition>
             ) : null}
             <br />
+            {isBuyOpen ? (
+              <Transition appear show={isBuyOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={closeModal}>
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                  </Transition.Child>
+
+                  <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                      <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0 scale-95"
+                        enterTo="opacity-100 scale-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100 scale-100"
+                        leaveTo="opacity-0 scale-95"
+                      >
+                        <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                          <Dialog.Title
+                            as="h3"
+                            className="text-xl font-medium leading-6 text-gray-900"
+                          >
+                            Satın Alım Başarılı
+                          </Dialog.Title>
+                          <div className="mt-2">
+                            <img
+                              className=" w-40 rounded-lg mx-auto p-3"
+                              src={
+                                "https://localhost:7104/resources/" +
+                                selproduct.image
+                              }
+                              alt="nature image"
+                            />
+                            <p className="text-md text-gray-700">
+                              Başarılı bir şekilde ürünü satın aldınız.
+                            </p>
+                            <br />
+                            <p className="text-lg text-gray-700">
+                              Ürün Adı: {selproduct.name}
+                            </p>
+                            <p className="text-lg text-gray-700">
+                              Alınan Fiyat:{" "}
+                              {!formik.values.isOfferPercentage
+                                ? formik.values.offeredPrice
+                                : (
+                                    selproduct.price -
+                                    (selproduct.price *
+                                      formik.values.offeredPrice) /
+                                      100
+                                  )
+                                    .toString()
+                                    .slice(0, 6)}{" "}
+                              TL
+                            </p>
+
+                            <br />
+                          </div>
+
+                          <div className="mt-4 text-right">
+                            <button
+                              type="button"
+                              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                              onClick={closeBuyModal}
+                            >
+                              Tamam
+                            </button>
+                          </div>
+                        </Dialog.Panel>
+                      </Transition.Child>
+                    </div>
+                  </div>
+                </Dialog>
+              </Transition>
+            ) : null}
             <div className="w-max gap-7 flex flex-col items-center">
               <Input
                 status={
