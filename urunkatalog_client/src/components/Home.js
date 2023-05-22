@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Typography,
+  Typography,Carousel,
   Chip,
   Avatar,
 } from "@material-tailwind/react";
@@ -20,6 +20,7 @@ import {useIsAuthenticated} from 'react-auth-kit';
 import Login from "./Login";
 import { useNavigate } from "react-router-dom";
 import FormatPrice from "./helper/FormatPrice";
+
 
 
 

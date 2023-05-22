@@ -179,7 +179,7 @@ function NavListMenu() {
               {...triggers}
               className="hidden items-center gap-2 text-blue-gray-900 lg:flex lg:rounded-full"
             >
-              <Square3Stack3DIcon className="h-[18px] w-[18px]" /> Pages{" "}
+              <Square3Stack3DIcon className="h-[18px] w-[18px]" /> Kategoriler{" "}
               <ChevronDownIcon
                 strokeWidth={2}
                 className={`h-3 w-3 transition-transform ${
@@ -220,10 +220,7 @@ const navListItems = [
     icon: CubeTransparentIcon,
     title:"/createProduct"
   },
-  {
-    label: "Docs",
-    icon: CodeBracketSquareIcon,
-  },
+ 
 ];
 
 function NavList() {

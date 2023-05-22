@@ -11,7 +11,7 @@ namespace UrunKatalogAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -23,65 +23,83 @@ namespace UrunKatalogAPI.API.Controllers
         }
 
 
-        [HttpGet("{Username}")] 
+        [HttpGet("{Username}")]
         public async Task<ActionResult<List<OfferDto>>> OffersThatIMade(string username)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var offercreatedby = _unitOfWork.Offer.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName); 
-            if (offercreatedby != null) 
+            var offercreatedby = _unitOfWork.Offer.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName);
+            if (offercreatedby != null)
             {
-                return Ok(offercreatedby); 
+                return Ok(offercreatedby);
             }
             return BadRequest("Verdiğiniz bir teklif bulunmamaktadır.");
         }
 
-        [HttpGet] 
+        [HttpGet]
         public async Task<ActionResult<List<OfferDto>>> OffersThatIReceive()
         {
-
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var product = _unitOfWork.Product.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName);
 
             if (product != null)
             {
-                List<int> list2 = new List<int>();
-                var sonuc = new List<OfferDto>();
-                product.ForEach(n => list2.Add(n.Id));
-                for (int i = 0; i < list2.Count(); i++)
-                {
-                    var offer = _unitOfWork.Offer.GetAll().Result.Result.Find(x => x.ProductId == list2[i]);
+                List<int> productIdList = new List<int>();
+                var result = new List<OfferDto>();
 
-                    // Teklif null değilse sonuç listesine ekle
-                    if (offer != null)
+                product.ForEach(p => productIdList.Add(p.Id));
+
+                foreach (var productId in productIdList)
+                {
+                    var offers = _unitOfWork.Offer.GetAll().Result.Result.FindAll(x => x.ProductId == productId);
+
+                    if (offers != null)
                     {
-                        sonuc.Add(offer);
+                        foreach (var offer in offers)
+                        {
+                            var offerDto = new OfferDto
+                            {
+                                Id = offer.Id,
+
+                                ProductId = offer.ProductId,
+                                OfferedPrice = offer.OfferedPrice,
+                                CreatedBy = offer.CreatedBy,
+                                CreatedById = offer.CreatedById,
+                                ModifiedBy = offer.ModifiedBy,
+                                ModifiedById = offer.ModifiedById,
+                                ModifiedDate = offer.ModifiedDate,
+                                CreatedDate = offer.CreatedDate,
+
+                            };
+
+                            result.Add(offerDto);
+                        }
                     }
                 }
 
-                // Sonuç listesi boş değilse, 200 kodu ile birlikte sonuçları dön
-                if (sonuc.Count > 0)
+                if (result.Count > 0)
                 {
-                    return Ok(sonuc);
+                    return Ok(result);
                 }
             }
 
-            // Ürünlere ait teklifler bulunamadıysa, BadRequest döndür
             return BadRequest("Teklif bulunmamaktadır.");
         }
 
-        [HttpPut("{id}")] 
+
+
+        [HttpPut("{id}")]
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AcceptTheOffer(int id)
         {
 
-            var user = await _userManager.GetUserAsync(HttpContext.User); 
+            var user = await _userManager.GetUserAsync(HttpContext.User);
             var teklif = await _unitOfWork.Offer.Get(id);
-            var kk = teklif.Result.ProductId;      
-            var product = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == kk); 
+            var kk = teklif.Result.ProductId;
+            var product = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == kk);
             if (product.UserName == user.UserName)
             {
-                if (teklif.Result.IsOfferPercentage is true) 
+                if (teklif.Result.IsOfferPercentage is true)
                 {
-                    int yuzdelik = teklif.Result.OfferedPrice; 
+                    int yuzdelik = teklif.Result.OfferedPrice;
                     var map = new UpdateProductInput
                     {
 
@@ -90,7 +108,7 @@ namespace UrunKatalogAPI.API.Controllers
                         ColorId = product.ColorId,
                         CategoryId = product.CategoryId,
                         Description = product.Description,
-                        UserName = product.UserName,             
+                        UserName = product.UserName,
                         IsOfferable = true,
                         IsSold = false,
                         Name = product.Name,
@@ -99,11 +117,12 @@ namespace UrunKatalogAPI.API.Controllers
                         ProductCondition = product.ProductCondition
                     };
 
-                    var result = await _unitOfWork.Product.Update(map, user); 
+                    var result = await _unitOfWork.Product.Update(map, user);
+                    await _unitOfWork.Offer.Delete(id); // Teklifi sil
 
                     return result;
                 }
-                else if (teklif.Result.IsOfferPercentage is false) 
+                else if (teklif.Result.IsOfferPercentage is false)
                 {
                     var map = new UpdateProductInput
                     {
@@ -113,7 +132,7 @@ namespace UrunKatalogAPI.API.Controllers
                         ColorId = product.ColorId,
                         CategoryId = product.CategoryId,
                         Description = product.Description,
-                        UserName = product.UserName,             
+                        UserName = product.UserName,
                         IsOfferable = true,
                         IsSold = false,
                         Name = product.Name,
@@ -122,7 +141,8 @@ namespace UrunKatalogAPI.API.Controllers
                         ProductCondition = product.ProductCondition
                     };
 
-                    var result = await _unitOfWork.Product.Update(map, user); 
+                    var result = await _unitOfWork.Product.Update(map, user);
+                    await _unitOfWork.Offer.Delete(id); // Teklifi sil
 
                     return result;
                 }

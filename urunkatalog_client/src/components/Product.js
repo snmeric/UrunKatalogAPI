@@ -24,7 +24,12 @@ import toast, { Toaster } from "react-hot-toast";
 import { Breadcrumbs } from "@material-tailwind/react";
 import ComplexNavbar from "./navbar/ComplexNavbar";
 import FormatPrice from "./helper/FormatPrice";
-import { fetchBrands, fetchCategories, fetchColors, fetchProduct } from "./service/api";
+import {
+  fetchBrands,
+  fetchCategories,
+  fetchColors,
+  fetchProduct,
+} from "./service/api";
 
 const Product = () => {
   const { id } = useParams();
@@ -40,7 +45,6 @@ const Product = () => {
   const [loading, setloading] = useState(false);
   let [isOpen, setIsOpen] = useState(false);
   let [isBuyOpen, setBuyIsOpen] = useState(false);
-
 
   function closeModal() {
     setIsOpen(false);
@@ -61,7 +65,7 @@ const Product = () => {
   const [error, setError] = useState("");
   const authHeader = useAuthHeader();
   const formData = new FormData();
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const config = {
     headers: {
@@ -69,67 +73,39 @@ const Product = () => {
       Authorization: `${authHeader()}`,
     },
   };
-// COLOR ENDPOINTI
-useEffect(() => {
-  const fetchData = async () => {
-    const colors = await fetchColors(config);
-    setColors(colors);
-  };
 
-  fetchData();
-}, []);
-
-// BRAND ENDPOINTI
-useEffect(() => {
-  const fetchData = async () => {
-    const brands = await fetchBrands(config);
-    setBrands(brands);
-  };
-
-  fetchData();
-}, []);
-
-// KATEGORİ ENDPOINTİ
-useEffect(() => {
-  const fetchData = async () => {
-    const categories = await fetchCategories(config);
-    setCategories(categories);
-  };
-
-  fetchData();
-}, []);
   /* ÜRÜN DETAY */
   useEffect(() => {
+    setloading(true);
     const getProduct = async () => {
-      setloading(true);
-  
+      
+
       const productData = await fetchProduct(config);
       setProduct(productData);
-  
-      console.log('Response', productData);
-      setloading(false);
+
+      console.log("Response", productData);
+     
     };
-  
+    setloading(false);
     getProduct();
   }, []);
-  
+
   useEffect(() => {
     setloading(true);
-  
+
     const fetchData = async () => {
       if (product.length > 0) {
         const filteredProduct = product.find((p) => p.id === parseInt(id));
         setSelProduct(filteredProduct);
       }
     };
-  
+
     fetchData();
     setloading(false);
   }, [product, id]);
-  console.log("Kim Tarafından: ",selproduct.createdBy);
 
-  console.log("Auth Adı:",auth().username);
-  console.log(`${!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false}`);
+
+
   /* TEKLİF GÖNDER */
   const onSubmit = async (values) => {
     setloading(true);
@@ -162,6 +138,70 @@ useEffect(() => {
     setloading(false);
   };
 
+  //MARKA
+  useEffect(() => {
+    setloading(true);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://localhost:7104/api/Brand/${selproduct.brandId}`,
+          config
+        );
+
+        setBrands(response.data.result.name);
+
+        setloading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    setloading(false);
+    fetchData();
+  }, [selproduct.brandId]);
+
+  //RENK
+  useEffect(() => {
+    setloading(true);
+    const fetchData = async () => {
+      try {
+       
+        const response = await axios.get(
+          `https://localhost:7104/api/Color/${selproduct.colorId}`,
+          config
+        );
+
+        setColors(response.data.result.name);
+
+        setloading(false);
+      } catch (error) {
+        console.error(error);
+        
+      }
+    };
+    setloading(false);
+    fetchData();
+  }, [selproduct.colorId]);
+  //KATEGORİ
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setloading(true);
+        const response = await axios.get(
+          `https://localhost:7104/api/Category/${selproduct.categoryId}`,
+          config
+        );
+
+        setCategories(response.data.result.name);
+
+        setloading(false);
+      } catch (error) {
+        console.error(error);
+        setloading(false);
+      }
+    };
+
+    fetchData();
+  }, [selproduct.categoryId]);
   /* SATIN AL */
 
   function handleBuyButtonClick() {
@@ -175,7 +215,6 @@ useEffect(() => {
       })
       .catch((error) => console.log(error));
   }
-  
 
   const formik = useFormik({
     initialValues: {
@@ -257,7 +296,9 @@ useEffect(() => {
           <h4 className="text-gray-700 mb-4">
             Açıklama: {selproduct.description}
           </h4>
-          <h4 className="text-gray-700 mb-4">Marka: {}</h4>
+          <h4 className="text-gray-700 mb-4 mt-4">Kategori: {categories}</h4>
+          <h4 className="text-gray-700 mb-4">Marka: {brands}</h4>
+
           <Tooltip
             content={
               !selproduct.isOfferable
@@ -290,15 +331,22 @@ useEffect(() => {
               Ürün {selproduct.isSold ? "Satıldı" : "Mevcut"}
             </Button>
           </Tooltip>
-          <h4 className="text-gray-700 mb-4 mt-4">
-            Renk: {selproduct.color === "none" ? "Renk Yok" : selproduct.color}
-          </h4>
-         
-          <h2 className="text-gray-900 mb-4">
-            
-           {<FormatPrice price={selproduct.price} />}</h2>
+          <h4 className="text-gray-700 mb-4 mt-4">Renk: {colors}</h4>
 
-          <Button disabled={!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false} ripple={true} onClick={handleBuyButtonClick}>
+          <h2 className="text-gray-900 mb-4">
+            {<FormatPrice price={selproduct.price} />}
+          </h2>
+
+          <Button
+            disabled={
+              !selproduct.isOfferable ||
+              selproduct.createdBy === auth().username
+                ? true
+                : false
+            }
+            ripple={true}
+            onClick={handleBuyButtonClick}
+          >
             Satın Al
           </Button>
         </div>
@@ -380,20 +428,26 @@ useEffect(() => {
                             <p className="text-lg text-gray-700">
                               Ürün Adı: {selproduct.name}
                             </p>
-                            <p className="text-lg text-gray-700">
+                            {/* <p className="text-lg text-gray-700">
                               Verilen Teklif:{" "}
-                              {!formik.values.isOfferPercentage
-                                ? formik.values.offeredPrice
-                                : (
-                                    selproduct.price -
-                                    (selproduct.price *
-                                      formik.values.offeredPrice) /
-                                      100
-                                  )
-                                    .toString()
-                                    .slice(0, 6)}{" "}
-                              TL
-                            </p>
+                              {
+                                <FormatPrice
+                                  price={
+                                    !formik.values.isOfferPercentage
+                                      ? formik.values.offeredPrice
+                                      : selproduct
+                                          .price(
+                                            selproduct.price -
+                                              (selproduct.price *
+                                                formik.values.offeredPrice) /
+                                                100
+                                          )
+                                          .toString()
+                                          .slice(0, 6)
+                                  }
+                                />
+                              }
+                            </p> */}
 
                             <br />
                           </div>
@@ -526,7 +580,16 @@ useEffect(() => {
                 trigger="hover"
                 color={selproduct.isOfferable ? "primary" : "error"}
               >
-                <Button type="submit" disabled={!selproduct.isOfferable||selproduct.createdBy===auth().username?true:false} ripple={true}>
+                <Button
+                  type="submit"
+                  disabled={
+                    !selproduct.isOfferable ||
+                    selproduct.createdBy === auth().username
+                      ? true
+                      : false
+                  }
+                  ripple={true}
+                >
                   Teklif Ver
                 </Button>
               </Tooltip>

@@ -23,6 +23,7 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import ComplexNavbar from "./navbar/ComplexNavbar";
 import { useAuthHeader } from "react-auth-kit";
+import FormatPrice from "./helper/FormatPrice";
 
 const TABLE_HEAD = ["ID", "Ürün", "Fiyat", "Tarih", "Teklif Eden", "Kaldır"];
 const TABLE_HEAD_OFFER = [
@@ -103,7 +104,6 @@ function Offer() {
   }, []);
 
   /* MY OFFER GELEN TEKLİFLER */
-
   useEffect(() => {
     setloading(true);
     axios
@@ -135,7 +135,6 @@ function Offer() {
   }, []);
 
   /* OFFER SİLME */
-
   const removeOffer = (offerId) => {
     setloading(true);
     axios
@@ -170,7 +169,7 @@ function Offer() {
       .put(`https://localhost:7104/api/Account/${offerId}`, data, config)
       .then((response) => {
         toast("Teklif Onaylandı.", { icon: "👍🏻" });
-        
+
         console.log("İstek başarılı:", response.data);
       })
       .catch((error) => {
@@ -229,96 +228,92 @@ function Offer() {
               </tr>
             </thead>
             <tbody>
-              {offerCurrentData.map((item, index) => {
-                const selectedProduct = product.find(
-                  (p) => p.id === item.productId
-                );
-                const isLast = index === item.length - 1;
-                const classes = isLast
+              {offerCurrentData.map((offeritem, offerindex) => {
+                const selectedProduct =
+                  product.find((p) => p.id === offeritem.productId) || {};
+                const isOfferLast = offerindex === offeritem.length - 1;
+                const classes = isOfferLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
 
                 return (
-                  <>
-                    <tr key={item.name}>
-                      <td className={classes}>
-                        <Typography
+                  <tr key={offeritem.name}>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {offeritem.id}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <Avatar
+                          src={
+                            selectedProduct.image
+                              ? "https://localhost:7104/resources/" +
+                                selectedProduct.image
+                              : ""
+                          }
+                          alt={offeritem.name}
+                          size="xl"
+                          className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
+                        />
+                        {/* <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-normal"
+                          className="font-bold"
                         >
-                          {item.id}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <Avatar
-                            src={
-                              selectedProduct && selectedProduct.image
-                                ? "https://localhost:7104/resources/" +
-                                  selectedProduct.image
-                                : ""
-                            }
-                            alt={item.name}
-                            size="xl"
-                            className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
-                          />
+                          {offeritem.name}
+                        </Typography> */}
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {<FormatPrice price={offeritem.offeredPrice}/>}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {moment(`${offeritem.modifiedDate}`).format(
+                          "DD/MM/YYYY HH:mm"
+                        )}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
                           <Typography
                             variant="small"
-                            color="blue-gray"
-                            className="font-bold"
+                            color="black"
+                            className="font-normal opacity-70"
                           >
-                            {item.name}
+                            {offeritem.modifiedBy}
                           </Typography>
                         </div>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <Tooltip content="Teklifi Onayla">
+                        <IconButton
+                          variant="text"
                           color="blue-gray"
-                          className="font-normal"
+                          onClick={() => offerAccept(offeritem.id)}
                         >
-                          {item.offeredPrice} TL
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {moment(`${item.modifiedDate}`).format(
-                            "DD/MM/YYYY HH:mm"
-                          )}
-                        </Typography>
-                      </td>
-
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="black"
-                              className="font-normal opacity-70"
-                            >
-                              {item.modifiedBy}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <Tooltip content="Teklifi Onayla">
-                          <IconButton
-                            variant="text"
-                            color="blue-gray"
-                            onClick={() => offerAccept(item.id)}
-                          >
-                            <HiCheck className="h-4 w-4" />
-                          </IconButton>
-                        </Tooltip>
-                      </td>
-                    </tr>
-                  </>
+                          <HiCheck className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>
@@ -433,13 +428,13 @@ function Offer() {
                             size="xl"
                             className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
                           />
-                          <Typography
+                          {/* <Typography
                             variant="small"
                             color="blue-gray"
                             className="font-bold"
                           >
                             {item.name}
-                          </Typography>
+                          </Typography> */}
                         </div>
                       </td>
                       <td className={classes}>
@@ -448,7 +443,7 @@ function Offer() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {item.offeredPrice} TL
+                       {<FormatPrice price={item.offeredPrice}/>}  
                         </Typography>
                       </td>
                       <td className={classes}>
