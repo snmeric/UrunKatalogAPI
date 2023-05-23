@@ -14,7 +14,7 @@ const FormatPrice=({price})=>{
     return Intl.NumberFormat("tr-TR",{
         style:"currency",
         currency:"TRY",
-        maximumFractionDigits:2,
+        maximumFractionDigits:0,
 
     }).format(price/100);
 };

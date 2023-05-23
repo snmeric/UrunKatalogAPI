@@ -36,7 +36,7 @@ namespace UrunKatalogAPI.API.Controllers
             {
                 if (input.IsOfferPercentage) // ürünün teklifi yüzdelik ise
                 {
-                    input.OfferedPrice = rr.Price - rr.Price * input.OfferedPrice / 100; // inputta girilen yüzdelik olarak alınır ve fiyat üzerinden hesaplanır
+                    input.OfferedPrice =  (rr.Price * input.OfferedPrice / 100); // inputta girilen yüzdelik olarak alınır ve fiyat üzerinden hesaplanır
                     var result = await _unitOfWork.Offer.Create(input, user); // teklif create edilir
                     if (result.Succeeded)
                     {

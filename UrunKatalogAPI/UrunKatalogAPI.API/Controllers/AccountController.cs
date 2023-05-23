@@ -90,68 +90,79 @@ namespace UrunKatalogAPI.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AcceptTheOffer(int id)
         {
-
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var teklif = await _unitOfWork.Offer.Get(id);
-            var kk = teklif.Result.ProductId;
-            var product = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == kk);
-            if (product.UserName == user.UserName)
+
+            if (teklif != null && teklif.Result != null)
             {
-                if (teklif.Result.IsOfferPercentage is true)
+                var kk = teklif.Result.ProductId;
+                var product = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == kk);
+
+                if (product != null && product.UserName == user.UserName)
                 {
-                    int yuzdelik = teklif.Result.OfferedPrice;
-                    var map = new UpdateProductInput
+                    if (teklif.Result.IsOfferPercentage == true)
                     {
+                        int yuzdelik = teklif.Result.OfferedPrice;
+                        var map = new UpdateProductInput
+                        {
+                            Id = product.Id,
+                            BrandId = product.BrandId,
+                            ColorId = product.ColorId,
+                            CategoryId = product.CategoryId,
+                            Description = product.Description,
+                            UserName = product.UserName,
+                            IsOfferable = false,
+                            IsSold = true, // Satışı kapat
+                            Name = product.Name,
+                            Image = product.Image,
+                            Price = (product.Price * (yuzdelik / 100)),
+                            ProductCondition = product.ProductCondition
+                        };
 
-                        Id = product.Id,
-                        BrandId = product.BrandId,
-                        ColorId = product.ColorId,
-                        CategoryId = product.CategoryId,
-                        Description = product.Description,
-                        UserName = product.UserName,
-                        IsOfferable = true,
-                        IsSold = false,
-                        Name = product.Name,
-                        Image = product.Image,
-                        Price = (product.Price * (yuzdelik / 100)),
-                        ProductCondition = product.ProductCondition
-                    };
+                        var result = await _unitOfWork.Product.Update(map, user);
+                        await CancelOtherOffers(teklif.Result.ProductId); // Diğer teklifleri iptal et
 
-                    var result = await _unitOfWork.Product.Update(map, user);
-                    await _unitOfWork.Offer.Delete(id); // Teklifi sil
-
-                    return result;
-                }
-                else if (teklif.Result.IsOfferPercentage is false)
-                {
-                    var map = new UpdateProductInput
+                        return result;
+                    }
+                    else if (teklif.Result.IsOfferPercentage== false)
                     {
+                        var map = new UpdateProductInput
+                        {
+                            Id = product.Id,
+                            BrandId = product.BrandId,
+                            ColorId = product.ColorId,
+                            CategoryId = product.CategoryId,
+                            Description = product.Description,
+                            UserName = product.UserName,
+                            IsOfferable = false,
+                            IsSold = true, // Satışı kapat
+                            Name = product.Name,
+                            Image = product.Image,
+                            Price = teklif.Result.OfferedPrice,
+                            ProductCondition = product.ProductCondition
+                        };
 
-                        Id = product.Id,
-                        BrandId = product.BrandId,
-                        ColorId = product.ColorId,
-                        CategoryId = product.CategoryId,
-                        Description = product.Description,
-                        UserName = product.UserName,
-                        IsOfferable = true,
-                        IsSold = false,
-                        Name = product.Name,
-                        Image = product.Image,
-                        Price = teklif.Result.OfferedPrice,
-                        ProductCondition = product.ProductCondition
-                    };
+                        var result = await _unitOfWork.Product.Update(map, user);
+                        await CancelOtherOffers(teklif.Result.ProductId); // Diğer teklifleri iptal et
 
-                    var result = await _unitOfWork.Product.Update(map, user);
-                    await _unitOfWork.Offer.Delete(id); // Teklifi sil
-
-                    return result;
+                        return result;
+                    }
                 }
-
             }
 
             return NotFound("Teklif kabul edilirken hata oluştu.");
         }
 
+        private async Task CancelOtherOffers(int productId)
+        {
+            var offers = await _unitOfWork.Offer.GetAll();
+            var offersToCancel = offers.Result.Where(x => x.ProductId == productId);
+
+            foreach (var offer in offersToCancel)
+            {
+                await _unitOfWork.Offer.Delete(offer.Id);
+            }
+        }
 
     }
 }

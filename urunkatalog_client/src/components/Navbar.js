@@ -32,6 +32,13 @@ import { useSignOut } from "react-auth-kit";
 // profile menu component
 
 function ProfileMenu() {
+  const navigate = useNavigate();
+  const signOut = useSignOut();
+  const logout = () => {
+    signOut();
+   // navigate("/login");
+  };
+
   const profileMenuItems = [
     {
       label: "Profilim",
@@ -61,13 +68,7 @@ function ProfileMenu() {
     },
   ];
 
-  const navigate = useNavigate();
-  const signOut = useSignOut();
-  const logout = () => {
-    signOut();
-    navigate("/login");
-  };
-
+ 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -216,7 +217,7 @@ const navListItems = [
     
   },
   {
-    label: "Ürün Oluştur",
+    label: "Ürün",
     icon: CubeTransparentIcon,
     title:"/createProduct"
   },

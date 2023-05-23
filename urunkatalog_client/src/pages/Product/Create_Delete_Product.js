@@ -1,15 +1,20 @@
 import React from "react";
-import { Listbox } from "@headlessui/react";
+
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useEffect, useState, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import MySelect from "react-select";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import IntlCurrencyInput from "react-intl-currency-input";
+import { Spacer } from "@nextui-org/react";
 import { Fragment } from "react";
+
 import {
   Card,
   Input,
+  CardBody,
+  CardFooter,
   Checkbox,
   Button,
   Select,
@@ -18,22 +23,34 @@ import {
   Textarea,
 } from "@material-tailwind/react";
 import { CloudArrowUpIcon, TrashIcon } from "@heroicons/react/24/outline";
-import ComplexNavbar from "./navbar/ComplexNavbar";
+import ComplexNavbar from "../../components/Navbar";
 import toast, { Toaster } from "react-hot-toast";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import GlassNavbar from "./navbar/GlassNavbar";
-import { currencyMask } from "./helper/FormatPrice";
-import { fetchBrands, fetchCategories, fetchColors } from "./service/api";
+import { fetchBrands, fetchCategories, fetchColors } from "../../components/service/api";
+import { useCreateDeleteProductHooks } from "../../hooks/hook";
 
 function CreateProduct() {
-  const [files, setFiles] = useState();
-  const [previews, setPreviews] = useState();
-  const [fileNames, setFileNames] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [colors, setColors] = useState([]);
-  let [isOpen, setIsOpen] = useState(false);
+  const {
+    loading,
+    setLoading,
+    files,
+    setFiles,
+    products,
+    setProducts,
+    previews,
+    setPreviews,
+    fileNames,
+    setFileNames,
+    categories,
+    setCategories,
+    brands,
+    setBrands,
+    colors,
+    setColors,
+    isOpen,
+    setIsOpen,
+  } = useCreateDeleteProductHooks();
   const navigate = useNavigate();
   function closeModal() {
     setIsOpen(false);
@@ -92,34 +109,87 @@ function CreateProduct() {
   };
 
   // COLOR ENDPOINTI
-useEffect(() => {
-  const fetchData = async () => {
-    const colors = await fetchColors(config);
-    setColors(colors);
+  useEffect(() => {
+    const fetchData = async () => {
+      const colors = await fetchColors(config);
+      setColors(colors);
+    };
+
+    fetchData();
+  }, []);
+
+  // BRAND ENDPOINTI
+  useEffect(() => {
+    const fetchData = async () => {
+      const brands = await fetchBrands(config);
+      setBrands(brands);
+    };
+
+    fetchData();
+  }, []);
+
+  // KATEGORİ ENDPOINTİ
+  useEffect(() => {
+    const fetchData = async () => {
+      const categories = await fetchCategories(config);
+      setCategories(categories);
+    };
+
+    fetchData();
+  }, []);
+
+  // ÜRÜNLERİ LİSTELE
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          "https://localhost:7104/api/Product",
+          config
+        );
+        setProducts(response.data.result);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [products]);
+
+  //Ürün Silme
+  const deleteonSubmit = async (values) => {
+    setLoading(true);
+    const data = {
+      id: values.id,
+    };
+console.log("VALUES IDD:",values.id)
+    try {
+      const response = await axios.delete(
+        `https://localhost:7104/api/Product/${values.id}`,
+
+        config
+      );
+      console.log(response.data);
+      toast("Ürün Silindi.", { icon: "👌" });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      const errorMessage = error.response.data;
+      toast.error(`${errorMessage}`);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  fetchData();
-}, []);
-
-// BRAND ENDPOINTI
-useEffect(() => {
-  const fetchData = async () => {
-    const brands = await fetchBrands(config);
-    setBrands(brands);
-  };
-
-  fetchData();
-}, []);
-
-// KATEGORİ ENDPOINTİ
-useEffect(() => {
-  const fetchData = async () => {
-    const categories = await fetchCategories(config);
-    setCategories(categories);
-  };
-
-  fetchData();
-}, []);
+  const deleteformik = useFormik({
+    initialValues: {
+      id: 0,
+    },
+    onSubmit: deleteonSubmit,
+  });
   // önizleme
   useEffect(() => {
     if (!files) return;
@@ -154,12 +224,7 @@ useEffect(() => {
       },
     },
   };
-  const handleChange = (event, value, maskedValue) => {
-    event.preventDefault();
-
-    console.log(value); // value without mask (ex: 1234.56)
-    console.log(maskedValue); // masked value (ex: R$1234,56)
-  };
+ 
   const handleFileUpload = () => {
     fileInputRef.current.click();
   };
@@ -172,10 +237,10 @@ useEffect(() => {
     updatedFileNames.splice(index, 1);
     setFileNames(updatedFileNames);
   };
-  const [loading, setloading] = useState(false);
+
 
   const onSubmit = async (values) => {
-    setloading(true);
+    setLoading(true);
     const data = {
       Name: values.Name,
       Description: values.Description,
@@ -188,7 +253,6 @@ useEffect(() => {
       IsSold: values.IsSold,
       CategoryId: parseInt(values.CategoryId),
     };
-
 
     console.log("Values: ", values);
 
@@ -215,10 +279,10 @@ useEffect(() => {
       toast.error(`${errorMessage}`);
       console.error(error);
     } finally {
-      setloading(false);
+      setLoading(false);
     }
 
-    setloading(false);
+    setLoading(false);
   };
   const MAX_FILE_SIZE = 400 * 1024; // 400 KB
 
@@ -465,7 +529,6 @@ useEffect(() => {
                 <div className="w-full px-4 py-1 rounded-lg border border-gray-400">
                   <IntlCurrencyInput
                     name="Price"
-                    
                     onChange={(event, value, maskedValue) => {
                       const formattedValue = maskedValue.replace(/[^\d]/g, "");
                       formik.setFieldValue("Price", formattedValue);
@@ -475,7 +538,6 @@ useEffect(() => {
                     error={formik.touched.Price && formik.errors.Price}
                     currency="TRY"
                     config={currencyConfig}
-                 
                     className="w-full text-lg font-bold"
                   />
                 </div>
@@ -562,6 +624,39 @@ useEffect(() => {
           </Button>
           <Toaster />
         </form>
+        <form onSubmit={deleteformik.handleSubmit}>
+        <Card className="mt-6 w-96 pb-5">
+          <CardBody className="flex flex-col items-center justify-center">
+            <Typography variant="h4" color="blue-gray">
+              Ürünü Sil
+            </Typography>
+        
+              <MySelect
+                name="id"
+                options={products.map((product) => ({
+                  value: product.id,
+                  label: product.name,
+                }))}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                  control: (base) => ({ ...base, width: "300px" }),
+                }}
+                onChange={(selectedOption) => {
+                  const { value, label } = selectedOption;
+                  console.log('Selected value:', value);
+                  console.log('Selected label:', label);
+                  deleteformik.setFieldValue("id", value);
+                }}
+           
+              />
+            
+          </CardBody>
+          <CardFooter className="pt-0 mx-auto">
+            <Button type="submit">Sil</Button>
+          </CardFooter>
+        </Card>
+        </form>
+        <Spacer y={7} />
       </div>
     </>
   );

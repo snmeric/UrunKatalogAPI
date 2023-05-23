@@ -77,8 +77,21 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
 
+        [HttpGet("{id}")] // ID'YE GÖRE ÇAĞIR
+        public async Task<ActionResult<ApplicationResult<ProductDto>>> GetProductById(int id)
+        {
+            var product = await _unitOfWork.Product.Get(id);
 
-        [HttpGet("{id}")] // SATIN ALMA
+            if (product == null)
+            {
+                return NotFound(); // Ürün bulunamadıysa 404 Not Found döndürülür.
+            }
+
+            return Ok(product); // Ürün bulunduysa 200 OK durumunda ürünün kendisi döndürülür.
+        }
+
+
+        [HttpGet("purchase/{id}")] // SATIN ALMA
         public async Task<ActionResult<ApplicationResult<ProductDto>>> Purchase(int id)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User); //kullanıcıyı al
@@ -128,6 +141,7 @@ namespace UrunKatalogAPI.API.Controllers
             }
             return BadRequest("Ürün Silinirken Hata Oluştu");
         }
+
 
         [HttpPut]
         public async Task<ActionResult> UpdateProductInput ([FromBody] UpdateProductInput updateProduct)

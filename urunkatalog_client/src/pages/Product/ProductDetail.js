@@ -13,6 +13,7 @@ import {
   Tooltip,
   Grid,
 } from "@nextui-org/react";
+import { Spacer } from "@nextui-org/react";
 import * as yup from "yup";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,29 +23,42 @@ import { Loading } from "@nextui-org/react";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Breadcrumbs } from "@material-tailwind/react";
-import ComplexNavbar from "./navbar/ComplexNavbar";
-import FormatPrice from "./helper/FormatPrice";
+import ComplexNavbar from "../../components/Navbar";
+import FormatPrice from "../../components/helper/FormatPrice";
 import {
   fetchBrands,
   fetchCategories,
   fetchColors,
   fetchProduct,
-} from "./service/api";
+} from "../../components/service/api";
+import { useProductHooks } from "../../hooks/hook";
 
 const Product = () => {
   const { id } = useParams();
   const auth = useAuthUser();
   const prodId = parseInt(id);
-  const [product, setProduct] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [colors, setColors] = useState([]);
-  const [selproduct, setSelProduct] = useState([]);
-  const [buyproduct, setBuyProduct] = useState([]);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [loading, setloading] = useState(false);
-  let [isOpen, setIsOpen] = useState(false);
-  let [isBuyOpen, setBuyIsOpen] = useState(false);
+  const {
+    product,
+    setProduct,
+    categories,
+    setCategories,
+    brands,
+    setBrands,
+    colors,
+    setColors,
+    selProduct,
+    setSelProduct,
+    buyproduct,
+    setBuyProduct,
+    isButtonDisabled,
+    setIsButtonDisabled,
+    loading,
+    setLoading,
+    isOpen,
+    setIsOpen,
+    isBuyOpen,
+    setBuyIsOpen,
+  } = useProductHooks();
 
   function closeModal() {
     setIsOpen(false);
@@ -63,6 +77,7 @@ const Product = () => {
   }
   const { value, reset, bindings } = useInput("");
   const [error, setError] = useState("");
+  const [productDetail, setProductDetail] = useState([]);
   const authHeader = useAuthHeader();
   const formData = new FormData();
   const navigate = useNavigate();
@@ -73,42 +88,63 @@ const Product = () => {
       Authorization: `${authHeader()}`,
     },
   };
-
   /* ÜRÜN DETAY */
   useEffect(() => {
-    setloading(true);
-    const getProduct = async () => {
-      
-
-      const productData = await fetchProduct(config);
-      setProduct(productData);
-
-      console.log("Response", productData);
-     
-    };
-    setloading(false);
-    getProduct();
-  }, []);
-
-  useEffect(() => {
-    setloading(true);
-
+   
+    setLoading(true);
+   
     const fetchData = async () => {
-      if (product.length > 0) {
-        const filteredProduct = product.find((p) => p.id === parseInt(id));
-        setSelProduct(filteredProduct);
+      try {
+        const response = await axios.get(
+          `https://localhost:7104/api/Product/${id}`,
+          {
+            headers: {
+              accept: "text/plain",
+              Authorization: `${authHeader()}`, // Kendi Authorization tokeninizi ekleyin
+            },
+          }
+        );
+        setProductDetail(response.data.result);
+        setLoading(false);
+       
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
       }
     };
 
     fetchData();
-    setloading(false);
-  }, [product, id]);
+  }, [id]);
 
+  // useEffect(() => {
+  //   setLoading(true);
+  //   const getProduct = async () => {
+  //     const productData = await fetchProduct(config);
+  //     setProduct(productData);
 
+  //     console.log("Response", productData);
+  //   };
+  //   setLoading(false);
+  //   getProduct();
+  // }, []);
+
+  // useEffect(() => {
+  //   setLoading(true);
+
+  //   const fetchData = async () => {
+  //     if (product.length > 0) {
+  //       const filteredProduct = product.find((p) => p.id === parseInt(id));
+  //       setSelProduct(filteredProduct);
+  //     }
+  //   };
+
+  //   fetchData();
+  //   setLoading(false);
+  // }, [product, id]);
 
   /* TEKLİF GÖNDER */
   const onSubmit = async (values) => {
-    setloading(true);
+    setLoading(true);
     const data = {
       productId: values.productId,
       isOfferPercentage: values.isOfferPercentage,
@@ -135,78 +171,76 @@ const Product = () => {
         toast.error(`${errorMessage}`);
         console.error(error);
       });
-    setloading(false);
+    setLoading(false);
   };
 
   //MARKA
   useEffect(() => {
-    setloading(true);
+    setLoading(true);
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://localhost:7104/api/Brand/${selproduct.brandId}`,
+          `https://localhost:7104/api/Brand/${productDetail.brandId}`,
           config
         );
 
         setBrands(response.data.result.name);
 
-        setloading(false);
+        setLoading(false);
       } catch (error) {
         console.error(error);
       }
     };
-    setloading(false);
+    setLoading(false);
     fetchData();
-  }, [selproduct.brandId]);
+  }, [productDetail.brandId]);
 
   //RENK
   useEffect(() => {
-    setloading(true);
+    setLoading(true);
     const fetchData = async () => {
       try {
-       
         const response = await axios.get(
-          `https://localhost:7104/api/Color/${selproduct.colorId}`,
+          `https://localhost:7104/api/Color/${productDetail.colorId}`,
           config
         );
 
         setColors(response.data.result.name);
 
-        setloading(false);
+        setLoading(false);
       } catch (error) {
         console.error(error);
-        
       }
     };
-    setloading(false);
+    setLoading(false);
     fetchData();
-  }, [selproduct.colorId]);
+  }, [productDetail.colorId]);
   //KATEGORİ
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setloading(true);
+        setLoading(true);
         const response = await axios.get(
-          `https://localhost:7104/api/Category/${selproduct.categoryId}`,
+          `https://localhost:7104/api/Category/${productDetail.categoryId}`,
           config
         );
 
         setCategories(response.data.result.name);
 
-        setloading(false);
+        setLoading(false);
       } catch (error) {
         console.error(error);
-        setloading(false);
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [selproduct.categoryId]);
+  }, [productDetail.categoryId]);
   /* SATIN AL */
 
   function handleBuyButtonClick() {
     axios
-      .get(`https://localhost:7104/api/Product/${id}`, config)
+      .get(`https://localhost:7104/api/Product/purchase/${id}`, config)
       .then((response) => {
         toast("Satın Alma Başarılı.", { icon: "👌" });
         openBuyModal();
@@ -244,7 +278,7 @@ const Product = () => {
       formik.values.isOfferPercentage
     );
     if (
-      selproduct.isOfferable &&
+      productDetail.isOfferable &&
       (isOffer || !formik.values.isOfferPercentage)
     ) {
       setIsButtonDisabled(false);
@@ -280,67 +314,68 @@ const Product = () => {
             </svg>
           </a>
 
-          <a href="#">{selproduct.name}</a>
+          <a href="#">{productDetail.name}</a>
         </Breadcrumbs>
       </div>
+     
       <div className="flex flex-row justify-center items-center p-8">
         <div className="max-w-xl mx-auto md:block w-1/2 p-5">
           <img
             className="h-full w-full rounded-lg shadow-md shadow-blue-gray-200"
-            src={"https://localhost:7104/resources/" + selproduct.image}
+            src={"https://localhost:7104/resources/" + productDetail.image}
             alt="nature image"
           />
         </div>
         <div className="max-w-xl gap-y-2 mx-auto flex flex-col items-center">
-          <h1 className="text-2xl font-bold mb-2">{selproduct.name}</h1>
+          <h1 className="text-2xl font-bold mb-2">{productDetail.name}</h1>
           <h4 className="text-gray-700 mb-4">
-            Açıklama: {selproduct.description}
+            Açıklama: {productDetail.description}
           </h4>
           <h4 className="text-gray-700 mb-4 mt-4">Kategori: {categories}</h4>
           <h4 className="text-gray-700 mb-4">Marka: {brands}</h4>
 
           <Tooltip
             content={
-              !selproduct.isOfferable
+              !productDetail.isOfferable
                 ? "Teklif Kapanmıştır."
                 : "Teklif Edilebilir."
             }
             trigger="hover"
-            color={selproduct.isOfferable ? "success" : "error"}
+            color={productDetail.isOfferable ? "success" : "error"}
           >
             <Button
               auto
               flat
-              color={selproduct.isOfferable ? "success" : "error"}
+              color={productDetail.isOfferable ? "success" : "error"}
             >
-              Teklif {selproduct.isOfferable ? "Açık" : "Kapalı"}
+              Teklif {productDetail.isOfferable ? "Açık" : "Kapalı"}
             </Button>
           </Tooltip>
           <Tooltip
             content={
-              !selproduct.isOfferable ? "Ürün Satılmıştır" : "Ürün Mevcuttur."
+              !productDetail.isOfferable ? "Ürün Satılmıştır" : "Ürün Mevcuttur."
             }
             trigger="hover"
-            color={selproduct.isOfferable ? "success" : "error"}
+            color={productDetail.isOfferable ? "success" : "error"}
           >
             <Button
               auto
               flat
-              color={selproduct.isOfferable ? "success" : "error"}
+              color={productDetail.isOfferable ? "success" : "error"}
             >
-              Ürün {selproduct.isSold ? "Satıldı" : "Mevcut"}
+              Ürün {productDetail.isSold ? "Satıldı" : "Mevcut"}
             </Button>
           </Tooltip>
           <h4 className="text-gray-700 mb-4 mt-4">Renk: {colors}</h4>
 
           <h2 className="text-gray-900 mb-4">
-            {<FormatPrice price={selproduct.price} />}
+            {<FormatPrice price={productDetail.price} />}
           </h2>
 
           <Button
             disabled={
-              !selproduct.isOfferable ||
-              selproduct.createdBy === auth().username
+              !productDetail.isOfferable ||
+              productDetail.createdBy === auth().username
                 ? true
                 : false
             }
@@ -417,7 +452,7 @@ const Product = () => {
                               className=" w-40 rounded-lg mx-auto p-3"
                               src={
                                 "https://localhost:7104/resources/" +
-                                selproduct.image
+                                productDetail.image
                               }
                               alt="nature image"
                             />
@@ -426,7 +461,7 @@ const Product = () => {
                             </p>
                             <br />
                             <p className="text-lg text-gray-700">
-                              Ürün Adı: {selproduct.name}
+                              Ürün Adı: {productDetail.name}
                             </p>
                             {/* <p className="text-lg text-gray-700">
                               Verilen Teklif:{" "}
@@ -435,10 +470,10 @@ const Product = () => {
                                   price={
                                     !formik.values.isOfferPercentage
                                       ? formik.values.offeredPrice
-                                      : selproduct
+                                      : productDetail
                                           .price(
-                                            selproduct.price -
-                                              (selproduct.price *
+                                            productDetail.price -
+                                              (productDetail.price *
                                                 formik.values.offeredPrice) /
                                                 100
                                           )
@@ -507,7 +542,7 @@ const Product = () => {
                               className=" w-40 rounded-lg mx-auto p-3"
                               src={
                                 "https://localhost:7104/resources/" +
-                                selproduct.image
+                                productDetail.image
                               }
                               alt="nature image"
                             />
@@ -516,15 +551,15 @@ const Product = () => {
                             </p>
                             <br />
                             <p className="text-lg text-gray-700">
-                              Ürün Adı: {selproduct.name}
+                              Ürün Adı: {productDetail.name}
                             </p>
                             <p className="text-lg text-gray-700">
                               Alınan Fiyat:{" "}
                               {!formik.values.isOfferPercentage
                                 ? formik.values.offeredPrice
                                 : (
-                                    selproduct.price -
-                                    (selproduct.price *
+                                    productDetail.price -
+                                    (productDetail.price *
                                       formik.values.offeredPrice) /
                                       100
                                   )
@@ -576,15 +611,15 @@ const Product = () => {
               />
 
               <Tooltip
-                content={!selproduct.isOfferable ? "Ürün Teklife Kapalı" : ""}
+                content={!productDetail.isOfferable ? "Ürün Teklife Kapalı" : ""}
                 trigger="hover"
-                color={selproduct.isOfferable ? "primary" : "error"}
+                color={productDetail.isOfferable ? "primary" : "error"}
               >
                 <Button
                   type="submit"
                   disabled={
-                    !selproduct.isOfferable ||
-                    selproduct.createdBy === auth().username
+                    !productDetail.isOfferable ||
+                    productDetail.createdBy === auth().username
                       ? true
                       : false
                   }
@@ -599,6 +634,7 @@ const Product = () => {
           <Toaster />
         </form>
       </div>
+      <Spacer y={5} />
     </div>
   );
 };

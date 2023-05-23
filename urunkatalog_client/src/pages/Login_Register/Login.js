@@ -15,7 +15,7 @@ import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import COVER_IMAGE from "../assets/loginbg.png";
+import COVER_IMAGE from "../../assets/loginbg.png";
 import toast, { Toaster } from "react-hot-toast";
 
 import {
@@ -65,9 +65,8 @@ function Login() {
       });
 
       toast("Giriş Başarılı", { icon: "👏" });
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      navigate("/");
+      
     } catch (err) {
       if (err && err instanceof AxiosError)
         setError(err.response?.data.message);

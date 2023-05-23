@@ -1,9 +1,9 @@
 import React from "react";
 import axios, { AxiosError } from "axios";
 import { useState, useEffect } from "react";
-import { MdDelete } from "react-icons/md";
+import { AiFillDelete} from "react-icons/ai";
 import moment from "moment";
-import { Loading } from "@nextui-org/react";
+import { Loading, Spacer } from "@nextui-org/react";
 import { HiCheck } from "react-icons/hi2";
 import { HiArchiveBox } from "react-icons/hi2";
 import { useAuthUser } from "react-auth-kit";
@@ -21,9 +21,10 @@ import {
   Input,
 } from "@material-tailwind/react";
 import toast, { Toaster } from "react-hot-toast";
-import ComplexNavbar from "./navbar/ComplexNavbar";
+import ComplexNavbar from "../../components/Navbar";
 import { useAuthHeader } from "react-auth-kit";
-import FormatPrice from "./helper/FormatPrice";
+import FormatPrice from "../../components/helper/FormatPrice";
+import { useOfferHooks } from "../../hooks/hook";
 
 const TABLE_HEAD = ["ID", "Ürün", "Fiyat", "Tarih", "Teklif Eden", "Kaldır"];
 const TABLE_HEAD_OFFER = [
@@ -36,11 +37,16 @@ const TABLE_HEAD_OFFER = [
 ];
 
 function Offer() {
-  const [selproduct, setSelProduct] = useState([]);
-  const [loading, setloading] = useState(false);
-  const [myOffer, setmyOffer] = useState([]);
-  const [product, setProduct] = useState([]);
-  const [offers, setoffers] = useState([]);
+  const {
+    loading,
+    setLoading,
+    myOffer,
+    setMyOffer,
+    product,
+    setProduct,
+    offers,
+    setOffers,
+  } = useOfferHooks();
   const authHeader = useAuthHeader();
   const config = {
     headers: {
@@ -92,37 +98,39 @@ function Offer() {
 
   /*OFFER */
   useEffect(() => {
-    setloading(true);
+    setLoading(true);
     axios
       .get("https://localhost:7104/api/Account", config)
       .then((response) => {
-        setoffers(response.data);
+        setOffers(response.data);
       })
       .catch((error) => console.log(error));
     console.log("Teklif Aldıklarım: ", offers);
-    setloading(false);
+    setLoading(false);
   }, []);
 
   /* MY OFFER GELEN TEKLİFLER */
   useEffect(() => {
-    setloading(true);
+    setLoading(true);
     axios
       .get(`https://localhost:7104/api/Account/myoffer`, config)
       .then((response) => {
-        setmyOffer(response.data);
+
+        setMyOffer(response.data);
+        
       })
       .catch((error) => {
         const errorMessage = error.response.data;
         toast.error(`${errorMessage}`);
         console.log(errorMessage);
       });
-    setloading(false);
+    setLoading(false);
   }, []);
 
   /* ÜRÜN DETAY */
   useEffect(() => {
     const getProduct = async () => {
-      setloading(true);
+      setLoading(true);
       await axios
         .get(`https://localhost:7104/api/Product`, config)
         .then((response) => setProduct(response.data.result))
@@ -130,13 +138,13 @@ function Offer() {
 
       console.log("Responsee", product);
     };
-    setloading(false);
+    setLoading(false);
     getProduct();
   }, []);
 
   /* OFFER SİLME */
   const removeOffer = (offerId) => {
-    setloading(true);
+    setLoading(true);
     axios
       .delete(`https://localhost:7104/Offer/${offerId}`, config)
       .then((response) => {
@@ -147,20 +155,20 @@ function Offer() {
         }, 1000);
 
         console.log(response.data);
-        setloading(true);
+        setLoading(true);
       })
       .catch((error) => {
         const errorMessage = error.response.data;
         toast.error(`Hata: ${errorMessage}`);
         console.error(error);
-        setloading(true);
+        setLoading(true);
       });
   };
 
   /* GELEN TEKLİFLERİ ONAYLAMA */
 
   const offerAccept = (offerId) => {
-    setloading(true);
+    setLoading(true);
     const data = {
       id: offerId,
     };
@@ -171,6 +179,9 @@ function Offer() {
         toast("Teklif Onaylandı.", { icon: "👍🏻" });
 
         console.log("İstek başarılı:", response.data);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       })
       .catch((error) => {
         const errorMessage = error.response.data;
@@ -190,9 +201,9 @@ function Offer() {
   }
   return (
     <div className="h-full gap-5 flex flex-col items-center justify-center ">
-      <ComplexNavbar />
-      <Typography variant="h2" color="blue-gray">
-        Hoşgeldiniz {auth().username}
+     <ComplexNavbar/>
+      <Typography variant="h3" color="blue-gray">
+        Hoşgeldin {auth().username}
       </Typography>
       <Card className="h-full w-2/3 ">
         <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -358,7 +369,7 @@ function Offer() {
           </Button>
         </CardFooter>
       </Card>
-
+          <Spacer y={3}/>      
       {/*TEKLİF ETTİKLERİM */}
       <Card className="h-full w-2/3 ">
         <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -473,12 +484,13 @@ function Offer() {
                       </td>
                       <td className={classes}>
                         <Tooltip content="Teklifi Kaldır">
+                          
                           <IconButton
                             variant="text"
                             color="blue-gray"
                             onClick={() => removeOffer(item.id)}
                           >
-                            <HiArchiveBox className="h-4 w-4" />
+                            <AiFillDelete className="h-4 w-4" />
                           </IconButton>
                         </Tooltip>
                       </td>
@@ -529,6 +541,7 @@ function Offer() {
           </Button>
         </CardFooter>
       </Card>
+      <Spacer y={10}/>
       <Toaster />
     </div>
   );

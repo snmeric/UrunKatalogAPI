@@ -4,8 +4,6 @@ import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useAuthHeader } from "react-auth-kit";
 import { Badge, Grid, Card, Spacer } from "@nextui-org/react";
-import { Option } from "@material-tailwind/react";
-import Select from "react-select";
 import {
   Table,
   Row,
@@ -16,24 +14,22 @@ import {
   Button,
   Text,
 } from "@nextui-org/react";
-import { StyledBadge } from "./table/StyledBadge";
-import { IconButton } from "./table/IconButton";
-import { EditIcon } from "./table/EditIcon";
-import { DeleteIcon } from "./table/DeleteIcon";
+import { StyledBadge } from "../../components/TableComponents/StyledBadge";
+import { IconButton } from "../../components/TableComponents/IconButton";
+import { EditIcon } from "../../components/TableComponents/EditIcon";
+import { DeleteIcon } from "../../components/TableComponents/DeleteIcon";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@material-tailwind/react";
-import ComplexNavbar from "./navbar/ComplexNavbar";
+import ComplexNavbar from "../../components/Navbar";
 
-function Category() {
-  const [categories, setCategories] = useState([]);
-  const [editCategory, seteditCategory] = useState(null);
-  const [deleteCategory, setdeleteCategory] = useState(null);
-
+function Color() {
+  const [colors, setColors] = useState([]);
+  const [editColor, seteditColor] = useState(null);
   const [loading, setloading] = useState(false);
   const [visible, setVisible] = React.useState(false);
-  const handler = (categoryId) => {
-    seteditCategory(categoryId);
+  const handler = (colorId) => {
+    seteditColor(colorId);
     setVisible(true);
   };
   const closeHandler = () => {
@@ -48,7 +44,7 @@ function Category() {
     },
   };
 
-  // KATEGORİ OLUŞTURMA
+  // RENK OLUŞTURMA
   const onSubmit = async (values) => {
     setloading(true);
 
@@ -58,13 +54,12 @@ function Category() {
 
     try {
       const response = await axios.post(
-        "https://localhost:7104/api/Category",
+        "https://localhost:7104/api/Color",
         data,
         config
       );
 
-      toast("Kategori Oluşturuldu.", { icon: "👌" });
-     
+      toast("Renk Oluşturuldu.", { icon: "👌" });
     } catch (error) {
       const errorMessage = error.response.data;
       toast.error(`${errorMessage}`);
@@ -74,23 +69,20 @@ function Category() {
     }
   };
 
-  // KATEGORİ ADI DEĞİŞTİRME
+  // RENK ADI DEĞİŞTİRME
   const putonSubmit = async (values) => {
     setloading(true);
     const data = {
       name: values.name,
-      id: editCategory,
+      id: editColor,
     };
 
     try {
-      const url = "https://localhost:7104/api/Category";
+      const url = "https://localhost:7104/api/Color";
 
       const response = await axios.put(url, data, config);
 
-      toast("Kategori adı değiştirildi.", { icon: "👌" });
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 2000);
+      toast("Renk adı değiştirildi.", { icon: "👌" });
     } catch (error) {
       const errorMessage = error.response.data;
       toast.error(`${errorMessage}`);
@@ -100,21 +92,18 @@ function Category() {
     }
   };
 
-  //KATEGORİ SİLME
-  const deleteonSubmit = async (deletecategoryID) => {
+  //RENK SİLME
+  const deleteonSubmit = async (deletecolorID) => {
     setloading(true);
 
     try {
       const response = await axios.delete(
-        `https://localhost:7104/api/Category/${deletecategoryID}`,
+        `https://localhost:7104/api/Color/${deletecolorID}`,
 
         config
       );
       console.log(response.data);
-      toast("Kategori Silindi.", { icon: "👌" });
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 2000);
+      toast("Renk Silindi.", { icon: "👌" });
     } catch (error) {
       const errorMessage = error.response.data;
       toast.error(`${errorMessage}`);
@@ -124,22 +113,22 @@ function Category() {
     }
   };
 
-  // TÜM KATEGORİLERİ LİSTELEME
+  // TÜM RENKLERİ LİSTELEME
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://localhost:7104/api/Category",
+          "https://localhost:7104/api/Color",
           config
         );
-        setCategories(response.data.result);
+        setColors(response.data.result);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [categories]);
+  }, [colors]);
 
   const formik = useFormik({
     initialValues: {
@@ -155,19 +144,19 @@ function Category() {
   });
 
   const columns = [
-    { name: "KATEGORİ", uid: "name" },
+    { name: "RENK", uid: "name" },
 
     { name: "ACTIONS", uid: "actions" },
   ];
-  const users = categories;
+  const users = colors;
 
-  const renderCell = (category, columnKey) => {
-    const cellValue = category[columnKey];
+  const renderCell = (color, columnKey) => {
+    const cellValue = color[columnKey];
     switch (columnKey) {
       case "name":
         return (
           <>
-            <StyledBadge>{category.name}</StyledBadge>
+            <StyledBadge>{color.name}</StyledBadge>
           </>
         );
 
@@ -176,7 +165,7 @@ function Category() {
           <Row justify="center" align="center">
             <Col css={{ d: "flex" }}>
               <Tooltip content="Düzenle">
-                <IconButton onClick={() => handler(category.id)}>
+                <IconButton onClick={() => handler(color.id)}>
                   <EditIcon size={20} fill="#979797" />
                 </IconButton>
               </Tooltip>
@@ -185,7 +174,7 @@ function Category() {
               <Tooltip
                 content="Sil"
                 color="error"
-                onClick={() => deleteonSubmit(category.id)}
+                onClick={() => deleteonSubmit(color.id)}
               >
                 <IconButton>
                   <DeleteIcon size={20} fill="#FF0080" />
@@ -200,20 +189,23 @@ function Category() {
   };
   return (
     <div className="h-screen gap-10 flex flex-col items-center mx-auto">
-      <ComplexNavbar />
+     {/* <ComplexNavbar /> */}
       <div className="flex flex-row gap-5">
         <form onSubmit={formik.handleSubmit} className="w-96 ">
-          <Card className="flex flex-col items-center shadow-sm " variant="bordered">
+          <Card
+            className="flex flex-col items-center shadow-sm "
+            variant="bordered"
+          >
             <Card.Body className="gap-4">
               <Text h1 size={20} weight="bold">
-                Kategori Oluştur
+                Marka Oluştur
               </Text>
               <Input
                 name="name"
                 onChange={formik.handleChange}
                 value={formik.values.name}
                 size="md"
-                label="Kategori Adı"
+                label="Marka Adı"
               />
               <Button type="submit" auto color="success" shadow>
                 Oluştur
@@ -253,7 +245,6 @@ function Category() {
           </Table.Body>
         </Table>
       </div>
-     
 
       <div>
         <Modal
@@ -265,7 +256,7 @@ function Category() {
         >
           <Modal.Header>
             <Text b size={18}>
-              Kategori Adını Değiştirin
+              Renk Adını Değiştirin
             </Text>
           </Modal.Header>
           <form onSubmit={putformik.handleSubmit}>
@@ -276,13 +267,13 @@ function Category() {
                 onChange={putformik.handleChange}
                 value={putformik.values.name}
                 size="md"
-                label="Kategori Adı"
+                label="Marka Adı"
               />
               {/* <Select
                 name="id"
-                options={categories.map((category) => ({
-                  value: category,
-                  label: category.name,
+                options={colors.map((color) => ({
+                  value: color,
+                  label: color.name,
                 }))}
                 onChange={(value) => putformik.setFieldValue("id", value)}
                 styles={{
@@ -298,9 +289,9 @@ function Category() {
               label="Kategori"
               className="flex items-center gap-2"
             >
-              {categories.map((category) => (
-                <Option value={`${category.id}`}>
-                  {category.name}
+              {colors.map((color) => (
+                <Option value={`${color.id}`}>
+                  {color.name}
                 </Option>
               ))}
             </Select> */}
@@ -322,4 +313,4 @@ function Category() {
   );
 }
 
-export default Category;
+export default Color;

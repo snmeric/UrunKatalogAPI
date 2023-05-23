@@ -1,20 +1,26 @@
 import "./App.css";
-import Login from "./components/Login";
-import Home from "./components/Home";
+import Login from "./pages/Login_Register/Login";
+import Home from "./pages/Home/Home";
 import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "react-auth-kit";
-import Product from "./components/Product";
+import Product from "./pages/Product/ProductDetail";
 import { useNavigate } from "react-router-dom";
 import { useIsAuthenticated } from "react-auth-kit";
-import Offer from "./components/Offer";
-import CreateProduct from "./components/CreateProduct";
-import Category from "./components/Category";
+import Offer from "./pages/Offer/Offer";
+import CreateProduct from "./pages/Product/Create_Delete_Product";
+import Category from "./pages/Category_Brand_Color/Category_Brand_Color";
+import ComplexNavbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 
 function App() {
- 
+  const isAuthenticated = useIsAuthenticated();
+  
+  if (isAuthenticated()) {
   return (
-    <Routes>
+    <div className="App">
+      
+      <Routes>
       <Route path="/login" element={<Login />} />
       <Route
         path="/"
@@ -29,7 +35,12 @@ function App() {
       <Route path="/category" element={<Category />} />
       <Route path="/product/:id" element={<Product />} />
     </Routes>
+    <Footer />
+    </div>
   );
+}else {
+  return <Login />;
 }
+};
 
 export default App;
