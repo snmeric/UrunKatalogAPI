@@ -21,7 +21,7 @@ import { DeleteIcon } from "../../components/TableComponents/DeleteIcon";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@material-tailwind/react";
-import ComplexNavbar from "../../components/Navbar";
+
 
 function Brand() {
   const [brandies, setBrandies] = useState([]);
@@ -188,32 +188,30 @@ function Brand() {
     }
   };
   return (
-    <div className="h-screen gap-10 flex flex-col items-center mx-auto">
-      {/* <ComplexNavbar /> */}
-      
-        <form onSubmit={formik.handleSubmit} className="w-96 ">
-          <Card
-            className="flex flex-col items-center shadow-sm "
-            variant="bordered"
-          >
-            <Card.Body className="gap-4">
-              <Text h1 size={20} weight="bold">
-                Marka Oluştur
-              </Text>
-              <Input
-                name="name"
-                onChange={formik.handleChange}
-                value={formik.values.name}
-                size="md"
-                label="Marka Adı"
-              />
-              <Button type="submit" auto color="success" shadow>
-                Oluştur
-              </Button>
-            </Card.Body>
-          </Card>
-        </form>
-      
+    <div className="flex flex-col gap-5">
+      <form onSubmit={formik.handleSubmit} className="w-96 ">
+        <Card
+          className="flex flex-col items-center shadow-sm "
+          variant="bordered"
+        >
+          <Card.Body className="gap-4">
+            <Text h1 size={20} weight="bold">
+              Marka Oluştur
+            </Text>
+            <Input
+              name="name"
+              onChange={formik.handleChange}
+              value={formik.values.name}
+              size="md"
+              label="Marka Adı"
+            />
+            <Button type="submit" auto color="success" shadow>
+              Oluştur
+            </Button>
+          </Card.Body>
+        </Card>
+      </form>
+
       <div className="w-96">
         <Table
           aria-label="Example table with custom cells"

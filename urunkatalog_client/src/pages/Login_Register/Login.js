@@ -54,6 +54,7 @@ function Login() {
         data,
         config
       );
+      toast("Giriş Başarılı", { icon: "👏" });
       console.log(response);
       const token = await response.data.token.accessToken;
       const username = await response.data.userName;
@@ -64,7 +65,7 @@ function Login() {
         authState: { email: values.email,username:username},
       });
 
-      toast("Giriş Başarılı", { icon: "👏" });
+      
       navigate("/");
       
     } catch (err) {

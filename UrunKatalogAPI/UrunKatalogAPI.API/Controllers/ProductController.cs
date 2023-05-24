@@ -48,6 +48,20 @@ namespace UrunKatalogAPI.API.Controllers
             return _unitOfWork.Product.GetAll();
         }
 
+        [HttpGet("category/{categoryId}")]
+        public async Task<IActionResult> GetProductsByCategory(int categoryId)
+        {
+            var products = await _unitOfWork.Product.GetAll();
+            var matchingProducts = products.Result.Where(p => p.CategoryId == categoryId).ToList();
+
+            if (matchingProducts.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(matchingProducts);
+        }
+
         [HttpPost] // ÜRÜN EKLEME ENDPOINT'İ
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AddProduct([FromForm] ProductImage image, [FromQuery] CreateProductInput input)
         {
@@ -90,7 +104,7 @@ namespace UrunKatalogAPI.API.Controllers
             return Ok(product); // Ürün bulunduysa 200 OK durumunda ürünün kendisi döndürülür.
         }
 
-
+     
         [HttpGet("purchase/{id}")] // SATIN ALMA
         public async Task<ActionResult<ApplicationResult<ProductDto>>> Purchase(int id)
         {
@@ -130,19 +144,6 @@ namespace UrunKatalogAPI.API.Controllers
             return NotFound(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<ApplicationResult<ProductDto>>> DeleteProduct(int id) {
-       
-            
-            var result = await _unitOfWork.Product.Delete(id);
-            if (result.Succeeded)
-            {  
-                    return Ok("Ürün Silindi");
-            }
-            return BadRequest("Ürün Silinirken Hata Oluştu");
-        }
-
-
         [HttpPut]
         public async Task<ActionResult> UpdateProductInput ([FromBody] UpdateProductInput updateProduct)
         {
@@ -155,7 +156,35 @@ namespace UrunKatalogAPI.API.Controllers
             }
             return BadRequest("Ürün Güncellenirken Hata Oluştu.");
         }
-    
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ApplicationResult<ProductDto>>> DeleteProduct(int id)
+        {
+            var product = await _unitOfWork.Product.Get(id); // ID'ye göre ürünü al
+
+            if (product == null)
+            {
+                return BadRequest("Böyle bir ürün bulunamadı.");
+            }
+
+            var username = _userManager.GetUserName(HttpContext.User); // Kullanıcının username'ini al
+
+            if (product.Result.CreatedBy == username) // Ürün kullanıcının username'i ile oluşturulduysa
+            {
+                var result = await _unitOfWork.Product.Delete(id); // Ürünü sil
+                if (result.Succeeded)
+                {
+                    return Ok("Ürün silindi.");
+                }
+            }
+            else
+            {
+                return BadRequest("Size ait olmayan ürünü silemezsiniz!");
+            }
+
+            return BadRequest("Ürün silinirken bir hata oluştu.");
+        }
+
 
     }
 }

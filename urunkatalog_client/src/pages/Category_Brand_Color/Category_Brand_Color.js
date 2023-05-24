@@ -21,7 +21,7 @@ import { DeleteIcon } from "../../components/TableComponents/DeleteIcon";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@material-tailwind/react";
-import ComplexNavbar from "../../components/Navbar";
+
 import Brand from "./Brand";
 import Color from "./Color";
 
@@ -190,14 +190,13 @@ function Category() {
     }
   };
   return (
-    <div className="h-screen w-full flex flex-col items-center">
-      <ComplexNavbar />
+  
+    <div> 
 
       <Grid.Container gap={10} justify="center">
-        <Grid xs={12}
-                  sm={12}
-                  lg={3} >
-          <div className="h-screen gap-10 flex flex-col items-center mx-auto">
+         
+        <Grid xs={12} sm={12} lg={3}>
+          <div className="flex flex-col gap-5">
             <form onSubmit={formik.handleSubmit} className="w-96 ">
               <Card
                 className="flex flex-col items-center shadow-sm "
@@ -277,7 +276,7 @@ function Category() {
                     />
                     {/* <Select
                 name="id"
-                options={categories.map((category) => ({
+           options={categories.map((category) => ({
                   value: category,
                   label: category.name,
                 }))}
@@ -314,21 +313,16 @@ function Category() {
               </Modal>
             </div>
           </div>
+          <Toaster />
         </Grid>
-        <Grid xs={12}
-                  sm={12}
-                  lg={3}>
+        <Grid xs={12} sm={12} lg={3}>
           <Brand />
         </Grid>
-        <Grid xs={12}
-                  sm={12}
-                  lg={3}>
+        <Grid xs={12} sm={12} lg={3}>
           <Color />
         </Grid>
       </Grid.Container>
-
-      <Toaster />
-    </div>
+      </div>
   );
 }
 

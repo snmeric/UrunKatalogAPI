@@ -28,6 +28,7 @@ namespace UrunKatalogAPI.API.Controllers
         {
             return _unitOfWork.Category.GetAll();
         }
+   
 
         [HttpGet("{id}")] 
         public async Task<ActionResult<ApplicationResult<CategoryDto>>> GetCategoryById(int id)

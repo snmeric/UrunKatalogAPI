@@ -27,17 +27,22 @@ import {
   Bars2Icon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { useSignOut } from "react-auth-kit";
+import { useAuthHeader, useSignOut } from "react-auth-kit";
+import { useEffect } from "react";
+import { useState } from "react";
+import axios from "axios";
 
 // profile menu component
 
 function ProfileMenu() {
   const navigate = useNavigate();
   const signOut = useSignOut();
+ 
   const logout = () => {
     signOut();
    // navigate("/login");
   };
+
 
   const profileMenuItems = [
     {
@@ -71,6 +76,7 @@ function ProfileMenu() {
  
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const closeMenu = () => setIsMenuOpen(false);
+
 
   return (
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
@@ -132,6 +138,7 @@ function ProfileMenu() {
   );
 }
 
+
 // nav list menu
 const navListMenuItems = [
   {
@@ -150,64 +157,88 @@ const navListMenuItems = [
   },
 ];
 
-function NavListMenu() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+// function NavListMenu() {
+//   const [categories, setCategories] = useState([]);
+//   const authHeader = useAuthHeader();
+//   const config = {
+//     headers: {
+//       Accept: "text/plain",
+//       "Content-Type": "application/json",
+//       Authorization: `${authHeader()}`,
+//     },
+//   };
+//    // TÜM KATEGORİLERİ LİSTELEME
+//    useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await axios.get(
+//           "https://localhost:7104/api/Category",
+//           config
+//         );
+//         setCategories(response.data.result);
+//         console.log("ASDADA",response.data.result)
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     };
+  
+//     fetchData();
+//   }, [categories]);
+//   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  const triggers = {
-    onMouseEnter: () => setIsMenuOpen(true),
-    onMouseLeave: () => setIsMenuOpen(false),
-  };
+//   const triggers = {
+//     onMouseEnter: () => setIsMenuOpen(true),
+//     onMouseLeave: () => setIsMenuOpen(false),
+//   };
 
-  const renderItems = navListMenuItems.map(({ title, description }) => (
-    <a href="#" key={title}>
-      <MenuItem>
-        <Typography variant="h6" color="blue-gray" className="mb-1">
-          {title}
-        </Typography>
-        <Typography variant="small" color="gray" className="font-normal">
-          {description}
-        </Typography>
-      </MenuItem>
-    </a>
-  ));
+//   const renderItems = categories.map(({category}) => (
+//     <a href="#" key={category.id}>
+//       <MenuItem>
+//         <Typography variant="h6" color="blue-gray" className="mb-1">
+//           {category.name}
+//         </Typography>
+      
+//       </MenuItem>
+//     </a>
+//   ));
 
-  return (
-    <React.Fragment>
-      <Menu open={isMenuOpen} handler={setIsMenuOpen}>
-        <MenuHandler>
-          <Typography as="a" href="#" variant="small" className="font-normal">
-            <MenuItem
-              {...triggers}
-              className="hidden items-center gap-2 text-blue-gray-900 lg:flex lg:rounded-full"
-            >
-              <Square3Stack3DIcon className="h-[18px] w-[18px]" /> Kategoriler{" "}
-              <ChevronDownIcon
-                strokeWidth={2}
-                className={`h-3 w-3 transition-transform ${
-                  isMenuOpen ? "rotate-180" : ""
-                }`}
-              />
-            </MenuItem>
-          </Typography>
-        </MenuHandler>
-        <MenuList
-          {...triggers}
-          className="hidden w-[30rem] grid-cols-4 gap-3 overflow-visible lg:grid"
-        >
-          <ul className="col-span-4 flex w-full flex-col gap-1 pr-10">
-            {renderItems}
-          </ul>
-        </MenuList>
-      </Menu>
-      <MenuItem className="flex items-center gap-2 text-blue-gray-900 lg:hidden">
-        <Square3Stack3DIcon className="h-[18px] w-[18px]" /> Pages{" "}
-      </MenuItem>
-      <ul className="ml-2 flex w-full flex-col gap-1 lg:hidden">
-        {renderItems}
-      </ul>
-    </React.Fragment>
-  );
-}
+//   return (
+//     <React.Fragment>
+//       <Menu open={isMenuOpen} handler={setIsMenuOpen}>
+//         <MenuHandler>
+//           <Typography as="a" href="#" variant="small" className="font-normal">
+//             <MenuItem
+//               {...triggers}
+//               className="hidden items-center gap-2 text-blue-gray-900 lg:flex lg:rounded-full"
+//             >
+//               <Square3Stack3DIcon className="h-[18px] w-[18px]" /> Kategoriler{" "}
+//               <ChevronDownIcon
+//                 strokeWidth={2}
+//                 className={`h-3 w-3 transition-transform ${
+//                   isMenuOpen ? "rotate-180" : ""
+//                 }`}
+//               />
+//             </MenuItem>
+//           </Typography>
+//         </MenuHandler>
+//         <MenuList
+//           {...triggers}
+//           className="hidden w-[30rem] grid-cols-4 gap-3 overflow-visible lg:grid"
+//         >
+//           <ul className="col-span-4 flex w-full flex-col gap-1 pr-10">
+//             {renderItems}
+//           </ul>
+//         </MenuList>
+//       </Menu>
+//       <MenuItem className="flex items-center gap-2 text-blue-gray-900 lg:hidden">
+//         <Square3Stack3DIcon className="h-[18px] w-[18px]" /> Pages{" "}
+//       </MenuItem>
+//       <ul className="ml-2 flex w-full flex-col gap-1 lg:hidden">
+//         {renderItems}
+//       </ul>
+//     </React.Fragment>
+//   );
+// }
 
 // nav list component
 const navListItems = [
@@ -225,9 +256,10 @@ const navListItems = [
 ];
 
 function NavList() {
+  
   return (
     <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-      <NavListMenu />
+      {/* <NavListMenu /> */}
       {navListItems.map(({ label, icon, title }, key) => (
         <Typography
           key={label}
@@ -262,9 +294,10 @@ export default function ComplexNavbar() {
     <Navbar className="mt-8 mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6">
       <div className="relative mx-auto flex items-center text-blue-gray-900">
         <Typography
+      
           as="a"
           href="/"
-          className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
+          className="mr-4 ml-2 cursor-pointer py-1.5 font-bold"
         >
           Ürün Katalog Projem
         </Typography>

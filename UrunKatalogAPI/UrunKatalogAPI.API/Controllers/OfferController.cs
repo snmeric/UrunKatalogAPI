@@ -57,7 +57,7 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
 
-        [HttpDelete("{id}")] // Teklifi Geri Alma
+        [HttpDelete("{id}")] // Teklifi Sil
         public async Task<ActionResult<ApplicationResult<OfferDto>>> CancelOffer(int id)
         {
             var omu = await _unitOfWork.Offer.Get(id); //girilen id'yle teklif tablosunda eşleşen teklifi bul 

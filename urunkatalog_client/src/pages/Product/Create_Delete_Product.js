@@ -23,7 +23,7 @@ import {
   Textarea,
 } from "@material-tailwind/react";
 import { CloudArrowUpIcon, TrashIcon } from "@heroicons/react/24/outline";
-import ComplexNavbar from "../../components/Navbar";
+
 import toast, { Toaster } from "react-hot-toast";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
@@ -306,7 +306,7 @@ console.log("VALUES IDD:",values.id)
 
   return (
     <>
-      <ComplexNavbar />
+      
       <div className="flex min-h-screen flex-col py-5 items-center">
         <Typography variant="h4" color="blue-gray">
           Ürün Oluştur
@@ -632,7 +632,9 @@ console.log("VALUES IDD:",values.id)
             </Typography>
         
               <MySelect
+              
                 name="id"
+               
                 options={products.map((product) => ({
                   value: product.id,
                   label: product.name,
@@ -640,6 +642,7 @@ console.log("VALUES IDD:",values.id)
                 styles={{
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                   control: (base) => ({ ...base, width: "300px" }),
+                  
                 }}
                 onChange={(selectedOption) => {
                   const { value, label } = selectedOption;
@@ -647,7 +650,7 @@ console.log("VALUES IDD:",values.id)
                   console.log('Selected label:', label);
                   deleteformik.setFieldValue("id", value);
                 }}
-           
+                placeholder="Silinecek Ürünü Seçin"
               />
             
           </CardBody>

@@ -21,7 +21,7 @@ import { DeleteIcon } from "../../components/TableComponents/DeleteIcon";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@material-tailwind/react";
-import ComplexNavbar from "../../components/Navbar";
+
 
 function Color() {
   const [colors, setColors] = useState([]);
@@ -188,8 +188,8 @@ function Color() {
     }
   };
   return (
-    <div className="h-screen gap-10 flex flex-col items-center mx-auto">
-     {/* <ComplexNavbar /> */}
+    <div className="flex flex-col gap-5">
+ 
       <div className="flex flex-row gap-5">
         <form onSubmit={formik.handleSubmit} className="w-96 ">
           <Card
@@ -198,14 +198,14 @@ function Color() {
           >
             <Card.Body className="gap-4">
               <Text h1 size={20} weight="bold">
-                Marka Oluştur
+                Renk Oluştur
               </Text>
               <Input
                 name="name"
                 onChange={formik.handleChange}
                 value={formik.values.name}
                 size="md"
-                label="Marka Adı"
+                label="Renk Adı"
               />
               <Button type="submit" auto color="success" shadow>
                 Oluştur
@@ -267,7 +267,7 @@ function Color() {
                 onChange={putformik.handleChange}
                 value={putformik.values.name}
                 size="md"
-                label="Marka Adı"
+                label="Renk Adı"
               />
               {/* <Select
                 name="id"

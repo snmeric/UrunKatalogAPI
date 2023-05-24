@@ -87,7 +87,7 @@ namespace UrunKatalogAPI.API.Controllers
 
 
 
-        [HttpPut("{id}")]
+        [HttpPut("OfferAccept/{id}")]
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AcceptTheOffer(int id)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -151,6 +151,27 @@ namespace UrunKatalogAPI.API.Controllers
             }
 
             return NotFound("Teklif kabul edilirken hata oluştu.");
+        }
+        [HttpPut("OfferReject/{id}")]
+        public async Task<ActionResult> RejectTheOffer(int id)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var teklif = await _unitOfWork.Offer.Get(id);
+
+            if (teklif != null && teklif.Result != null)
+            {
+                var kk = teklif.Result.ProductId;
+                var product = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == kk);
+
+                if (product != null && product.UserName == user.UserName)
+                {
+                    await _unitOfWork.Offer.Delete(id);
+
+                    return Ok("Teklif reddedildi.");
+                }
+            }
+
+            return NotFound("Teklif reddedilirken hata oluştu.");
         }
 
         private async Task CancelOtherOffers(int productId)

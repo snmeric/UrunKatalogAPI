@@ -196,9 +196,9 @@ namespace UrunKatalogAPI.API.Controllers
                     var user = await _userManager.FindByEmailAsync(model.Email); 
                     await _userManager.AccessFailedAsync(user);
                     var failedCount = _userManager.GetAccessFailedCountAsync(user);
-                    if (failedCount.Result.Equals(3)) // eğer 3 kez failed count yaptıysa
+                    if (failedCount.Result.Equals(5)) // 5 hata
                     {
-                        BackgroundJob.Enqueue(() => sendEmailJob.DoLogInJob(model.Email)); // mail gönderme background servisini çalıştır
+                        BackgroundJob.Enqueue(() => sendEmailJob.DoLogInJob(model.Email)); 
 
                         CreateMailInput input = new()
                         {
@@ -208,9 +208,9 @@ namespace UrunKatalogAPI.API.Controllers
                             Status = "Sent"
 
                         };
-                        await _userManager.DeleteAsync(user); // 3 kez fail olduğu için blokeledik
-                        await _unitOfWork.Mail.Create(input, user); //Statüsü "mail gönderildi" olan yeni bir mail kaydı ekle database'e
-                        var failJob = Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedCount(); // hangfiredaki failed olan jobları count et değişkene at
+                        await _userManager.DeleteAsync(user); // bloke
+                        await _unitOfWork.Mail.Create(input, user); //"mail gönderildi"
+                        var failJob = Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedCount(); 
                         if (failJob is 1) // background serviste başarısız olan mailleri 5 kez göndermeyi dene yine başarısızsa failed tablosuna at diye config yaptık. Eğer 5 kez denedi ve failed tablosuna attıysa burası 1 olacaktır. Eğer 1 ise
                         {
                             var kk = _unitOfWork.Mail.GetAll().Result.Result.Find(x => x.CreatedById == user.Id); //mail tablosundaki ilgili maili bul

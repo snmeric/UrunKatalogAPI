@@ -21,7 +21,7 @@ import {
   Input,
 } from "@material-tailwind/react";
 import toast, { Toaster } from "react-hot-toast";
-import ComplexNavbar from "../../components/Navbar";
+
 import { useAuthHeader } from "react-auth-kit";
 import FormatPrice from "../../components/helper/FormatPrice";
 import { useOfferHooks } from "../../hooks/hook";
@@ -34,6 +34,7 @@ const TABLE_HEAD_OFFER = [
   "Tarih",
   "Teklif Eden",
   "Onayla",
+  "Reddet",
 ];
 
 function Offer() {
@@ -174,7 +175,7 @@ function Offer() {
     };
 
     axios
-      .put(`https://localhost:7104/api/Account/${offerId}`, data, config)
+      .put(`https://localhost:7104/api/Account/OfferAccept/${offerId}`, data, config)
       .then((response) => {
         toast("Teklif Onaylandı.", { icon: "👍🏻" });
 
@@ -189,8 +190,32 @@ function Offer() {
         console.log("Başarısız: ", errorMessage);
       });
   };
+    /* GELEN TEKLİFLERİ SİLME */
 
-  const auth = useAuthUser();
+    const offerReject = (offerId) => {
+      setLoading(true);
+      const data = {
+        id: offerId,
+      };
+  
+      axios
+        .put(`https://localhost:7104/api/Account/OfferReject/${offerId}`, data, config)
+        .then((response) => {
+          toast("Gelen Teklif Silindi.", { icon: "👍🏻" });
+  
+          console.log("İstek başarılı:", response.data);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        })
+        .catch((error) => {
+          const errorMessage = error.response.data;
+          toast.error(`${errorMessage}`);
+          console.log("Başarısız: ", errorMessage);
+        });
+    };
+
+  // const auth = useAuthUser();
 
   if (!loading) {
     return (
@@ -201,10 +226,8 @@ function Offer() {
   }
   return (
     <div className="h-full gap-5 flex flex-col items-center justify-center ">
-     <ComplexNavbar/>
-      <Typography variant="h3" color="blue-gray">
-        Hoşgeldin {auth().username}
-      </Typography>
+  
+   
       <Card className="h-full w-2/3 ">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
@@ -301,17 +324,16 @@ function Offer() {
                       </Typography>
                     </td>
                     <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <div className="flex flex-col">
+                      
                           <Typography
+                          
                             variant="small"
                             color="black"
                             className="font-normal opacity-70"
                           >
                             {offeritem.modifiedBy}
                           </Typography>
-                        </div>
-                      </div>
+                      
                     </td>
                     <td className={classes}>
                       <Tooltip content="Teklifi Onayla">
@@ -321,6 +343,18 @@ function Offer() {
                           onClick={() => offerAccept(offeritem.id)}
                         >
                           <HiCheck className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                     
+                    </td>
+                    <td className={classes}>
+                    <Tooltip content="Teklifi Reddet">
+                        <IconButton
+                          variant="text"
+                          color="blue-gray"
+                          onClick={() => offerReject(offeritem.id)}
+                        >
+                          <AiFillDelete className="h-4 w-4" />
                         </IconButton>
                       </Tooltip>
                     </td>

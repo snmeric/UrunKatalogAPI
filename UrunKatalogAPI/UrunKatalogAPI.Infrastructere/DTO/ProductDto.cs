@@ -45,15 +45,13 @@ namespace UrunKatalogAPI.Infrastructere.DTO
         public bool IsSold { get; set; } = false;
         [Required]
         public virtual int? CategoryId { get; set; }
-        //public string CreatedById { get; set; }
-        //public string CreatedBy { get; set; }
+      
     }
 
     public class UpdateProductInput : CreateProductInput
     {
         public int Id { get; set; }
-        //public string ModifiedById { get; set; }
-        //public string ModifiedBy { get; set; }
+     
     }
     public class ProductImage
     {

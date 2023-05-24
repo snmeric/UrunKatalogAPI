@@ -23,7 +23,6 @@ import { Loading } from "@nextui-org/react";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Breadcrumbs } from "@material-tailwind/react";
-import ComplexNavbar from "../../components/Navbar";
 import FormatPrice from "../../components/helper/FormatPrice";
 import {
   fetchBrands,
@@ -300,7 +299,7 @@ const Product = () => {
   }
   return (
     <div>
-      <ComplexNavbar />
+     
       <div className="flex justify-center p-2">
         <Breadcrumbs className="mx-auto ">
           <a href="/" className="opacity-60">
@@ -331,6 +330,7 @@ const Product = () => {
           <h4 className="text-gray-700 mb-4">
             Açıklama: {productDetail.description}
           </h4>
+          <h4 className="text-gray-700 mb-4 mt-4">Satıcı: {productDetail.createdBy}</h4>
           <h4 className="text-gray-700 mb-4 mt-4">Kategori: {categories}</h4>
           <h4 className="text-gray-700 mb-4">Marka: {brands}</h4>
 
