@@ -196,7 +196,7 @@ namespace UrunKatalogAPI.API.Controllers
                     var user = await _userManager.FindByEmailAsync(model.Email); 
                     await _userManager.AccessFailedAsync(user);
                     var failedCount = _userManager.GetAccessFailedCountAsync(user);
-                    if (failedCount.Result.Equals(5)) // 5 hata
+                    if (failedCount.Result.Equals(3)) // 3 hata
                     {
                         BackgroundJob.Enqueue(() => sendEmailJob.DoLogInJob(model.Email)); 
 
