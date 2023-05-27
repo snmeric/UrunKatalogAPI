@@ -13,8 +13,9 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using UrunKatalogAPI.API;
 using UrunKatalogAPI.API.Extensions;
+using UrunKatalogAPI.API.Extensions.ServiceExtensions;
 using UrunKatalogAPI.API.SendMail;
-using UrunKatalogAPI.Core.Shared.Filters;
+
 using UrunKatalogAPI.Core.Shared.Service;
 using UrunKatalogAPI.Infrastructere;
 using UrunKatalogAPI.Infrastructere.Mapping;
@@ -24,13 +25,6 @@ using UrunKatalogAPI.Infrastructere.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddMvc(options =>
-{
-    options.EnableEndpointRouting = false;
-    options.Filters.Add<ValidationFilter>();
-})
-           .AddFluentValidation(m => m.RegisterValidatorsFromAssemblyContaining<Program>())
-           .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
 
 
 builder.Services.AddDataProtection()
@@ -132,18 +126,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
              .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false
-//    ).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
 
 
 
 var app = builder.Build();
 
-//app.Use((context, next) =>
-//{
-//    context.Request.EnableBuffering();
-//    return next();
-//});
 
 app.UseExceptionHandler(errorApp =>
 {
@@ -161,7 +149,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UrunKatalogAPI.API v1"));
 }
-//app.UseCustomGlobalException();
+app.UseCustomGlobalException();
 
 app.UseHangfireDashboard();
 app.UseCors(MyAllowSpecificOrigins);

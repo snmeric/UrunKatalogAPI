@@ -23,11 +23,16 @@ import {
   Textarea,
 } from "@material-tailwind/react";
 import { CloudArrowUpIcon, TrashIcon } from "@heroicons/react/24/outline";
-
+import { BiChevronDown } from "react-icons/bi";
+import { AiOutlineSearch } from "react-icons/ai";
 import toast, { Toaster } from "react-hot-toast";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { fetchBrands, fetchCategories, fetchColors } from "../../components/service/api";
+import {
+  fetchBrands,
+  fetchCategories,
+  fetchColors,
+} from "../../components/service/api";
 import { useCreateDeleteProductHooks } from "../../hooks/hook";
 
 function CreateProduct() {
@@ -55,6 +60,9 @@ function CreateProduct() {
   function closeModal() {
     setIsOpen(false);
   }
+  const [inputValue, setInputValue] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [open, setOpen] = useState(false);
 
   function openModal() {
     setIsOpen(true);
@@ -164,7 +172,7 @@ function CreateProduct() {
     const data = {
       id: values.id,
     };
-console.log("VALUES IDD:",values.id)
+    console.log("VALUES IDD:", values.id);
     try {
       const response = await axios.delete(
         `https://localhost:7104/api/Product/${values.id}`,
@@ -224,7 +232,7 @@ console.log("VALUES IDD:",values.id)
       },
     },
   };
- 
+
   const handleFileUpload = () => {
     fileInputRef.current.click();
   };
@@ -238,7 +246,6 @@ console.log("VALUES IDD:",values.id)
     setFileNames(updatedFileNames);
   };
 
-
   const onSubmit = async (values) => {
     setLoading(true);
     const data = {
@@ -249,7 +256,7 @@ console.log("VALUES IDD:",values.id)
       ProductCondition: values.ProductCondition,
       UserName: auth().username,
       Price: values.Price,
-      IsOfferable: values.IsOfferable,
+      IsOfferable: Boolean(values.IsOfferable),
       IsSold: values.IsSold,
       CategoryId: parseInt(values.CategoryId),
     };
@@ -296,8 +303,8 @@ console.log("VALUES IDD:",values.id)
       Image: null,
       UserName: auth().username,
       Price: "",
-      IsOfferable: true,
-      IsSold: false,
+      IsOfferable: false,
+      IsSold: null,
       CategoryId: null,
     },
     validationSchema,
@@ -306,7 +313,6 @@ console.log("VALUES IDD:",values.id)
 
   return (
     <>
-      
       <div className="flex min-h-screen flex-col py-5 items-center">
         <Typography variant="h4" color="blue-gray">
           Ürün Oluştur
@@ -619,47 +625,90 @@ console.log("VALUES IDD:",values.id)
             type="submit"
             ripple={true}
             className="mt-6 mb-20 flex mx-auto"
+            color="green"
           >
             Oluştur
           </Button>
           <Toaster />
         </form>
         <form onSubmit={deleteformik.handleSubmit}>
-        <Card className="mt-6 w-96 pb-5">
-          <CardBody className="flex flex-col items-center justify-center">
-            <Typography variant="h4" color="blue-gray">
-              Ürünü Sil
-            </Typography>
-        
-              <MySelect
-              
-                name="id"
-               
-                options={products.map((product) => ({
-                  value: product.id,
-                  label: product.name,
-                }))}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                  control: (base) => ({ ...base, width: "300px" }),
-                  
-                }}
-                onChange={(selectedOption) => {
-                  const { value, label } = selectedOption;
-                  console.log('Selected value:', value);
-                  console.log('Selected label:', label);
-                  deleteformik.setFieldValue("id", value);
-                }}
-                placeholder="Silinecek Ürünü Seçin"
-              />
-            
-          </CardBody>
-          <CardFooter className="pt-0 mx-auto">
-            <Button type="submit">Sil</Button>
-          </CardFooter>
-        </Card>
+          <Card className="w-96 ">
+            <CardBody className="flex flex-col items-center justify-center">
+              <Typography variant="h4" color="blue-gray">
+                Ürünü Sil
+              </Typography>
+
+              <div className="w-72 font-medium">
+                <div
+                  onClick={() => setOpen(!open)}
+                  className={`bg-gray-100 w-full p-2 flex items-center justify-between rounded ${
+                    !selected && "text-light-blue-700"
+                  }`}
+                >
+                  {selected
+                    ? selected.length > 25
+                      ? selected.substring(0, 25) + "..."
+                      : selected
+                    : "Ürün Seç"}
+                  <BiChevronDown
+                    size={20}
+                    className={`${open && "rotate-180"}`}
+                  />
+                </div>
+                <ul
+                  className={`bg-gray-100 rounded mt-2 overflow-y-auto ${
+                    open ? "max-h-60" : "max-h-0"
+                  } `}
+                >
+                  <div className="flex items-center px-2 sticky top-0 bg-gray-100">
+                    <AiOutlineSearch
+                      size={18}
+                      className="text-light-blue-700"
+                    />
+                    <input
+                      type="id"
+                      value={inputValue}
+                      onChange={(e) => {
+                        setInputValue(e.target.value);
+                        console.log("Selected value:", inputValue);
+                      }}
+                      placeholder="Ürünü ara.."
+                      className="placeholder:text-gray-700 bg-gray-100 p-2 outline-none"
+                    />
+                  </div>
+                  {products?.map((product) => (
+                    <li
+                      key={product?.id}
+                      value={product?.id}
+                      className={`p-2 text-sm hover:bg-sky-600 hover:text-light-blue-700
+        ${
+          product?.name.toLowerCase() === selected
+            ? "bg-sky-600 text-black"
+            : ""
+        }
+        ${product?.name?.toLowerCase().startsWith(inputValue) ? "" : "hidden"}`}
+                      onClick={() => {
+                        if (product?.id !== selected) {
+                          setSelected(product?.name);
+                          setOpen(false);
+                          setInputValue("");
+                          deleteformik.setFieldValue("id", product?.id); // Seçilen ürünün ID'sini Formik alanına gönder
+                        }
+                      }}
+                    >
+                      {product?.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardBody>
+            <CardFooter className="pt-0 mx-auto">
+              <Button type="submit" color="red">
+                Sil
+              </Button>
+            </CardFooter>
+          </Card>
         </form>
-        <Spacer y={7} />
       </div>
     </>
   );

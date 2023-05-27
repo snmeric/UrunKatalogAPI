@@ -1,4 +1,4 @@
-﻿namespace UrunKatalogAPI.API.Extensions
+﻿namespace UrunKatalogAPI.Infrastructere.Repositories    
 {
     public class JwtConfig
     {

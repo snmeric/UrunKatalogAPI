@@ -101,7 +101,7 @@ export default function Nav() {
               color="secondary"
               onAction={handleItemClick}
             >
-              <Dropdown.Item key="profile" css={{ height: "$18" }}>
+              <Dropdown.Item key="/profile" css={{ height: "$18" }}>
                 <Text b color="inherit" css={{ d: "flex" }}>
                   Hoşgeldin {auth().username}
                 </Text>

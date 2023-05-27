@@ -8,26 +8,19 @@ import {
   CardBody,
   CardFooter,
   Typography,
-  Carousel,
-  Chip,
-  Avatar,
 } from "@material-tailwind/react";
 import { Loading } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuthHeader } from "react-auth-kit";
 import FormatPrice from "../../components/helper/FormatPrice";
-
-import { useIsAuthenticated } from "react-auth-kit";
-import Login from "../Login_Register/Login";
-import { useNavigate } from "react-router-dom";
 import CategoryProducts from "./CategoryProducts";
 
 function Home() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryID, setcategoryID] = useState(null);
+  const [loading, setLoading] = useState(false);
   const authHeader = useAuthHeader();
   const config = {
     headers: {
@@ -83,7 +76,7 @@ function Home() {
   return (
     <div className="relative w-full">
       {/* <ComplexNavbar /> */}
-      <div className="mx-auto w-full max-w-7xl px-8">
+      <div className="mx-auto w-full max-w-7xl px-8 pb-20">
         <Grid.Container gap={2}>
           <Grid>
             <Button
@@ -177,8 +170,17 @@ function Home() {
                             className="font-normal opacity-75"
                           >
                             {product.description.length > 20
-                              ? product.description.substring(0, 20) + "..."
+                              ? product.description.substring(0, 35) + "..."
                               : product.description}
+                          </Typography>
+                          <Typography
+                            variant="medium"
+                           
+                            className="pt-3 font-normal opacity-75"
+                          >
+                           Satıcı: {product.createdBy.length > 20
+                              ? product.createdBy.substring(0, 20) + "..."
+                              : product.createdBy}
                           </Typography>
                         </CardBody>
                         <CardFooter className="pt-0 m-auto">

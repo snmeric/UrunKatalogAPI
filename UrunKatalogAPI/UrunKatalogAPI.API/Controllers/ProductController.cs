@@ -74,8 +74,8 @@ namespace UrunKatalogAPI.API.Controllers
                 ColorId = input.ColorId,
                 Description = input.Description,
                 Image = uniqueFileName,
-                IsOfferable = true,                          
-                IsSold = false,
+                IsOfferable = input.IsOfferable,                          
+                IsSold = input.IsSold,
                 Name = input.Name,
                 Price = input.Price,
                 ProductCondition = input.ProductCondition,
@@ -108,11 +108,11 @@ namespace UrunKatalogAPI.API.Controllers
         [HttpGet("purchase/{id}")] // SATIN ALMA
         public async Task<ActionResult<ApplicationResult<ProductDto>>> Purchase(int id)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User); //kullanıcıyı al
-            var result = await _unitOfWork.Product.Get(id); // girilen id ile eşlesen product'ı al
-            if (result.Succeeded) // listeleme başarılı ise
+            var user = await _userManager.GetUserAsync(HttpContext.User); 
+            var result = await _unitOfWork.Product.Get(id); 
+            if (result.Succeeded) 
             {
-                if (result.Result.IsSold is false) // eğer ürün satın alınmamışsa
+                if (result.Result.IsSold is false) 
                 {
                     var maplendi =
                     new UpdateProductInput
@@ -121,8 +121,8 @@ namespace UrunKatalogAPI.API.Controllers
                         BrandId = result.Result.BrandId,
                         ColorId = result.Result.ColorId,
                         CategoryId = result.Result.CategoryId,
-                        Description = result.Result.Description,                   //yeni bir update inputu oluştur ve satıldı mı alanını true, 
-                        UserName = result.Result.UserName,                          //teklif yapılabilir mi alanını false setle
+                        Description = result.Result.Description,                   
+                        UserName = result.Result.UserName,                          
                         IsOfferable = false,
                         IsSold = true,
                         Image = result.Result.Image,
@@ -169,7 +169,7 @@ namespace UrunKatalogAPI.API.Controllers
 
             var username = _userManager.GetUserName(HttpContext.User); // Kullanıcının username'ini al
 
-            if (product.Result.CreatedBy == username) // Ürün kullanıcının username'i ile oluşturulduysa
+            if (product.Result.ModifiedBy == username) // Ürün kullanıcının username'i ile oluşturulduysa
             {
                 var result = await _unitOfWork.Product.Delete(id); // Ürünü sil
                 if (result.Succeeded)

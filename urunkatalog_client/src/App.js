@@ -10,6 +10,7 @@ import CreateProduct from "./pages/Product/Create_Delete_Product";
 import Category from "./pages/Category_Brand_Color/Category_Brand_Color";
 import Footer from "./components/Footer";
 import Nav from "./components/Navbar/Nav";
+import Profile from "./pages/Profile/Profile";
 
 
 
@@ -35,6 +36,7 @@ function App() {
       <Route path="/offer" element={<Offer />} />
       <Route path="/createProduct" element={<CreateProduct />} />
       <Route path="/category" element={<Category />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/product/:id" element={<Product />} />
     </Routes>
     <Footer />

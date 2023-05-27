@@ -447,7 +447,7 @@ function Offer() {
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
-
+                    
                 return (
                   <>
                     <tr key={item.name}>

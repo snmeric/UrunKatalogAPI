@@ -1,4 +1,4 @@
-﻿namespace UrunKatalogAPI.API
+﻿namespace UrunKatalogAPI.API.Extensions.ServiceExtensions
 {
     static class Configuration
     {
@@ -13,6 +13,6 @@
                 return configurationManager.GetConnectionString("DefaultConnection");
             }
         }
-        
+
     }
 }

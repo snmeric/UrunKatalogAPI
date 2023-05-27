@@ -89,9 +89,8 @@ const Product = () => {
   };
   /* ÜRÜN DETAY */
   useEffect(() => {
-   
     setLoading(true);
-   
+
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -105,7 +104,6 @@ const Product = () => {
         );
         setProductDetail(response.data.result);
         setLoading(false);
-       
       } catch (error) {
         setLoading(false);
         console.log(error);
@@ -299,7 +297,6 @@ const Product = () => {
   }
   return (
     <div>
-     
       <div className="flex justify-center p-2">
         <Breadcrumbs className="mx-auto ">
           <a href="/" className="opacity-60">
@@ -316,7 +313,7 @@ const Product = () => {
           <a href="#">{productDetail.name}</a>
         </Breadcrumbs>
       </div>
-     
+
       <div className="flex flex-row justify-center items-center p-8">
         <div className="max-w-xl mx-auto md:block w-1/2 p-5">
           <img
@@ -330,15 +327,17 @@ const Product = () => {
           <h4 className="text-gray-700 mb-4">
             Açıklama: {productDetail.description}
           </h4>
-          <h4 className="text-gray-700 mb-4 mt-4">Satıcı: {productDetail.createdBy}</h4>
+          <h4 className="text-gray-700 mb-4 mt-4">
+            Satıcı: {productDetail.createdBy}
+          </h4>
           <h4 className="text-gray-700 mb-4 mt-4">Kategori: {categories}</h4>
           <h4 className="text-gray-700 mb-4">Marka: {brands}</h4>
 
           <Tooltip
             content={
-              !productDetail.isOfferable
-                ? "Teklif Kapanmıştır."
-                : "Teklif Edilebilir."
+              productDetail.isOfferable
+                ? "Teklif Edilebilir."
+                : "Teklif Kapanmıştır."
             }
             trigger="hover"
             color={productDetail.isOfferable ? "success" : "error"}
@@ -353,17 +352,17 @@ const Product = () => {
           </Tooltip>
           <Tooltip
             content={
-              !productDetail.isOfferable ? "Ürün Satılmıştır" : "Ürün Mevcuttur."
+              productDetail.isSold ? "Ürün Satılmıştır" : "Ürün Mevcuttur."
             }
             trigger="hover"
-            color={productDetail.isOfferable ? "success" : "error"}
+            color={!productDetail.isSold ? "success" : "error"}
           >
             <Button
               auto
               flat
-              color={productDetail.isOfferable ? "success" : "error"}
+              color={!productDetail.isSold ? "success" : "error"}
             >
-              Ürün {productDetail.isSold ? "Satıldı" : "Mevcut"}
+              Ürün {!productDetail.isSold ? "Mevcut" : "Satıldı"}
             </Button>
           </Tooltip>
           <h4 className="text-gray-700 mb-4 mt-4">Renk: {colors}</h4>
@@ -371,19 +370,35 @@ const Product = () => {
           <h2 className="text-gray-900 mb-4">
             {<FormatPrice price={productDetail.price} />}
           </h2>
-
-          <Button
-            disabled={
-              !productDetail.isOfferable ||
-              productDetail.createdBy === auth().username
-                ? true
-                : false
+          <Tooltip
+            content={
+              !productDetail.isSold
+                ? "Ürün satın alınabilir."
+                : "Ürün Satılmıştır."
             }
-            ripple={true}
-            onClick={handleBuyButtonClick}
+            trigger="hover"
+            color={!productDetail.isSold ? "success" : "error"}
           >
-            Satın Al
-          </Button>
+            <Button
+              shadow
+              color="success"
+              disabled={
+                productDetail.isSold ||
+                productDetail.createdBy === auth().username
+                  ? true
+                  : false
+              }
+              ripple={true}
+              onClick={handleBuyButtonClick}
+            >
+              Satın Al
+            </Button>
+          </Tooltip>
+          <Text h5 color="error">
+            {productDetail.createdBy === auth().username
+              ? "Kendi ürününüzü satın alamazsınız"
+              : ""}
+          </Text>
         </div>
       </div>
       <div className="max-w-xl mx-auto flex flex-col items-center p-5">
@@ -553,8 +568,8 @@ const Product = () => {
                             <p className="text-lg text-gray-700">
                               Ürün Adı: {productDetail.name}
                             </p>
-                            <p className="text-lg text-gray-700">
-                              Alınan Fiyat:{" "}
+                            {/* <p className="text-lg text-gray-700">
+                              Alınan Fiyat:
                               {!formik.values.isOfferPercentage
                                 ? formik.values.offeredPrice
                                 : (
@@ -566,8 +581,7 @@ const Product = () => {
                                     .toString()
                                     .slice(0, 6)}{" "}
                               TL
-                            </p>
-
+                            </p> */}
                             <br />
                           </div>
 
@@ -611,7 +625,11 @@ const Product = () => {
               />
 
               <Tooltip
-                content={!productDetail.isOfferable ? "Ürün Teklife Kapalı" : ""}
+                content={
+                  !productDetail.isOfferable
+                    ? "Ürün Teklife Kapalı"
+                    : "Teklif Verebilirsiniz."
+                }
                 trigger="hover"
                 color={productDetail.isOfferable ? "primary" : "error"}
               >
@@ -628,6 +646,11 @@ const Product = () => {
                   Teklif Ver
                 </Button>
               </Tooltip>
+              <Text h7 auto color="error">
+        
+        {productDetail.createdBy === auth().username
+                    ? "Kendinize teklif veremezsiniz"
+                    : ""}</Text>
             </div>
           </div>
 

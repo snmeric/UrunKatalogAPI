@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UrunKatalogAPI.Infrastructere;
 
-namespace UrunKatalogAPI.API
+namespace UrunKatalogAPI.API.Extensions.ServiceExtensions
 {
     public static class ServiceRegistration
     {
@@ -12,12 +12,12 @@ namespace UrunKatalogAPI.API
                 options.UseSqlServer(Configuration.ConnectionString);
 
             });
-          
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
-            
-    }
-     
+
+        }
+
     }
 }

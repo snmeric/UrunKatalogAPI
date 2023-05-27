@@ -132,7 +132,7 @@ function Login() {
       pageContent: () => {
         return (
           <form onSubmit={formik.handleSubmit} className="w-80 flex flex-col ">
-            {/* <Text>{error}</Text> */}
+          
             <Input
               {...bindings}
               clearable
@@ -168,7 +168,7 @@ function Login() {
             <Button flat color="primary" type="submit" disabled={isLoading}>
               Giriş Yap
             </Button>
-            <Toaster />
+          
           </form>
         );
       },
@@ -177,7 +177,7 @@ function Login() {
       label: "Kayıt Ol",
       value: "kayit",
       pageContent: () => {
-        return <Register></Register>;
+        return <Register/>
       },
     },
   ];
@@ -227,6 +227,7 @@ function Login() {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

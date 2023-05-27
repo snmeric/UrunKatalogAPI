@@ -115,7 +115,7 @@ namespace UrunKatalogAPI.API.Controllers
                             IsSold = true, // Satışı kapat
                             Name = product.Name,
                             Image = product.Image,
-                            Price = (product.Price * (yuzdelik / 100)),
+                            Price = teklif.Result.OfferedPrice,
                             ProductCondition = product.ProductCondition
                         };
 
