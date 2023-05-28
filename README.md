@@ -3,7 +3,7 @@
 
 Selçuk Üniversitesi Bilgisayar Mühendisliği 4.Sınıf öğrencisi olarak İş Yeri Eğitimim için Primefor Şirketine yaptığım Ürün Katalog Projesi için yaptığım proje.
 
-## Proje Hakkında
+
 ## Ürün Katalog Projesi
 
 #### Üye Ol Detayları
