@@ -178,7 +178,7 @@ Bu projenin UI tarafında Create React App ve Tailwind CSS ile bazı paketleri k
 
 | Parametre | Tip     | Açıklama                |
 | :-------- | :------- | :------------------------- |
-| `username` | `string` | 5 karakterden fazla, sayı ve büyük küçük harf kullanılması gerekir |
+| `username` | `string` | 6 karakterden fazla karakter kullanılması gerekir |
 | `email` | `string` | Email |
 | `password` | `string` | En az 8, en fazla 20 karakter uzunluğunda şifre |
 
