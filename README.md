@@ -203,24 +203,38 @@ Tüm markları getirir.
 
 ## Ekran Görüntüleri
 
-![Screenshot_8](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/b1bbaf87-0b15-4691-956e-f9002db93169)
-![Screenshot_9](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/315f09ff-4adb-4bfa-96ef-e3c5ff9e8b23)
-![Screenshot_10](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/0063def0-a9aa-4b3f-aed1-5404875860f3)
-![Screenshot_11](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/9058b362-4675-4fb2-8e75-e7c310b77dd8)
-![Screenshot_12](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/e21a60a7-a0ee-466d-a1b1-7386affd1991)
-![Screenshot_13](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/8c3e6017-dfa3-4c2b-b7ba-f29da9d31cd3)
-![Screenshot_14](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/39f5ae14-9b7b-4e85-9f0d-e8c58b423567)
-![Screenshot_15](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/a10e3056-7958-48f8-a619-cfdd00d0fe8f)
-![Screenshot_16](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/204bb24e-21df-47ac-bf38-c64f5b193d69)
-![Screenshot_17](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/8da0b78a-479b-47c3-b063-33df5768dda1)
-![Screenshot_18](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/4e10d9f9-29fd-4eb5-9565-bd69a2417549)
-![Screenshot_19](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/7df8887d-b4c8-48cc-847e-9523ab1f745c)
+#### Swagger
 ![Screenshot_1](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/756a6df7-f5fa-40c7-9b6d-98f8cb22557e)
 ![Screenshot_2](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/652602e6-9869-4181-b6e7-f340230ec307)
+![Screenshot_8](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/b1bbaf87-0b15-4691-956e-f9002db93169)
+
+#### Giriş ve Kayıt Ol
 ![Screenshot_3](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/ad65e1ec-8d60-4e98-9dd4-7cfcdb274c8f)
 ![Screenshot_4](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/20eeebe4-1045-410c-8e3c-30e070dfe2fa)
+![Screenshot_16](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/204bb24e-21df-47ac-bf38-c64f5b193d69)
+![Screenshot_17](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/8da0b78a-479b-47c3-b063-33df5768dda1)
+
+#### Anasayfa
 ![Screenshot_5](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/fb594d86-daf5-4113-a959-94b133959fd7)
 ![Screenshot_6](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/91855073-6b3b-4d65-bf4f-9c2edac69b28)
 ![Screenshot_7](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/5e8ab75b-6749-4242-adf4-27d81dbd21fd)
 
-  
+#### Ürün Detay Sayfası (Satın Alma ve Teklif Verme)
+![Screenshot_18](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/4e10d9f9-29fd-4eb5-9565-bd69a2417549)
+![Screenshot_19](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/7df8887d-b4c8-48cc-847e-9523ab1f745c)
+
+#### Teklif Ettiklerim ve Gelen Teklifler
+![Screenshot_14](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/39f5ae14-9b7b-4e85-9f0d-e8c58b423567)
+
+#### Ürün Oluşturma
+![Screenshot_9](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/315f09ff-4adb-4bfa-96ef-e3c5ff9e8b23)
+
+#### Ürün Silme
+![Screenshot_10](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/0063def0-a9aa-4b3f-aed1-5404875860f3)
+
+#### Kategori, Marka ve Renk Oluşturma
+![Screenshot_11](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/9058b362-4675-4fb2-8e75-e7c310b77dd8)
+![Screenshot_12](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/e21a60a7-a0ee-466d-a1b1-7386affd1991)
+
+#### Kategori, Marka ve Renk Oluşturma
+![Screenshot_15](https://github.com/snmeric/UrunKatalogAPI/assets/82456006/a10e3056-7958-48f8-a619-cfdd00d0fe8f)
