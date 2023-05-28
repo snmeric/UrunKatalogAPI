@@ -1,10 +1,83 @@
 
 # Ürün Katalog Projesi
 
-Selçuk Üniversitesi Bilgisayar Mühendisliği 4.Sınıf öğrencisi olarak İş Yeri Eğitimim için Primefor Şirketine yaptığım Ürün Katalog Projesi için yaptığım proje. Benden istenilenler:
+Selçuk Üniversitesi Bilgisayar Mühendisliği 4.Sınıf öğrencisi olarak İş Yeri Eğitimim için Primefor Şirketine yaptığım Ürün Katalog Projesi için yaptığım proje.
 
+## Proje Hakkında
+## Ürün Katalog Projesi
 
-
+#### Üye Ol Detayları
+• Kullanıcılar sisteme uye olabilmeli. Kayit isleminde alinan bilgiler eksiksiz olmali ve validate 
+edilmeli. Email bilgisi gecerli olmali.
+• Kayit sirasinda kullanici sifresi sifrelenmis sekilde databasede saklanmali. 
+• Ayni sifreye sahip kullanicilarin hashelenmis sifreleri mutlaka farkli olmali. (Tuzlama)
+• Sifreler geri cozulemeyecek sekilde sifrelenip saklanmali.
+• Email valid olmalı
+• En az 8 ve en fazla 20 karakter uzunluğunda bir password girilmeli
+• İşlem başarısız ise kullanıcıya tasarıma göre hata mesajı gösterilmeli
+• İşlem başarılı ise API'den basarili mesaji gonderilmeli ve Hosgeldiniz Email i gonderilmeli.
+#### Üye Girişi Detayları
+• Kullanıcılar burden üye girişi yapabilmeli
+• Email ve Password alanları zorunlu alanlar olmali. Bos yada gecersiz gonderilirse uyari 
+verilmeli.
+• Email ve Password alanlarının validasyonu yapılmalı
+• Email valid olmalı ve en az 8 ve en fazla 20 karakter uzunluğunda bir password girilmeli
+• İşlem başarısız ise kullanıcıya hata mesajı gösterilmeli
+• İşlem başarılı ise API'de JWT token uretilmeli ve tüm authantication gerektiren requestlerde 
+header'a Bearer token olarak eklenmeli.
+• 3 kez parolanin yanlis girilmesi durumunda hesabi bloke ediniz ve kullaniciya bilgilendirme 
+maili gonderiniz. 
+#### Email Servisi
+• Email gonderme islemlerini Sync olarak gonderecek bir tasarim yapmayiniz. 
+• Email ler bir kuyruk tablosunda toplanmali ve bir process ordan email gonderimi yapmali. 
+• Database,kafka, rabbitmq vs uzerinde kuyruklama islemi yapabilirsiniz. 
+• Hangfire gibi servisler kullanarak da yapabilirsiniz.
+• Kuyruga gelen her email in en gec 2sn icerisinde process edilmeli. 
+• Gonderilen email ler in status durumunu guncelleyiniz. 
+• Try count ile basarisiz olmasi durumunda terkar gondermesini saglayiniz. 
+• 5 kez deneyip basarisiz olan kayitlari Farkli bir statuye cekerek guncelleyiniz
+• Smtp entegrasyonu yaparak mail gonderimini saglayiniz. 
+• Smtp hizmetinin calisir sekilde oldugundan emin olunuz. 
+#### Kategori Detayları
+• Tüm kategoriler listelenmeli
+• Kullanıcı kategori id ile api call yaptiginda kategori altindaki ürünler kategoriye göre 
+filtrelenmeli, default olarak tüm ürünler çekilmeli.
+• Yeni kategori eklenebilmeli veya mevcut olan guncellenebilmeli. 
+#### Ürün Detayları
+• Teklif Ver apisi üründen gelen data içerisindeki isOfferable alanına gore control edilmeli.
+• isOfferable durumunun saglanmadigi takdirde teklif verilememeli. 
+• Teklif Ver apisi ile kullanıcı kendisi teklif girebilmeli. Teklif girme alanı number olmalı ve 
+buraya validasyon eklenmeli
+• ayrica Teklif degeri yuzdelik olarak api tarafına yollanabilmeli (offeredPrice), mesela, 100₺
+olan ürün için %40 değeri seçilirse, 40₺ teklif yapılabilmeli
+• Eğer bir kullanıcı bir ürüne teklif verdiyse, o ürünün icin teklifini geri cekebilmeli. Verdigi teklif 
+yoksa kullanicilar bilgilendirilmeli. 
+• Kullanıcı teklif yapmadan bir ürünü direk satın alabilir. Kullanıcı ürünü satın alınca, ilgili ürün 
+datası içerisindeki isSold alanının değeri guncellenmeli. 
+#### Hesabım Detayları
+• Kullanicinin yaptigi offer lar listelenmeli. 
+• Kullanicinin urunleri icin aldigi offer lar listelenmeli. 
+• Alınan tekliflere Onayla ve Reddet ile cevap verilebilmeli
+• Verilen teklif onaylandığında satin alma icin uygun duruma getirilmeli. 
+• Ürün detay daki gibi Satın Al tetiklenince statu guncellenmeli. Satın Al'a tetiklenince Teklif 
+Verdiklerim listesindeki ürünün durumu güncellenmeli
+#### Ürün Ekleme Detayları
+• İlgili validasyonlar eklenmeli:
+• Ürün Adı alanı maksimum 100 karakter uzunluğunda olmalı ve zorunlu bir alan olmalı
+• Açıklama alanı maksimum 500 karakter uzunluğunda olmalı ve zorunlu bir alan olmalı
+• Kategori alanı ilgili endpointten çekilen kategorileri listelemeli ve en fazla bir kategori 
+seçilebilmeli. Bu alan zorunlu bir alan olmalı
+• Renk alanı ilgili endpointten çekilen renkleri listelemeli ve en fazla bir renk seçilebilmeli. Bu 
+alan zorunlu bir alan olmamalı
+• Marka alanı ilgili endpointten çekilen markaları listelemeli ve en fazla bir marka seçilebilmeli. 
+Bu alan zorunlu bir alan olmamalı
+• Kullanım Durumu alanı ilgili endpointten çekilen kullanım durumlarını listelemeli ve en fazla 
+bir kullanım durumu seçilebilmeli. Bu alan zorunlu bir alan olmalı
+• Ürün Görseli alanından en fazla bir ürün görseli eklenmeli. Eklenen ürün görseli istenildiği 
+zaman silinebilmeli. Bu alan zorunlu bir alan olmalı. Sadece png/jpg/jpeg formatında 
+görseller eklenmeli. Maksimum 400kb değerinde görseller eklenilebilmeli
+• Fiyat alanı number olmalı ve zorunlu bir alan olmalı
+• Teklif Opsiyonu alanı boolean bir değer olmalı ve default olarak false olmalı
 
 
 
