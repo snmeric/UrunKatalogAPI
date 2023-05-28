@@ -74,11 +74,9 @@ const Product = () => {
   function openBuyModal() {
     setBuyIsOpen(true);
   }
-  const { value, reset, bindings } = useInput("");
-  const [error, setError] = useState("");
+
   const [productDetail, setProductDetail] = useState([]);
   const authHeader = useAuthHeader();
-  const formData = new FormData();
   const navigate = useNavigate();
 
   const config = {
@@ -149,7 +147,7 @@ const Product = () => {
     };
 
     console.log("Values: ", values);
-    setError("");
+
     console.log("TOKEEN:", authHeader());
     axios
       .post("https://localhost:7104/Offer", data, {
@@ -647,10 +645,10 @@ const Product = () => {
                 </Button>
               </Tooltip>
               <Text h7 auto color="error">
-        
-        {productDetail.createdBy === auth().username
-                    ? "Kendinize teklif veremezsiniz"
-                    : ""}</Text>
+                {productDetail.createdBy === auth().username
+                  ? "Kendinize teklif veremezsiniz"
+                  : ""}
+              </Text>
             </div>
           </div>
 

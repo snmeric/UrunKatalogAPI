@@ -28,15 +28,14 @@ import {
 import Register from "./Register";
 
 function Login() {
-  const [error, setError] = useState("");
+
   const signIn = useSignIn();
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setisLoading] = useState();
 
   const onSubmit = async (values) => {
     console.log("Values: ", values);
-    setError("");
+
     setisLoading(true);
     const data = {
       email: values.email,
@@ -62,18 +61,14 @@ function Login() {
         token: token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: values.email,username:username},
+        authState: { email: values.email, username: username },
       });
 
-      
-      navigate("/");
-      
-    } catch (err) {
-      if (err && err instanceof AxiosError)
-        setError(err.response?.data.message);
-      else if (err && err instanceof Error) setError(err.message);
-      toast.error("Hatalı Giriş");
-      console.log("Error: ", err);
+      // navigate("/");
+    } catch (error) {
+      const errorMessage = error.response.data;
+      toast.error(`${errorMessage}`);
+      console.error(error);
     } finally {
       setisLoading(false);
     }
@@ -132,7 +127,6 @@ function Login() {
       pageContent: () => {
         return (
           <form onSubmit={formik.handleSubmit} className="w-80 flex flex-col ">
-          
             <Input
               {...bindings}
               clearable
@@ -168,7 +162,7 @@ function Login() {
             <Button flat color="primary" type="submit" disabled={isLoading}>
               Giriş Yap
             </Button>
-          
+            <Toaster/>
           </form>
         );
       },
@@ -177,17 +171,11 @@ function Login() {
       label: "Kayıt Ol",
       value: "kayit",
       pageContent: () => {
-        return <Register/>
+        return <Register />;
       },
     },
   ];
-  if (isLoading) {
-    return (
-      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
-        <Loading type="spinner" size="lg" />
-      </div>
-    );
-  }
+
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center">
       <div className="rounded-2xl bg-[#E5EDF9] shadow-lg flex max-w-3xl">
@@ -226,8 +214,9 @@ function Login() {
             </Tabs>
           </div>
         </div>
+     
       </div>
-      <Toaster />
+     
     </div>
   );
 }

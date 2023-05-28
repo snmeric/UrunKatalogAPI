@@ -95,11 +95,11 @@ namespace UrunKatalogAPI.API.Controllers
                 var user = await _userManager.FindByNameAsync(newUser.UserName);
 
                  //hoşgeldiniz emaili
-                    BackgroundJob.Enqueue(() => sendEmailJob.DoRegisterJob(model.Email)); // mail gönderme background servisini çalıştır
+                    BackgroundJob.Enqueue(() => sendEmailJob.DoRegisterJob(model.Email)); 
 
                     CreateMailInput input = new()
                     {
-                        CreatedBy = user.UserName,         // Statüsü "mail gönderildi" olan yeni bir mail kaydı ekle database'e
+                        CreatedBy = user.UserName,      
                         CreatedById = user.Id,
                         CreatedDate = DateTime.Now,
                         Status = "Sent"
@@ -186,11 +186,11 @@ namespace UrunKatalogAPI.API.Controllers
                 {
                     return BadRequest("Email Kayıtlı Değil");
                 }
-                var loginResult = await _signInManager.PasswordSignInAsync(userEmail.UserName, model.Password, true, false); // username ve password ile giriş yap
+                var loginResult = await _signInManager.PasswordSignInAsync(userEmail.UserName, model.Password, true, false); 
 
 
 
-                if (!loginResult.Succeeded) // giriş başarısız
+                if (!loginResult.Succeeded) 
                 {
                     
                     var user = await _userManager.FindByEmailAsync(model.Email); 
@@ -209,9 +209,9 @@ namespace UrunKatalogAPI.API.Controllers
 
                         };
                         await _userManager.DeleteAsync(user); // bloke
-                        await _unitOfWork.Mail.Create(input, user); //"mail gönderildi"
+                        await _unitOfWork.Mail.Create(input, user); //mail gönderildi
                         var failJob = Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedCount(); 
-                        if (failJob is 1) // background serviste başarısız olan mailleri 5 kez göndermeyi dene yine başarısızsa failed tablosuna at diye config yaptık. Eğer 5 kez denedi ve failed tablosuna attıysa burası 1 olacaktır. Eğer 1 ise
+                        if (failJob is 1) 
                         {
                             var kk = _unitOfWork.Mail.GetAll().Result.Result.Find(x => x.CreatedById == user.Id); //mail tablosundaki ilgili maili bul
                             UpdateMailInput updateMail = new()

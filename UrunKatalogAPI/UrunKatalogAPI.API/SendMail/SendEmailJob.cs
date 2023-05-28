@@ -14,11 +14,11 @@ namespace UrunKatalogAPI.API.SendMail
 
 
         }
-        [AutomaticRetry(Attempts = 5, OnAttemptsExceeded = AttemptsExceededAction.Fail)] // 5 kez yapmayı dene yapamazsan fail tablosuna at
+        [AutomaticRetry(Attempts = 5, OnAttemptsExceeded = AttemptsExceededAction.Fail)] 
         public void DoLogInJob(string recipientEmail)
         {
 
-            mailService.SendLogInEmailAsync(recipientEmail); // mail yollama 
+            mailService.SendLogInEmailAsync(recipientEmail); 
 
         }
 

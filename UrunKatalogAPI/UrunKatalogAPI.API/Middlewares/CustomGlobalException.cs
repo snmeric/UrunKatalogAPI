@@ -15,7 +15,7 @@ namespace UrunKatalogAPI.API.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            //instead of using seperate handlers on controller, we can write a try catch block for global exception here..
+          
             try
             {
                 await _next(context);

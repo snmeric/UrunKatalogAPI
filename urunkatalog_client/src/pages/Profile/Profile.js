@@ -19,7 +19,7 @@ import FormatPrice from "../../components/helper/FormatPrice";
 function Profile() {
   const auth = useAuthUser();
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const authHeader = useAuthHeader();
   const config = {
     headers: {
@@ -49,7 +49,13 @@ function Profile() {
     };
     fetchData();
   }, []);
-
+  if (isLoading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <Loading type="spinner" size="lg" />
+      </div>
+    );
+  }
   return (
     <div className="relative w-full">
       {/* <ComplexNavbar /> */}
