@@ -17,6 +17,10 @@ export default function Register() {
     const navigate = useNavigate();
     const [isLoading, setisLoading] = useState();
 
+
+    const validateUsername = (value) => {
+        return /^[a-z0-9]{6,}$/i.test(value);
+      };
     const validateEmail = (value) => {
         return value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);
     };
@@ -78,6 +82,19 @@ export default function Register() {
 
 
     });
+    const registerhelperUsername = React.useMemo(() => {
+        if (!registerFormik.values.username)
+            return {
+                text: "",
+                color: "",
+            };
+        const isUsernameValid = validateUsername(registerFormik.values.username);
+        return {
+            text: isUsernameValid ? "Doğru Yazım" : "Min 6 karakter giriniz",
+            color: isUsernameValid ? "success" : "error",
+        };
+    }, [registerFormik.values.username]);
+
     const registerhelperEmail = React.useMemo(() => {
         if (!registerFormik.values.email)
             return {
@@ -112,9 +129,13 @@ export default function Register() {
             <Input
                 clearable
                 shadow={false}
-                status="default"
+               
                 onClearClick={reset}
                 name="username"
+                status={registerhelperUsername.color}
+                color={registerhelperUsername.color}
+                helperColor={registerhelperUsername.color}
+                helperText={registerhelperUsername.text}
                 value={registerFormik.values.username}
                 onChange={registerFormik.handleChange}
                 onBlur={registerFormik.handleBlur}

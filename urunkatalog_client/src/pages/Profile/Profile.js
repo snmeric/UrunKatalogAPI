@@ -55,7 +55,7 @@ function Profile() {
       {/* <ComplexNavbar /> */}
       <div className="mx-auto w-full max-w-7xl px-8 pb-20">
         <Text h3 className="pt-12 flex flex-col items-center ">
-          Satın Aldıklarım
+          Ürünlerim
         </Text>
 
         <div className="justify-between gap-4">
