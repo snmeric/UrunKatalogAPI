@@ -29,45 +29,45 @@ namespace UrunKatalogAPI.API.Controllers
         [HttpPost] //TEKLİF YAP ENDPOINT'İ
         public async Task<ActionResult<ApplicationResult<OfferDto>>> MakeOffer([FromBody] CreateOfferInput input)
         {
-            var rr = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == input.ProductId); //girilen inputtaki productid product tablosundaki id ise rr'ye at
-            var user = await _userManager.GetUserAsync(HttpContext.User); //kullanıcıyı al
+            var rr = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == input.ProductId); 
+            var user = await _userManager.GetUserAsync(HttpContext.User); 
 
-            if (rr.IsOfferable == true && rr!=null) //eğer ürün teklife açıksa
+            if (rr.IsOfferable == true && rr!=null)
             {
-                if (input.IsOfferPercentage) // ürünün teklifi yüzdelik ise
+                if (input.IsOfferPercentage) 
                 {
-                    input.OfferedPrice =  (rr.Price * input.OfferedPrice / 100); // inputta girilen yüzdelik olarak alınır ve fiyat üzerinden hesaplanır
-                    var result = await _unitOfWork.Offer.Create(input, user); // teklif create edilir
+                    input.OfferedPrice =  (rr.Price * input.OfferedPrice / 100); 
+                    var result = await _unitOfWork.Offer.Create(input, user);
                     if (result.Succeeded)
                     {
-                        return result; //create başarılı ise döner
+                        return result; 
                     }
 
                 }
-                else if (input.IsOfferPercentage == false) // eğer ürünün teklifi yüzdelik değil ise
+                else if (input.IsOfferPercentage == false) 
                 {
-                    var resultt = await _unitOfWork.Offer.Create(input, user); //inputtaki değerlerle offer create et
+                    var resultt = await _unitOfWork.Offer.Create(input, user); 
                     if (resultt.Succeeded)
                     {
-                        return resultt; //create başarılı ise döner
+                        return resultt; 
                     }
                 }
             }
-            return NotFound("Ürün teklife açık değildir!"); //eğer ürün teklife açık değilse döner
+            return NotFound("Ürün teklife açık değildir!");
 
         }
 
         [HttpDelete("{id}")] // Teklifi Sil
         public async Task<ActionResult<ApplicationResult<OfferDto>>> CancelOffer(int id)
         {
-            var omu = await _unitOfWork.Offer.Get(id); //girilen id'yle teklif tablosunda eşleşen teklifi bul 
-            var username = _userManager.GetUserName(HttpContext.User); //kullanıcının username'ini al
-            if (omu.Result.CreatedBy == username) //teklif kullanıcının username'i ile oluşturulduysa
+            var omu = await _unitOfWork.Offer.Get(id); 
+            var username = _userManager.GetUserName(HttpContext.User); 
+            if (omu.Result.CreatedBy == username) 
             {
-                var result = await _unitOfWork.Offer.Delete(id); // teklifi sil
+                var result = await _unitOfWork.Offer.Delete(id); 
                 if (result.Succeeded)
                 {
-                    return Ok("Teklif silindi."); //silme işlemi tamamlandıysa döner
+                    return Ok("Teklif silindi.");
                 }
             }
             else if (omu.Result.CreatedBy != username)

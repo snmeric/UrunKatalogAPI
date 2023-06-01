@@ -28,7 +28,7 @@ namespace UrunKatalogAPI.API.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISendEmailJob sendEmailJob;
-        // private readonly JwtConfig _jwtConfig;
+      
 
 
 
@@ -42,7 +42,7 @@ namespace UrunKatalogAPI.API.Controllers
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
             this.sendEmailJob = sendEmailJob;
-            // _jwtConfig = jwtConfig;
+         
 
         }
 

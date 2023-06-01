@@ -23,7 +23,6 @@ namespace UrunKatalogAPI.Infrastructere.DTO
     {
         [Required]
         public int Id { get; set; }
-        //public string ModifiedById { get; set; }
-        //public string ModifiedBy { get; set; }
+       
     }
 }
