@@ -2,7 +2,6 @@ import React from "react";
 import { Button } from "@nextui-org/react";
 import { Card, Grid, Row, Text } from "@nextui-org/react";
 import { Link } from "react-router-dom";
-
 import {
   CardHeader,
   CardBody,
@@ -75,7 +74,7 @@ function Home() {
 
   return (
     <div className="relative w-full">
-      {/* <ComplexNavbar /> */}
+    
       <div className="mx-auto w-full max-w-7xl px-8 pb-20">
         <Grid.Container gap={2}>
           <Grid>

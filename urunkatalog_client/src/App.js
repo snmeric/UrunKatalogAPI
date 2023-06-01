@@ -12,39 +12,35 @@ import Footer from "./components/Footer";
 import Nav from "./components/Navbar/Nav";
 import Profile from "./pages/Profile/Profile";
 
-
-
-
-
 function App() {
   const isAuthenticated = useIsAuthenticated();
-  
+
   if (isAuthenticated()) {
-  return (
-    <div className="App">
-       <Nav/>
-      <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={
-          <RequireAuth loginPath="/login">
-            <Home />
-          </RequireAuth>
-        }
-      />
-      <Route path="/offer" element={<Offer />} />
-      <Route path="/createProduct" element={<CreateProduct />} />
-      <Route path="/category" element={<Category />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/product/:id" element={<Product />} />
-    </Routes>
-    <Footer />
-    </div>
-  );
-}else {
-  return <Login />;
+    return (
+      <div className="App">
+        <Nav />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <RequireAuth loginPath="/login">
+                <Home />
+              </RequireAuth>
+            }
+          />
+          <Route path="/offer" element={<Offer />} />
+          <Route path="/createProduct" element={<CreateProduct />} />
+          <Route path="/category" element={<Category />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/product/:id" element={<Product />} />
+        </Routes>
+        <Footer />
+      </div>
+    );
+  } else {
+    return <Login />;
+  }
 }
-};
 
 export default App;
