@@ -9,6 +9,7 @@ using UrunKatalogAPI.Infrastructere.Repositories;
 
 namespace UrunKatalogAPI.API.Controllers
 {
+    // Kategori (Category) işlemlerini gerçekleştiren controller
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -23,13 +24,14 @@ namespace UrunKatalogAPI.API.Controllers
             _userManager = userManager;
         }
 
+        // Tüm kategorileri getiren HTTP GET metodu
         [HttpGet]
         public Task<ApplicationResult<List<CategoryDto>>> GetAllCategories()
         {
             return _unitOfWork.Category.GetAll();
         }
-   
 
+        // Belirli bir kategoriyi id'ye göre getiren HTTP GET metodu
         [HttpGet("{id}")] 
         public async Task<ActionResult<ApplicationResult<CategoryDto>>> GetCategoryById(int id)
         {
@@ -39,6 +41,7 @@ namespace UrunKatalogAPI.API.Controllers
             return NotFound(result);
         }
 
+        // Yeni bir kategori oluşturan HTTP POST metodu
         [HttpPost] 
         public async Task<ActionResult<ApplicationResult<CategoryDto>>> CreateCategory([FromBody] CreateCategoryInput input)
         {
@@ -54,6 +57,7 @@ namespace UrunKatalogAPI.API.Controllers
             return BadRequest();
         }
 
+        // Bir kategoriyi güncelleyen HTTP PUT metodu
         [HttpPut] 
         public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryInput updateCategory)
         {
@@ -65,6 +69,7 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
 
+        // Bir kategoriyi silen HTTP DELETE metodu
         [HttpDelete("{id}")] 
         public async Task<IActionResult> DeleteCategory(int id)
         {

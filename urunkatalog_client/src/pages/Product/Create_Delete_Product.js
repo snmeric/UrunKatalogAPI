@@ -1,21 +1,16 @@
 import React from "react";
-
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useEffect, useState, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import MySelect from "react-select";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import IntlCurrencyInput from "react-intl-currency-input";
-import { Spacer } from "@nextui-org/react";
 import { Fragment } from "react";
-
 import {
   Card,
   Input,
   CardBody,
   CardFooter,
-  Checkbox,
   Button,
   Select,
   Option,
@@ -172,14 +167,14 @@ function CreateProduct() {
     const data = {
       id: values.id,
     };
-    console.log("VALUES IDD:", values.id);
+
     try {
       const response = await axios.delete(
         `https://localhost:7104/api/Product/${values.id}`,
 
         config
       );
-      console.log(response.data);
+
       toast("Ürün Silindi.", { icon: "👌" });
       setTimeout(() => {
         window.location.reload();
@@ -261,8 +256,6 @@ function CreateProduct() {
       CategoryId: parseInt(values.CategoryId),
     };
 
-    console.log("Values: ", values);
-
     try {
       const url = "https://localhost:7104/api/Product";
       const formData = new FormData();
@@ -278,7 +271,7 @@ function CreateProduct() {
       };
 
       const response = await axios.post(url, formData, config);
-      console.log(response.data);
+
       openModal();
       toast("Ürün Oluşturuldu.", { icon: "👌" });
     } catch (error) {
@@ -521,17 +514,6 @@ function CreateProduct() {
                 )}
               </div>
               <div className="relative flex flex-col items-center justify-center gap-4">
-                {/* <Input
-               
-                  name="Price"
-                  onChange={(e)=>handleChange(currencyMask(e))}
-                  value={formik.values.Price}
-                  error={formik.touched.Price && formik.errors.Price}
-                  size="lg"
-                  label="Ürünün Fiyatı"
-                  type="number"
-                /> */}
-
                 <div className="w-full px-4 py-1 rounded-lg border border-gray-400">
                   <IntlCurrencyInput
                     name="Price"
@@ -670,7 +652,6 @@ function CreateProduct() {
                       value={inputValue}
                       onChange={(e) => {
                         setInputValue(e.target.value);
-                        console.log("Selected value:", inputValue);
                       }}
                       placeholder="Ürünü ara.."
                       className="placeholder:text-gray-700 bg-gray-100 p-2 outline-none"

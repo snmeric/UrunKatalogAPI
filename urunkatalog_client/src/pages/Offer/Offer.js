@@ -1,30 +1,26 @@
 import React from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useState, useEffect } from "react";
 import { AiFillDelete} from "react-icons/ai";
 import moment from "moment";
 import { Loading, Spacer } from "@nextui-org/react";
 import { HiCheck } from "react-icons/hi2";
-import { HiArchiveBox } from "react-icons/hi2";
-import { useAuthUser } from "react-auth-kit";
 import {
   Card,
   CardHeader,
   Typography,
   Button,
   CardBody,
-  Chip,
   CardFooter,
   Avatar,
   IconButton,
   Tooltip,
-  Input,
 } from "@material-tailwind/react";
 import toast, { Toaster } from "react-hot-toast";
-
 import { useAuthHeader } from "react-auth-kit";
 import FormatPrice from "../../components/helper/FormatPrice";
 import { useOfferHooks } from "../../hooks/hook";
+
 
 const TABLE_HEAD = ["ID", "Ürün", "Fiyat", "Tarih", "Teklif Eden", "Kaldır"];
 const TABLE_HEAD_OFFER = [
@@ -106,7 +102,7 @@ function Offer() {
         setOffers(response.data);
       })
       .catch((error) => console.log(error));
-    console.log("Teklif Aldıklarım: ", offers);
+    
     setLoading(false);
   }, []);
 
@@ -137,7 +133,7 @@ function Offer() {
         .then((response) => setProduct(response.data.result))
         .catch((error) => console.log(error));
 
-      console.log("Responsee", product);
+      
     };
     setLoading(false);
     getProduct();
@@ -155,7 +151,7 @@ function Offer() {
           window.location.reload();
         }, 1000);
 
-        console.log(response.data);
+       
         setLoading(true);
       })
       .catch((error) => {
@@ -179,7 +175,7 @@ function Offer() {
       .then((response) => {
         toast("Teklif Onaylandı.", { icon: "👍🏻" });
 
-        console.log("İstek başarılı:", response.data);
+        
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -203,7 +199,7 @@ function Offer() {
         .then((response) => {
           toast("Gelen Teklif Silindi.", { icon: "👍🏻" });
   
-          console.log("İstek başarılı:", response.data);
+          
           setTimeout(() => {
             window.location.reload();
           }, 1000);

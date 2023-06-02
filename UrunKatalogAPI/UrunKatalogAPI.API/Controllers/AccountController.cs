@@ -22,11 +22,13 @@ namespace UrunKatalogAPI.API.Controllers
             _userManager = userManager;
         }
 
-
+        // Kullanıcının yaptığı teklifleri getiren endpoint
         [HttpGet("{Username}")]
         public async Task<ActionResult<List<OfferDto>>> OffersThatIMade(string username)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            // Veritabanından kullanıcının yaptığı teklifleri getir
             var offercreatedby = _unitOfWork.Offer.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName);
             if (offercreatedby != null)
             {
@@ -35,10 +37,13 @@ namespace UrunKatalogAPI.API.Controllers
             return BadRequest("Verdiğiniz bir teklif bulunmamaktadır.");
         }
 
+        // Kullanıcının aldığı teklifleri getiren endpoint
         [HttpGet]
         public async Task<ActionResult<List<OfferDto>>> OffersThatIReceive()
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            // Kullanıcının oluşturduğu ürünleri getir
             var product = _unitOfWork.Product.GetAll().Result.Result.FindAll(x => x.CreatedBy == user.UserName);
 
             if (product != null)
@@ -48,6 +53,7 @@ namespace UrunKatalogAPI.API.Controllers
 
                 product.ForEach(p => productIdList.Add(p.Id));
 
+                // Her bir ürün için teklifleri getir
                 foreach (var productId in productIdList)
                 {
                     var offers = _unitOfWork.Offer.GetAll().Result.Result.FindAll(x => x.ProductId == productId);
@@ -86,7 +92,7 @@ namespace UrunKatalogAPI.API.Controllers
         }
 
 
-
+        // Teklif kabul eden endpoint
         [HttpPut("OfferAccept/{id}")]
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AcceptTheOffer(int id)
         {
@@ -152,6 +158,8 @@ namespace UrunKatalogAPI.API.Controllers
 
             return NotFound("Teklif kabul edilirken hata oluştu.");
         }
+
+        // Teklif reddeden endpoint
         [HttpPut("OfferReject/{id}")]
         public async Task<ActionResult> RejectTheOffer(int id)
         {
@@ -174,6 +182,7 @@ namespace UrunKatalogAPI.API.Controllers
             return NotFound("Teklif reddedilirken hata oluştu.");
         }
 
+        // Diğer teklifleri iptal eden yardımcı metot
         private async Task CancelOtherOffers(int productId)
         {
             var offers = await _unitOfWork.Offer.GetAll();

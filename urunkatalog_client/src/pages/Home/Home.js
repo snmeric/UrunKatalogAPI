@@ -99,7 +99,7 @@ function Home() {
                 ghost
                 onPress={() => {
                   setcategoryID(category.id);
-                  console.log("Kategori ID: ", category.id);
+                  
                 }}
               >
                 {category.name}

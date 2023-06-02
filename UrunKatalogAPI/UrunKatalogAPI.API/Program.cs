@@ -15,7 +15,6 @@ using UrunKatalogAPI.API;
 using UrunKatalogAPI.API.Extensions;
 using UrunKatalogAPI.API.Extensions.ServiceExtensions;
 using UrunKatalogAPI.API.SendMail;
-
 using UrunKatalogAPI.Core.Shared.Service;
 using UrunKatalogAPI.Infrastructere;
 using UrunKatalogAPI.Infrastructere.Mapping;
@@ -24,22 +23,24 @@ using UrunKatalogAPI.Infrastructere.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Kontrollerin eklenmesi
 builder.Services.AddControllers();
 
-
+// Veri koruma ayarlarýnýn yapýlandýrýlmasý
 builder.Services.AddDataProtection()
       .PersistKeysToFileSystem(new DirectoryInfo(Path.GetTempPath()))
       .SetApplicationName("UrunKatalogAPI");
 
-
+// Hangfire'ýn yapýlandýrýlmasý
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration["ConnectionStrings:DefaultConnection"]));
 builder.Services.AddHangfireServer();
 
-//mail sender
+// E-posta gönderimi için hizmetlerin yapýlandýrýlmasý
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddSingleton<IMailService, MailService>();
 builder.Services.AddSingleton<ISendEmailJob, SendEmailJob>();
 
+// API için Swagger'ýn yapýlandýrýlmasý
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
@@ -58,15 +59,8 @@ builder.Services.AddSwaggerGen(
     
     );
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredUniqueChars = 1;
-});
 
+// Veritabaný baðlantýsýnýn yapýlandýrýlmasý
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(Configuration.ConnectionString);
@@ -75,19 +69,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Unit of Work ve Mapper'ýn eklenmesi
 var mappingConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new AutoMapperProfile());
 });
 IMapper mapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
-
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 
 // Authentication ve jwt Ekleme
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -111,6 +104,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// CORS politikalarýnýn yapýlandýrýlmasý
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
@@ -122,17 +116,17 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Kimlik doðrulama ve yetkilendirme eklentilerinin yapýlandýrýlmasý
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
              .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
 
-
-
-
+// Uygulamanýn oluþturulmasý
 var app = builder.Build();
 
 
+// Hata yönetimi
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -144,25 +138,33 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
+// Geliþtirme ortamýnda Swagger'ýn etkinleþtirilmesi
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UrunKatalogAPI.API v1"));
 }
+
+// Custom Global hata yönetimi kullanýmý
 app.UseCustomGlobalException();
 
+// Hangfire ve CORS'ýn kullanýmý
 app.UseHangfireDashboard();
 app.UseCors(MyAllowSpecificOrigins);
+
 app.UseHttpLogging();
 app.UseHttpsRedirection();
 
+// Statik dosyalarýn kullanýmý
 app.UseStaticFiles(new StaticFileOptions {FileProvider=new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath,"images")),RequestPath="/Resources" });
 
 
 
-
+// Kimlik doðrulama ve yetkilendirme kullanýmý
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Kontrollerin eþleþtirilmesi
 app.MapControllers();
 
 

@@ -23,6 +23,7 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.BrandRepository
             _mapper = mapper;
         }
 
+        // Yeni bir marka oluşturur.
         public async Task<ApplicationResult<BrandDto>> Create(CreateBrandInput input, ApplicationUser applicationUser)
         {
             try
@@ -53,6 +54,7 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.BrandRepository
             }
         }
 
+        // Bir markayı siler.
         public async Task<ApplicationResult> Delete(int id)
         {
             try
@@ -75,6 +77,7 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.BrandRepository
             }
         }
 
+        // Bir markayı alır.
         public async Task<ApplicationResult<BrandDto>> Get(int id)
         {
             try
@@ -107,6 +110,7 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.BrandRepository
             }
         }
 
+        // Tüm markaları alır.
         public async Task<ApplicationResult<List<BrandDto>>> GetAll()
         {
             try
@@ -140,6 +144,7 @@ namespace UrunKatalogAPI.Infrastructere.Repositories.BrandRepository
             }
         }
 
+        // Bir markayı günceller.
         public async Task<ApplicationResult<BrandDto>> Update(UpdateBrandInput input, ApplicationUser applicationUser)
         {
             try

@@ -28,12 +28,6 @@ namespace UrunKatalogAPI.API.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISendEmailJob sendEmailJob;
-      
-
-
-
-
-
 
         public AuthenticateController(UserManager<ApplicationUser> userManager, IConfiguration configuration, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork, ISendEmailJob sendEmailJob)
         {
@@ -42,17 +36,16 @@ namespace UrunKatalogAPI.API.Controllers
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
             this.sendEmailJob = sendEmailJob;
-         
 
         }
 
         [HttpPost]
         [Route("register")]
-        // REGISTER OLMA ENDPOINT'İ
+        // Register olma endpoint'i
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-
-            if (!ModelState.IsValid) //model validse
+            // Modelin geçerlilik kontrolü
+            if (!ModelState.IsValid)
             {
                 return BadRequest(new AuthResult()
                 {
@@ -64,8 +57,7 @@ namespace UrunKatalogAPI.API.Controllers
                 });
             }
 
-            // Email Zaten Kaytlı
-            // usermanager ile kullanıcıyı oluştur
+            // Email zaten kayıtlı mı kontrolü
             var user_exist = await _userManager.FindByEmailAsync(model.Email);
             if (user_exist != null)
             {
@@ -79,51 +71,58 @@ namespace UrunKatalogAPI.API.Controllers
                 });
             }
 
-            //Kullanıcı oluşturma
+            // Yeni kullanıcı oluşturma
             ApplicationUser newUser = new()
             {
                 UserName = model.Username,
-                SecurityStamp = Guid.NewGuid().ToString(),//yeni application user oluştur
+                SecurityStamp = Guid.NewGuid().ToString(),
                 Email = model.Email
             };
 
             var registerUser = await _userManager.CreateAsync(newUser, model.Password);
 
-            if (registerUser.Succeeded) //kullanıcı oluşturma başarılıysa
+            if (registerUser.Succeeded)
             {
-                await _signInManager.SignInAsync(newUser, isPersistent: false); //signin
+                await _signInManager.SignInAsync(newUser, isPersistent: false);
                 var user = await _userManager.FindByNameAsync(newUser.UserName);
 
-                 //hoşgeldiniz emaili
-                    BackgroundJob.Enqueue(() => sendEmailJob.DoRegisterJob(model.Email)); 
+                // Kayıt işlemi başarılıysa e-posta gönderimi
+                BackgroundJob.Enqueue(() => sendEmailJob.DoRegisterJob(model.Email));
 
-                    CreateMailInput input = new()
+                CreateMailInput input = new()
+                {
+                    CreatedBy = user.UserName,
+                    CreatedById = user.Id,
+                    CreatedDate = DateTime.Now,
+                    Status = "Sent"
+
+                };
+
+                await _unitOfWork.Mail.Create(input, user);
+                // Başarısız olan görevlerin sayısını al
+                var failJob = Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedCount();
+
+                // Eğer sadece bir tane başarısız görev varsa
+                if (failJob is 1)
+                {
+                    var foundMail = _unitOfWork.Mail.GetAll().Result.Result.Find(x => x.CreatedById == user.Id);
+
+                    // E-posta güncelleme bilgilerini oluştur
+                    UpdateMailInput updateMail = new()
                     {
-                        CreatedBy = user.UserName,      
-                        CreatedById = user.Id,
-                        CreatedDate = DateTime.Now,
-                        Status = "Sent"
+                        Id = foundMail.Id, // Id: Güncellenecek e-postanın kimliği
+                        CreatedBy = foundMail.CreatedBy,  // CreatedBy: E-postanın oluşturan kullanıcı
+                        CreatedById = foundMail.CreatedById,  // CreatedById: E-postayı oluşturan kullanıcının kimliği
+                        CreatedDate = foundMail.CreatedDate,  // CreatedDate: E-postanın oluşturulma tarihi
+                        Status = "Failed"   // Status: E-postanın durumu (Failed olarak ayarlanacak)
 
                     };
-                    
-                    await _unitOfWork.Mail.Create(input, user); //Statüsü "mail gönderildi" olan yeni bir mail kaydı ekle database'e
-                    var failJob = Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedCount(); // hangfiredaki failed olan jobları count et değişkene at
-                    if (failJob is 1) // background serviste başarısız olan mailleri 5 kez göndermeyi dene yine başarısızsa failed tablosuna at diye config yaptık. Eğer 5 kez denedi ve failed tablosuna attıysa burası 1 olacaktır. Eğer 1 ise
-                    {
-                        var kk = _unitOfWork.Mail.GetAll().Result.Result.Find(x => x.CreatedById == user.Id); //mail tablosundaki ilgili maili bul
-                        UpdateMailInput updateMail = new()
-                        {
-                            Id = kk.Id,
-                            CreatedBy = kk.CreatedBy,
-                            CreatedById = kk.CreatedById, // statüsünü failed'e çek
-                            CreatedDate = kk.CreatedDate,
-                            Status = "Failed"
 
-                        };
-                        await _unitOfWork.Mail.Update(updateMail, user); // güncelle
-                        Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedJobs(0, int.MaxValue).Clear(); // failed jobs 'ı temizle
-                    }
-
+                    // E-postayı güncelle
+                    await _unitOfWork.Mail.Update(updateMail, user);
+                    Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedJobs(0, int.MaxValue).Clear();  // Başarısız görevleri temizle
+                }
+                // İşlem başarılıysa kullanıcıya token dönüşü yap
                 return Ok(GetTokenResponse(user));
             }
 
@@ -138,8 +137,8 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
 
-
-        private JwtTokenResult GetTokenResponse(ApplicationUser user) // TOKEN RESPONSE'UNU DÖNEN METOT
+        // TOKEN DÖNEN METOT
+        private JwtTokenResult GetTokenResponse(ApplicationUser user)
         {
             var token = GetToken(user);
             JwtTokenResult result = new()
@@ -173,74 +172,82 @@ namespace UrunKatalogAPI.API.Controllers
         }
 
 
-
+        // Login olma endpoint'i
         [HttpPost]
-        [Route("login")]            // LOGIN OLMA ENDPOINT'İ
+        [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
 
             if (ModelState.IsValid)
             {
+                // Kullanıcının e-posta adresine göre kullanıcıyı bul
                 var userEmail = await _userManager.FindByEmailAsync(model.Email);
+
+                // Eğer kullanıcı bulunamazsa hata dön
                 if (userEmail == null)
                 {
                     return BadRequest("Email Kayıtlı Değil");
                 }
-                var loginResult = await _signInManager.PasswordSignInAsync(userEmail.UserName, model.Password, true, false); 
+
+                // Kullanıcı adı ve şifreyle giriş yapma işlemi
+                var loginResult = await _signInManager.PasswordSignInAsync(userEmail.UserName, model.Password, true, false);
 
 
-
-                if (!loginResult.Succeeded) 
+                // Eğer giriş başarısız ise
+                if (!loginResult.Succeeded)
                 {
-                    
-                    var user = await _userManager.FindByEmailAsync(model.Email); 
+
+                    var user = await _userManager.FindByEmailAsync(model.Email);
                     await _userManager.AccessFailedAsync(user);
                     var failedCount = _userManager.GetAccessFailedCountAsync(user);
-                    if (failedCount.Result.Equals(3)) // 3 hata
+                    if (failedCount.Result.Equals(3)) // Eğer 3 başarısız giriş varsa
                     {
+                        // Arkaplanda bir e-posta gönderme işi planla
                         BackgroundJob.Enqueue(() => sendEmailJob.DoLogInJob(model.Email)); 
-
                         CreateMailInput input = new()
                         {
-                            CreatedBy = user.UserName,         // Statüsü "mail gönderildi" olan yeni bir mail kaydı ekle database'e
+                            CreatedBy = user.UserName,
                             CreatedById = user.Id,
                             CreatedDate = DateTime.Now,
                             Status = "Sent"
 
                         };
-                        await _userManager.DeleteAsync(user); // bloke
-                        await _unitOfWork.Mail.Create(input, user); //mail gönderildi
-                        var failJob = Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedCount(); 
-                        if (failJob is 1) 
+                        await _userManager.DeleteAsync(user); // Kullanıcıyı sil (hesabı bloke et)
+                        await _unitOfWork.Mail.Create(input, user); // E-postayı oluştur
+                        var failJob = Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedCount(); // Başarısız görev sayısını al
+                        if (failJob is 1)
                         {
-                            var kk = _unitOfWork.Mail.GetAll().Result.Result.Find(x => x.CreatedById == user.Id); //mail tablosundaki ilgili maili bul
+                            var foundMail = _unitOfWork.Mail.GetAll().Result.Result.Find(x => x.CreatedById == user.Id);  // Kullanıcının oluşturduğu e-postayı al
+
+                            // E-posta güncelleme bilgilerini oluştur
                             UpdateMailInput updateMail = new()
                             {
-                                Id = kk.Id,
-                                CreatedBy = kk.CreatedBy,
-                                CreatedById = kk.CreatedById, // statüsünü failed'e çek
-                                CreatedDate = kk.CreatedDate,
+                                Id = foundMail.Id,
+                                CreatedBy = foundMail.CreatedBy,
+                                CreatedById = foundMail.CreatedById,
+                                CreatedDate = foundMail.CreatedDate,
                                 Status = "Failed"
 
                             };
-                            await _unitOfWork.Mail.Update(updateMail, user); // güncelle
-                            Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedJobs(0, int.MaxValue).Clear(); // failed jobs 'ı temizle
+                            await _unitOfWork.Mail.Update(updateMail, user);
+                            Hangfire.SqlServer.SqlServerStorage.Current.GetMonitoringApi().FailedJobs(0, int.MaxValue).Clear(); // Başarısız görevleri temizle
                         };
-                        return BadRequest("Hesabınız bloke oldu. Mail atılmıştır."); // tüm işlemleri yaptıktan sonra dön
+                        return BadRequest("Hesabınız bloke oldu. Mail atılmıştır.");
                     }
-                    return BadRequest("Giriş yapılamadı. Bilgilerinizi kontrol ediniz."); // giriş başarısızsa
-                    }
-                    var user1 = await _userManager.FindByEmailAsync(model.Email);
-                var response = new
-                {
-                    UserName = user1.UserName, // Kullanıcının adını (username) döndür
-                    Token = GetTokenResponse(user1)
-                };
-                return Ok(response); // model state valid ise
+                    return BadRequest("Giriş yapılamadı. Bilgilerinizi kontrol ediniz.");
                 }
-                return BadRequest(ModelState); // model state valid değil ise
+                var userByEmail = await _userManager.FindByEmailAsync(model.Email); // Kullanıcıyı tekrar bul
+
+                var response = new // Kullanıcı adı ve token bilgilerini oluştur
+                {
+                    UserName = userByEmail.UserName,
+                    Token = GetTokenResponse(userByEmail)
+                };
+                return Ok(response);
             }
+            return BadRequest(ModelState);
         }
     }
+}
 
 

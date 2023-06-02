@@ -8,6 +8,8 @@ using UrunKatalogAPI.Infrastructere.Repositories;
 
 namespace UrunKatalogAPI.API.Controllers
 {
+
+    // Marka (Brand) işlemlerini gerçekleştiren controller
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -16,18 +18,22 @@ namespace UrunKatalogAPI.API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
+        // Bağımlılıkların enjekte edildiği constructor metodu
         public BrandController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
 
+
+        // Tüm markaları getiren endpoint
         [HttpGet]
         public Task<ApplicationResult<List<BrandDto>>> GetAllBrandies()
         {
             return _unitOfWork.Brand.GetAll();
         }
 
+        // Belirli bir markayı id'ye göre getiren endpoint
         [HttpGet("{id}")]
         public async Task<ActionResult<ApplicationResult<BrandDto>>> GetBrandById(int id)
         {
@@ -37,6 +43,7 @@ namespace UrunKatalogAPI.API.Controllers
             return NotFound(result);
         }
 
+        // Yeni bir marka oluşturan HTTP POST metodu
         [HttpPost]
         public async Task<ActionResult<ApplicationResult<BrandDto>>> CreateBrand([FromBody] CreateBrandInput input)
         {
@@ -52,6 +59,7 @@ namespace UrunKatalogAPI.API.Controllers
             return BadRequest();
         }
 
+        // Bir markayı güncelleyen HTTP PUT metodu
         [HttpPut]
         public async Task<IActionResult> UpdateBrand([FromBody] UpdateBrandInput updateBrand)
         {
@@ -63,6 +71,7 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
 
+        // Bir markayı silen HTTP DELETE metodu
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBrand(int id)
         {

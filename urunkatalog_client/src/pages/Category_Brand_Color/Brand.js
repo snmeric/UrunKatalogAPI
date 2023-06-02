@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useAuthHeader } from "react-auth-kit";
-import { Badge, Grid, Card, Spacer } from "@nextui-org/react";
+import { Badge, Grid, Card, Spacer, Loading } from "@nextui-org/react";
 import {
   Table,
   Row,
@@ -21,7 +21,6 @@ import { DeleteIcon } from "../../components/TableComponents/DeleteIcon";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@material-tailwind/react";
-
 
 function Brand() {
   const [brandies, setBrandies] = useState([]);
@@ -102,7 +101,7 @@ function Brand() {
 
         config
       );
-      console.log(response.data);
+     
       toast("Marka Silindi.", { icon: "👌" });
     } catch (error) {
       const errorMessage = error.response.data;
@@ -187,6 +186,13 @@ function Brand() {
         return cellValue;
     }
   };
+  if (loading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <Loading type="spinner" size="lg" />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-5">
       <form onSubmit={formik.handleSubmit} className="w-96 ">
@@ -267,32 +273,6 @@ function Brand() {
                 size="md"
                 label="Marka Adı"
               />
-              {/* <Select
-                name="id"
-                options={brandies.map((category) => ({
-                  value: category,
-                  label: category.name,
-                }))}
-                onChange={(value) => putformik.setFieldValue("id", value)}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                  control: (base) => ({ ...base, width: "300px" }),
-                }}
-                menuPortalTarget={document.body}
-              /> */}
-              {/* <Select
-              name="id"
-              onChange={(value) => putformik.setFieldValue("id", value)}
-              variant="outlined"
-              label="Kategori"
-              className="flex items-center gap-2"
-            >
-              {brandies.map((category) => (
-                <Option value={`${category.id}`}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select> */}
             </Modal.Body>
             <Modal.Footer>
               <Button auto flat color="error" onPress={closeHandler}>

@@ -35,7 +35,7 @@ export default function Register() {
   };
 
   const onSubmit = async (values) => {
-    console.log("Values: ", values);
+    
     setError("");
     setIsButtonDisabled(true);
     const data = {
@@ -55,7 +55,7 @@ export default function Register() {
         data,
         config
       );
-      console.log(response);
+     
       const token = await response.data.accessToken;
 
       toast("Kayıt Başarılı. Lütfen Giriş Yapınız", { icon: "👏" });

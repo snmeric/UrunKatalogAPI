@@ -32,41 +32,54 @@ namespace UrunKatalogAPI.API.Controllers
 
             if (image.Image != null)
             {
+                // Resim dosyasının yükleneceği klasör yolunu belirle
                 string uploadsFolder = Path.Combine(webHostEnvironment.ContentRootPath, "images");
+
+                // Guid.NewGuid() yöntemi kullanarak benzersiz bir dosya adı oluştur
                 uniqueFileName = Guid.NewGuid().ToString() + "_" + image.Image.FileName;
+
+                // Klasör yolunu ve benzersiz dosya adını birleştirerek tam dosya yolunu elde et
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // Bir dosya akışı oluştur ve resim dosyasını belirtilen dosya yoluna kopyala
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     image.Image.CopyTo(fileStream);
                 }
             }
+            // Yüklenen resme daha sonra erişmek için kullanılabilecek benzersiz dosya adını döndür
             return uniqueFileName;
         }
         [HttpGet]
         public Task<ApplicationResult<List<ProductDto>>> GetAllProducts()
         {
+            // Tüm ürünleri almak için
             return _unitOfWork.Product.GetAll();
         }
 
         [HttpGet("category/{categoryId}")]
         public async Task<IActionResult> GetProductsByCategory(int categoryId)
         {
+            // Alınan ürünlerin sonucunda, belirtilen kategoriye sahip ürünleri filtreler ve bir liste olarak alır.
             var products = await _unitOfWork.Product.GetAll();
             var matchingProducts = products.Result.Where(p => p.CategoryId == categoryId).ToList();
 
+            // Eşleşen ürünlerin sayısı 0 ise, NotFound (404) döndürür.
             if (matchingProducts.Count == 0)
             {
                 return NotFound();
             }
-
+            // Eşleşen ürünlerin listesini Ok (200) döndürür.
             return Ok(matchingProducts);
         }
 
-        [HttpPost] // ÜRÜN EKLEME ENDPOINT'İ
+
+        // ÜRÜN EKLEME ENDPOINT'İ
+        [HttpPost] 
         public async Task<ActionResult<ApplicationResult<ProductDto>>> AddProduct([FromForm] ProductImage image, [FromQuery] CreateProductInput input)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User); 
-            string uniqueFileName = ImageFile(image); 
+            string uniqueFileName = ImageFile(image); // Yüklenen resmin benzersiz dosya adını alır.
             var n = new CreateProductInput
             {
                 BrandId = input.BrandId,
@@ -81,7 +94,9 @@ namespace UrunKatalogAPI.API.Controllers
                 ProductCondition = input.ProductCondition,
                 UserName = input.UserName
             };
-            var result = await _unitOfWork.Product.Create(n, user); // Ürünü ekle
+
+           
+            var result = await _unitOfWork.Product.Create(n, user); // Ürünü oluşturur ve kullanıcı ile ilişkilendirir.
             if (result.Succeeded) 
             {
                 return result; 
@@ -112,7 +127,7 @@ namespace UrunKatalogAPI.API.Controllers
             var result = await _unitOfWork.Product.Get(id); 
             if (result.Succeeded) 
             {
-                if (result.Result.IsSold is false) 
+                if (result.Result.IsSold is false) // Ürünün satılmadığı kontrol edilir.
                 {
                     var maplendi =
                     new UpdateProductInput
@@ -167,9 +182,9 @@ namespace UrunKatalogAPI.API.Controllers
                 return BadRequest("Böyle bir ürün bulunamadı.");
             }
 
-            var username = _userManager.GetUserName(HttpContext.User); // Kullanıcının username'ini al
+            var username = _userManager.GetUserName(HttpContext.User); 
 
-            if (product.Result.ModifiedBy == username) // Ürün kullanıcının username'i ile oluşturulduysa
+            if (product.Result.ModifiedBy == username) 
             {
                 var result = await _unitOfWork.Product.Delete(id); // Ürünü sil
                 if (result.Succeeded)

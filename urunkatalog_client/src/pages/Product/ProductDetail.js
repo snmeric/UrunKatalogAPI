@@ -2,34 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import {
-  useInput,
-  Card,
-  Col,
-  Row,
   Button,
   Text,
-  Popover,
   Input,
   Tooltip,
-  Grid,
 } from "@nextui-org/react";
 import { Spacer } from "@nextui-org/react";
-import * as yup from "yup";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import { useNavigate, useParams } from "react-router-dom";
-import axios, { AxiosError } from "axios";
-import { Chip, Checkbox, Typography, Radio } from "@material-tailwind/react";
+import axios from "axios";
+import {  Radio } from "@material-tailwind/react";
 import { Loading } from "@nextui-org/react";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Breadcrumbs } from "@material-tailwind/react";
 import FormatPrice from "../../components/helper/FormatPrice";
-import {
-  fetchBrands,
-  fetchCategories,
-  fetchColors,
-  fetchProduct,
-} from "../../components/service/api";
 import { useProductHooks } from "../../hooks/hook";
 
 const Product = () => {
@@ -111,31 +98,7 @@ const Product = () => {
     fetchData();
   }, [id]);
 
-  // useEffect(() => {
-  //   setLoading(true);
-  //   const getProduct = async () => {
-  //     const productData = await fetchProduct(config);
-  //     setProduct(productData);
-
-  //     console.log("Response", productData);
-  //   };
-  //   setLoading(false);
-  //   getProduct();
-  // }, []);
-
-  // useEffect(() => {
-  //   setLoading(true);
-
-  //   const fetchData = async () => {
-  //     if (product.length > 0) {
-  //       const filteredProduct = product.find((p) => p.id === parseInt(id));
-  //       setSelProduct(filteredProduct);
-  //     }
-  //   };
-
-  //   fetchData();
-  //   setLoading(false);
-  // }, [product, id]);
+  
 
   /* TEKLİF GÖNDER */
   const onSubmit = async (values) => {
@@ -146,9 +109,9 @@ const Product = () => {
       offeredPrice: values.offeredPrice,
     };
 
-    console.log("Values: ", values);
+   
 
-    console.log("TOKEEN:", authHeader());
+  
     axios
       .post("https://localhost:7104/Offer", data, {
         headers: {
@@ -157,7 +120,7 @@ const Product = () => {
         },
       })
       .then((response) => {
-        console.log(response.data);
+        
         openModal();
         toast("Teklif Başarılı.", { icon: "👌" });
       })
@@ -240,7 +203,7 @@ const Product = () => {
         toast("Satın Alma Başarılı.", { icon: "👌" });
         openBuyModal();
         setBuyProduct(response.data.result);
-        console.log("Responsee:", product);
+        
       })
       .catch((error) => console.log(error));
   }
@@ -422,7 +385,7 @@ const Product = () => {
                   formik.setFieldValue("isOfferPercentage", false)
                 }
                 onBlur={formik.handleBlur}
-                label="Yüzdelik olmadan direk fiyat teklifi vereceğim."
+                label="Tutar vererek teklif vereceğim."
                 ripple={false}
               />
             </div>
@@ -611,7 +574,9 @@ const Product = () => {
                   formik.values.isOfferPercentage ? helperisOffer.color : ""
                 }
                 helperText={
-                  formik.values.isOfferPercentage ? helperisOffer.text : ""
+                  formik.values.isOfferPercentage
+                    ? helperisOffer.text
+                    : "İki sıfır fazladan koyarak teklif verin"
                 }
                 labelRight={!formik.values.isOfferPercentage ? "TL" : "%"}
                 label="Teklif Fiyatı"

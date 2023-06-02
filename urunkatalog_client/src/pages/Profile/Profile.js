@@ -4,13 +4,10 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import { Button } from "@nextui-org/react";
-import { Card, Grid, Row, Text } from "@nextui-org/react";
+import { Card, Grid, Text } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 
 import {
-  CardHeader,
-  CardBody,
-  CardFooter,
   Typography,
 } from "@material-tailwind/react";
 import { Loading } from "@nextui-org/react";
@@ -21,6 +18,7 @@ function Profile() {
   const [products, setProducts] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const authHeader = useAuthHeader();
+
   const config = {
     headers: {
       Accept: "text/plain",
@@ -28,7 +26,8 @@ function Profile() {
       Authorization: `${authHeader()}`,
     },
   };
-  // ÜRÜNLERİ LİSTELE
+
+
   // ÜRÜNLERİ LİSTELE
   useEffect(() => {
     const fetchData = () => {
@@ -49,6 +48,7 @@ function Profile() {
     };
     fetchData();
   }, []);
+
   if (isLoading) {
     return (
       <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
@@ -56,6 +56,7 @@ function Profile() {
       </div>
     );
   }
+  
   return (
     <div className="relative w-full">
       {/* <ComplexNavbar /> */}

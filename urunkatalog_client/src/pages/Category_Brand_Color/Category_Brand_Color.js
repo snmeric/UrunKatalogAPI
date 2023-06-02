@@ -1,16 +1,15 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useAuthHeader } from "react-auth-kit";
-import { Badge, Grid, Card, Spacer } from "@nextui-org/react";
+import { Grid, Card, Loading } from "@nextui-org/react";
 import {
   Table,
   Row,
   Col,
   Modal,
   Tooltip,
-  User,
   Button,
   Text,
 } from "@nextui-org/react";
@@ -21,7 +20,6 @@ import { DeleteIcon } from "../../components/TableComponents/DeleteIcon";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@material-tailwind/react";
-
 import Brand from "./Brand";
 import Color from "./Color";
 
@@ -104,7 +102,7 @@ function Category() {
 
         config
       );
-      console.log(response.data);
+      
       toast("Kategori Silindi.", { icon: "👌" });
     } catch (error) {
       const errorMessage = error.response.data;
@@ -189,12 +187,16 @@ function Category() {
         return cellValue;
     }
   };
+  if (loading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <Loading type="spinner" size="lg" />
+      </div>
+    );
+  }
   return (
-  
-    <div> 
-
+    <div>
       <Grid.Container gap={10} justify="center">
-         
         <Grid xs={12} sm={12} lg={3}>
           <div className="flex flex-col gap-5">
             <form onSubmit={formik.handleSubmit} className="w-96 ">
@@ -274,32 +276,6 @@ function Category() {
                       size="md"
                       label="Kategori Adı"
                     />
-                    {/* <Select
-                name="id"
-           options={categories.map((category) => ({
-                  value: category,
-                  label: category.name,
-                }))}
-                onChange={(value) => putformik.setFieldValue("id", value)}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                  control: (base) => ({ ...base, width: "300px" }),
-                }}
-                menuPortalTarget={document.body}
-              /> */}
-                    {/* <Select
-              name="id"
-              onChange={(value) => putformik.setFieldValue("id", value)}
-              variant="outlined"
-              label="Kategori"
-              className="flex items-center gap-2"
-            >
-              {categories.map((category) => (
-                <Option value={`${category.id}`}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select> */}
                   </Modal.Body>
                   <Modal.Footer>
                     <Button auto flat color="error" onPress={closeHandler}>
@@ -322,7 +298,7 @@ function Category() {
           <Color />
         </Grid>
       </Grid.Container>
-      </div>
+    </div>
   );
 }
 

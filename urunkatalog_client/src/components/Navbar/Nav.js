@@ -37,7 +37,7 @@ export default function Nav() {
     if (actionKey === "/logout") {
       logout();
     } else {
-      console.log({ actionKey });
+      
       navigate(`${actionKey}`);
       setIsOpen(false); // Dropdown'u kapat
     }

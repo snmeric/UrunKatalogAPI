@@ -11,6 +11,7 @@ using UrunKatalogAPI.Infrastructere.Repositories.OfferRepository;
 
 namespace UrunKatalogAPI.API.Controllers
 {
+    // Teklif (Offer) işlemlerini gerçekleştiren controller sınıfı
     [Route("[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -26,17 +27,17 @@ namespace UrunKatalogAPI.API.Controllers
         }
 
 
-        [HttpPost] //TEKLİF YAP ENDPOINT'İ
+        [HttpPost] //TEKLIF YAP ENDPOINT'I
         public async Task<ActionResult<ApplicationResult<OfferDto>>> MakeOffer([FromBody] CreateOfferInput input)
         {
-            var rr = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == input.ProductId); 
+            var requestedProduct = _unitOfWork.Product.GetAll().Result.Result.FirstOrDefault(x => x.Id == input.ProductId); 
             var user = await _userManager.GetUserAsync(HttpContext.User); 
 
-            if (rr.IsOfferable == true && rr!=null)
+            if (requestedProduct.IsOfferable == true && requestedProduct !=null)
             {
-                if (input.IsOfferPercentage) 
+                if (input.IsOfferPercentage) // Yüzdelik durumunda, teklif fiyatını hesaplayın
                 {
-                    input.OfferedPrice =  (rr.Price * input.OfferedPrice / 100); 
+                    input.OfferedPrice =  (requestedProduct.Price * input.OfferedPrice / 100); 
                     var result = await _unitOfWork.Offer.Create(input, user);
                     if (result.Succeeded)
                     {
@@ -44,7 +45,7 @@ namespace UrunKatalogAPI.API.Controllers
                     }
 
                 }
-                else if (input.IsOfferPercentage == false) 
+                else if (input.IsOfferPercentage == false)  // Sabit fiyat indirim durumunda, teklifi oluşturun
                 {
                     var resultt = await _unitOfWork.Offer.Create(input, user); 
                     if (resultt.Succeeded)
@@ -57,20 +58,21 @@ namespace UrunKatalogAPI.API.Controllers
 
         }
 
-        [HttpDelete("{id}")] // Teklifi Sil
+        [HttpDelete("{id}")] // Bir teklifi iptal eden HTTP DELETE metodu
         public async Task<ActionResult<ApplicationResult<OfferDto>>> CancelOffer(int id)
         {
-            var omu = await _unitOfWork.Offer.Get(id); 
+            var requestedOffer = await _unitOfWork.Offer.Get(id); 
             var username = _userManager.GetUserName(HttpContext.User); 
-            if (omu.Result.CreatedBy == username) 
+            if (requestedOffer.Result.CreatedBy == username) 
             {
+                // İptal edilecek teklifi bulun ve sil
                 var result = await _unitOfWork.Offer.Delete(id); 
                 if (result.Succeeded)
                 {
                     return Ok("Teklif silindi.");
                 }
             }
-            else if (omu.Result.CreatedBy != username)
+            else if (requestedOffer.Result.CreatedBy != username)
             {
                 return BadRequest("Size ait olmayan teklifi silemezsiniz!");
             }

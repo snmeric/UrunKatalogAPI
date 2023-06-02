@@ -1,9 +1,9 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useAuthHeader } from "react-auth-kit";
-import { Badge, Grid, Card, Spacer } from "@nextui-org/react";
+import { Card, Loading } from "@nextui-org/react";
 import {
   Table,
   Row,
@@ -102,7 +102,7 @@ function Color() {
 
         config
       );
-      console.log(response.data);
+     
       toast("Renk Silindi.", { icon: "👌" });
     } catch (error) {
       const errorMessage = error.response.data;
@@ -187,6 +187,13 @@ function Color() {
         return cellValue;
     }
   };
+  if (loading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+        <Loading type="spinner" size="lg" />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-5">
  
@@ -269,32 +276,7 @@ function Color() {
                 size="md"
                 label="Renk Adı"
               />
-              {/* <Select
-                name="id"
-                options={colors.map((color) => ({
-                  value: color,
-                  label: color.name,
-                }))}
-                onChange={(value) => putformik.setFieldValue("id", value)}
-                styles={{
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                  control: (base) => ({ ...base, width: "300px" }),
-                }}
-                menuPortalTarget={document.body}
-              /> */}
-              {/* <Select
-              name="id"
-              onChange={(value) => putformik.setFieldValue("id", value)}
-              variant="outlined"
-              label="Kategori"
-              className="flex items-center gap-2"
-            >
-              {colors.map((color) => (
-                <Option value={`${color.id}`}>
-                  {color.name}
-                </Option>
-              ))}
-            </Select> */}
+             
             </Modal.Body>
             <Modal.Footer>
               <Button auto flat color="error" onPress={closeHandler}>

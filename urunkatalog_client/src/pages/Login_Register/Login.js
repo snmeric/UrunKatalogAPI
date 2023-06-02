@@ -17,7 +17,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import COVER_IMAGE from "../../assets/loginbg.png";
 import toast, { Toaster } from "react-hot-toast";
-
 import {
   Tabs,
   TabsHeader,
@@ -28,13 +27,12 @@ import {
 import Register from "./Register";
 
 function Login() {
-
   const signIn = useSignIn();
   const navigate = useNavigate();
   const [isLoading, setisLoading] = useState();
 
   const onSubmit = async (values) => {
-    console.log("Values: ", values);
+   
 
     setisLoading(true);
     const data = {
@@ -54,7 +52,7 @@ function Login() {
         config
       );
       toast("Giriş Başarılı", { icon: "👏" });
-      console.log(response);
+      
       const token = await response.data.token.accessToken;
       const username = await response.data.userName;
       signIn({
@@ -162,7 +160,7 @@ function Login() {
             <Button flat color="primary" type="submit" disabled={isLoading}>
               Giriş Yap
             </Button>
-            <Toaster/>
+            <Toaster />
           </form>
         );
       },
@@ -214,9 +212,7 @@ function Login() {
             </Tabs>
           </div>
         </div>
-     
       </div>
-     
     </div>
   );
 }
