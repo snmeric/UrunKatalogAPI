@@ -9,11 +9,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using UrunKatalogAPI.API.Extensions;
-using UrunKatalogAPI.API.SendMail;
+
 using UrunKatalogAPI.Core.Domain.Entities;
 using UrunKatalogAPI.Core.Shared;
 using UrunKatalogAPI.Infrastructere.DTO;
 using UrunKatalogAPI.Infrastructere.Repositories;
+using UrunKatalogAPI.Infrastructere.Services.SendMail;
+using UrunKatalogAPI.Infrastructere.UnitOfWork;
 using static Microsoft.VisualStudio.Services.Graph.GraphResourceIds;
 
 namespace UrunKatalogAPI.API.Controllers

@@ -8,6 +8,7 @@ using UrunKatalogAPI.Core.Shared;
 using UrunKatalogAPI.Infrastructere.DTO;
 using UrunKatalogAPI.Infrastructere.Repositories;
 using UrunKatalogAPI.Infrastructere.Repositories.OfferRepository;
+using UrunKatalogAPI.Infrastructere.UnitOfWork;
 
 namespace UrunKatalogAPI.API.Controllers
 {

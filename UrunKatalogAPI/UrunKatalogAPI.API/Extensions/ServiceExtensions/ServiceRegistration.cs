@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UrunKatalogAPI.Infrastructere;
+using UrunKatalogAPI.Infrastructere.UnitOfWork;
 
 namespace UrunKatalogAPI.API.Extensions.ServiceExtensions
 {

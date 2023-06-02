@@ -1,8 +1,8 @@
 ﻿using Hangfire;
-using UrunKatalogAPI.Core.Shared.Service;
+using UrunKatalogAPI.Infrastructere.Services;
 using UrunKatalogAPI.Infrastructere.Repositories;
 
-namespace UrunKatalogAPI.API.SendMail
+namespace UrunKatalogAPI.Infrastructere.Services.SendMail
 {
     public class SendEmailJob:ISendEmailJob
     {

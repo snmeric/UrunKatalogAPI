@@ -1,4 +1,4 @@
-﻿using UrunKatalogAPI.API.Middlewares;
+﻿using UrunKatalogAPI.API.Extensions.Middlewares;
 
 namespace UrunKatalogAPI.API.Extensions
 {

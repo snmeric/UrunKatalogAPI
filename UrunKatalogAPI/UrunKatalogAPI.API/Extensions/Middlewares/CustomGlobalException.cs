@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
 
-namespace UrunKatalogAPI.API.Middlewares
+namespace UrunKatalogAPI.API.Extensions.Middlewares
 {
     public class CustomGlobalException
     {
@@ -15,7 +15,7 @@ namespace UrunKatalogAPI.API.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-          
+
             try
             {
                 await _next(context);

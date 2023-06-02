@@ -194,7 +194,7 @@ function Brand() {
     );
   }
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col mx-auto gap-5">
       <form onSubmit={formik.handleSubmit} className="w-96 ">
         <Card
           className="flex flex-col items-center shadow-sm "

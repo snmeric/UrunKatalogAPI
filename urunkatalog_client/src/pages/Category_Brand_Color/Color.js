@@ -195,7 +195,7 @@ function Color() {
     );
   }
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col mx-auto gap-5">
  
       <div className="flex flex-row gap-5">
         <form onSubmit={formik.handleSubmit} className="w-96 ">

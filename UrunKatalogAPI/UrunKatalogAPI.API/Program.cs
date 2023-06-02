@@ -14,12 +14,12 @@ using System.Text;
 using UrunKatalogAPI.API;
 using UrunKatalogAPI.API.Extensions;
 using UrunKatalogAPI.API.Extensions.ServiceExtensions;
-using UrunKatalogAPI.API.SendMail;
-using UrunKatalogAPI.Core.Shared.Service;
+using UrunKatalogAPI.Infrastructere.Services;
 using UrunKatalogAPI.Infrastructere;
 using UrunKatalogAPI.Infrastructere.Mapping;
 using UrunKatalogAPI.Infrastructere.Repositories;
-
+using UrunKatalogAPI.Infrastructere.Services.SendMail;
+using UrunKatalogAPI.Infrastructere.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 

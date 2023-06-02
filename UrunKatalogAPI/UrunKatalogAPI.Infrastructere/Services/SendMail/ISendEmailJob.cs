@@ -1,4 +1,4 @@
-﻿namespace UrunKatalogAPI.API.SendMail
+﻿namespace UrunKatalogAPI.Infrastructere.Services.SendMail
 {
     public interface ISendEmailJob
     {

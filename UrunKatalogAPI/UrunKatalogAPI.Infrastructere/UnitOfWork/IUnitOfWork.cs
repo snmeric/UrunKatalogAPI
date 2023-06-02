@@ -10,7 +10,7 @@ using UrunKatalogAPI.Infrastructere.Repositories.MailRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.OfferRepository;
 using UrunKatalogAPI.Infrastructere.Repositories.ProductRepository;
 
-namespace UrunKatalogAPI.API
+namespace UrunKatalogAPI.Infrastructere.UnitOfWork
 {
     public interface IUnitOfWork
     {

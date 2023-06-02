@@ -102,7 +102,7 @@ function Category() {
 
         config
       );
-      
+
       toast("Kategori Silindi.", { icon: "👌" });
     } catch (error) {
       const errorMessage = error.response.data;
@@ -196,9 +196,9 @@ function Category() {
   }
   return (
     <div>
-      <Grid.Container gap={10} justify="center">
-        <Grid xs={12} sm={12} lg={3}>
-          <div className="flex flex-col gap-5">
+      <Grid.Container gap={5} justify="center" className=" gap-x-14">
+        <Grid xs={12} md={12} sm={12} lg={3} >
+          <div className="flex flex-col items-center mx-auto gap-5">
             <form onSubmit={formik.handleSubmit} className="w-96 ">
               <Card
                 className="flex flex-col items-center shadow-sm "
